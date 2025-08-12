@@ -1,0 +1,28 @@
+{
+  "name": "aps-nashik-website",
+  "version": "1.0.0",
+  "description": "APS Nashik School Website",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site - no build required'",
+    "start": "vercel dev"
+  },
+  "keywords": [
+    "school",
+    "education",
+    "nashik",
+    "aps"
+  ],
+  "author": "APS Nashik",
+  "license": "MIT",
+  "dependencies": {
+    "nodemailer": "^6.9.7"
+  },
+  "devDependencies": {
+    "vercel": "^32.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
