@@ -1,4 +1,4 @@
-// File: X:\apsnashik\app\social\page.tsx
+// File: /home/wanted/apsnashik18/app/social/page.tsx
 import * as entry from '../../../../app/social/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
