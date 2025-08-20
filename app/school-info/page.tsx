@@ -124,7 +124,7 @@ export default function SchoolInfo() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-xl text-gray-200 max-w-3xl mx-auto"
           >
-            Complete information about Apple Public School - Your gateway to AI-enhanced education in Nashik.
+            Complete information about Apple Public School - Your gateway to excellent education in Nashik.
           </motion.p>
         </div>
       </section>
@@ -147,7 +147,7 @@ export default function SchoolInfo() {
                 preparing students for the future of education and work.
               </p>
               <p className="text-body mb-6">
-                Our AI-enhanced learning environment combines traditional academic excellence with 
+                Our learning environment combines traditional academic excellence with 
                 cutting-edge technology, ensuring that every student develops critical thinking, 
                 creativity, and digital literacy skills essential for the 21st century.
               </p>
@@ -196,7 +196,7 @@ export default function SchoolInfo() {
           >
             <h2 className="heading-secondary mb-4">Academic Information</h2>
             <p className="text-body max-w-3xl mx-auto">
-              Comprehensive details about our AI-enhanced academic programs and curriculum structure.
+              Comprehensive details about our academic programs and curriculum structure.
             </p>
           </motion.div>
 
@@ -233,9 +233,9 @@ export default function SchoolInfo() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">AI-Enhanced Facilities</h2>
+            <h2 className="heading-secondary mb-4">Facilities</h2>
             <p className="text-body max-w-3xl mx-auto">
-              State-of-the-art facilities designed to support AI-enhanced learning and holistic development.
+              State-of-the-art facilities designed to support holistic development.
             </p>
           </motion.div>
 
@@ -272,7 +272,7 @@ export default function SchoolInfo() {
           >
             <h2 className="heading-secondary mb-4">Admission Information</h2>
             <p className="text-body max-w-3xl mx-auto">
-              Everything you need to know about joining our AI-enhanced learning community.
+              Everything you need to know about joining our learning community.
             </p>
           </motion.div>
 
@@ -306,7 +306,7 @@ export default function SchoolInfo() {
           >
             <h2 className="heading-secondary mb-4">Awards & Achievements</h2>
             <p className="text-body max-w-3xl mx-auto">
-              Recognition of our commitment to excellence in AI-enhanced education.
+              Recognition of our commitment to excellence in education.
             </p>
           </motion.div>
 
@@ -350,7 +350,7 @@ export default function SchoolInfo() {
           >
             <h2 className="heading-secondary mb-4">Parent Reviews</h2>
             <p className="text-body max-w-3xl mx-auto">
-              What parents say about our AI-enhanced educational approach.
+              What parents say about our educational approach.
             </p>
           </motion.div>
 
@@ -395,7 +395,7 @@ export default function SchoolInfo() {
           >
             <h2 className="heading-secondary mb-4">Contact Information</h2>
             <p className="text-body max-w-3xl mx-auto">
-              Get in touch with us for more information about our AI-enhanced programs.
+              Get in touch with us for more information about our programs.
             </p>
           </motion.div>
 
@@ -434,9 +434,9 @@ export default function SchoolInfo() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="heading-secondary text-white mb-4">Ready to Join Our AI-Enhanced School?</h2>
+            <h2 className="heading-secondary text-white mb-4">Ready to Join Our School?</h2>
             <p className="text-xl text-gray-200 mb-8 max-w-3xl mx-auto">
-              Experience the future of education with our AI-powered learning environment. 
+              Experience quality education with modern facilities and experienced teachers. 
               Apply now and give your child the advantage they deserve.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -72,23 +72,23 @@ const Header = () => {
       </div>
 
       {/* Main Header */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-200 ${
         isScrolled 
-          ? 'bg-white/95 backdrop-blur shadow-lg' 
+          ? 'bg-white/95 backdrop-blur shadow-md' 
           : 'bg-white'
       }`}>
         <div className="container-custom">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-16 sm:h-18 md:h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3">
-              <img 
-                src="/images/aps.jpg" 
-                alt="APS Nashik" 
-                className="w-12 h-12 rounded-lg"
+              <img
+                src="/images/aps.jpg"
+                alt="APS Nashik"
+                className="w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-lg"
               />
               <div>
-                <h1 className="text-xl font-bold text-primary-600">APS Nashik</h1>
-                <p className="text-sm text-dark-500">Apple Public School</p>
+                <h1 className="text-lg sm:text-xl font-bold text-primary-600">APS Nashik</h1>
+                <p className="text-xs sm:text-sm text-dark-500">Apple Public School</p>
               </div>
             </Link>
 
@@ -150,7 +150,8 @@ const Header = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-dark-700 hover:text-primary-600"
+              aria-label="Toggle menu"
+              className="lg:hidden p-2 rounded-md border border-gray-200 text-dark-700 hover:text-primary-600 hover:border-primary-200 active:bg-gray-50"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -164,7 +165,7 @@ const Header = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-white border-t border-gray-100"
+              className="lg:hidden bg-white border-t border-gray-100 shadow-sm"
             >
               <div className="container-custom py-4">
                 <nav className="space-y-2">
@@ -210,7 +211,7 @@ const Header = () => {
       </header>
 
       {/* Spacer for fixed header */}
-      <div className="h-20"></div>
+      <div className="h-16 sm:h-[72px] md:h-20"></div>
     </>
   )
 }

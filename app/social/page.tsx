@@ -139,7 +139,7 @@ export default function Social() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-xl text-gray-200 max-w-3xl mx-auto"
           >
-            Stay connected with our AI-enhanced school community. Follow us for updates, events, and insights into our innovative educational approach.
+            Stay connected with our school community. Follow us for updates, events, and insights into our educational approach.
           </motion.p>
         </div>
       </section>
@@ -328,11 +328,11 @@ export default function Social() {
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center space-x-3">
                   <Sparkles className="w-5 h-5 text-primary-600" />
-                  <span>Latest school events and announcements</span>
+                  <span>Learning insights and achievements</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <Sparkles className="w-5 h-5 text-primary-600" />
-                  <span>Student achievements and success stories</span>
+                  <span>Parent engagement and community updates</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <Sparkles className="w-5 h-5 text-primary-600" />
@@ -340,7 +340,7 @@ export default function Social() {
                 </li>
                 <li className="flex items-center space-x-3">
                   <Sparkles className="w-5 h-5 text-primary-600" />
-                  <span>Parent engagement and community updates</span>
+                  <span>Latest school events and announcements</span>
                 </li>
               </ul>
               
@@ -390,7 +390,7 @@ export default function Social() {
                 
                 <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                   <p className="text-sm text-dark-600 mb-3">
-                    "Exciting to see our students embracing AI-enhanced learning! The future of education is here at APS Nashik."
+                    "Exciting to see our students learning and growing every day at APS Nashik."
                   </p>
                   <div className="flex items-center justify-between text-xs text-dark-500">
                     <span>2 hours ago</span>
@@ -418,7 +418,7 @@ export default function Social() {
           >
             <h2 className="heading-secondary text-white mb-4">Join Our Social Media Community</h2>
             <p className="text-xl text-gray-200 mb-8 max-w-3xl mx-auto">
-              Stay connected with our AI-enhanced school community. Follow us for the latest updates, 
+              Stay connected with our school community. Follow us for the latest updates, 
               events, and insights into innovative education.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

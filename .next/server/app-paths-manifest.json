@@ -1,16 +1,3 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/academics/page": "app/academics/page.js",
-  "/admin/content/page": "app/admin/content/page.js",
-  "/admin/login/page": "app/admin/login/page.js",
-  "/about/page": "app/about/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/admin/test-login/page": "app/admin/test-login/page.js",
-  "/contact/page": "app/contact/page.js",
-  "/gallery/page": "app/gallery/page.js",
-  "/page": "app/page.js",
-  "/school-info/page": "app/school-info/page.js",
-  "/social/page": "app/social/page.js",
-  "/test/page": "app/test/page.js",
-  "/api/contact/route": "app/api/contact/route.js"
+  "/page": "app/page.js"
 }

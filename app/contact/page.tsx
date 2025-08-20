@@ -132,7 +132,7 @@ export default function Contact() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="heading-primary mb-4"
           >
-            AI-Enhanced Communication
+            Contact Apple Public School
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 30 }}
@@ -140,13 +140,12 @@ export default function Contact() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-xl text-gray-200 max-w-3xl mx-auto"
           >
-            Experience seamless communication with our AI-powered contact system. 
-            Get instant responses and personalized assistance.
+            Reach out to our admissions and administration team. We respond within 24 hours on working days.
           </motion.p>
         </div>
       </section>
 
-      {/* AI Features Section */}
+      {/* Highlights Section */}
       <section className="py-16 bg-gray-50">
         <div className="container-custom">
           <motion.div
@@ -156,9 +155,9 @@ export default function Contact() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="heading-secondary mb-4">AI-Powered Communication Features</h2>
+            <h2 className="heading-secondary mb-4">Why Contact Us</h2>
             <p className="text-body max-w-3xl mx-auto">
-              Our intelligent contact system ensures you get the fastest and most accurate responses.
+              Get information about admissions, curriculum, transport, fees, and school facilities.
             </p>
           </motion.div>
 
@@ -180,7 +179,7 @@ export default function Contact() {
           >
             <h2 className="heading-secondary mb-4">Get in Touch</h2>
             <p className="text-body max-w-3xl mx-auto">
-              Connect with us through our AI-enhanced communication channels for the best experience.
+              Connect with us through our official channels for the best experience.
             </p>
           </motion.div>
 
@@ -217,7 +216,7 @@ export default function Contact() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h2 className="heading-secondary mb-6">Send AI-Enhanced Message</h2>
+              <h2 className="heading-secondary mb-6">Send Us a Message</h2>
               <p className="text-body mb-8">
                 Our intelligent system will route your message to the most appropriate department 
                 and provide you with instant acknowledgment and tracking.
@@ -232,7 +231,7 @@ export default function Contact() {
                   <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
                   <h3 className="text-2xl font-bold text-dark-900 mb-2">Message Sent Successfully!</h3>
                   <p className="text-dark-600 mb-4">
-                    Thank you for contacting us. Our AI system has received your message and will 
+                    Thank you for contacting us. Our team has received your message and will 
                     route it to the appropriate department. You'll receive a response within 24 hours.
                   </p>
                   <button
@@ -334,7 +333,7 @@ export default function Contact() {
                       required
                       rows={6}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="Tell us about your inquiry or interest in AI-enhanced education..."
+                      placeholder="Tell us about your inquiry or interest in admissions, academics, or facilities..."
                     />
                   </div>
 
@@ -351,7 +350,7 @@ export default function Contact() {
                     ) : (
                       <>
                         <Send className="w-5 h-5 mr-2" />
-                        Send AI-Enhanced Message
+                        Send Message
                       </>
                     )}
                   </button>
@@ -366,11 +365,11 @@ export default function Contact() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h3 className="heading-tertiary mb-6">AI-Enhanced Campus Location</h3>
+              <h3 className="heading-tertiary mb-6">Campus Location</h3>
               <div className="bg-gray-200 rounded-xl h-96 flex items-center justify-center">
                 <div className="text-center">
                   <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">Interactive AI-powered map coming soon</p>
+                  <p className="text-gray-600">Interactive map coming soon</p>
                   <p className="text-sm text-gray-500 mt-2">Smart navigation and campus exploration</p>
                 </div>
               </div>
@@ -389,9 +388,9 @@ export default function Contact() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">AI Education FAQs</h2>
+            <h2 className="heading-secondary mb-4">Admissions & School FAQs</h2>
             <p className="text-body max-w-3xl mx-auto">
-              Get answers to common questions about our AI-enhanced educational approach.
+              Get answers to common questions about admissions, academics, and school life.
             </p>
           </motion.div>
 

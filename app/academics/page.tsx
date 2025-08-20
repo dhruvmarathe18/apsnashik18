@@ -146,7 +146,7 @@ export default function Academics() {
       icon: Brain,
       title: 'Learning Support',
       description: 'Specialized support for students with different learning needs',
-      features: ['Individual attention', 'Remedial classes', 'AI-assisted learning', 'Progress monitoring']
+      features: ['Individual attention', 'Remedial classes', 'Project-based learning', 'Progress monitoring']
     },
     {
       icon: Users,
@@ -180,10 +180,10 @@ export default function Academics() {
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.6 }}
             className="heading-primary mb-4"
           >
-            AI-Enhanced Academic Excellence
+            Academic Excellence
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 30 }}
@@ -191,7 +191,7 @@ export default function Academics() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-xl text-gray-200 max-w-3xl mx-auto"
           >
-            Discover our innovative curriculum that combines traditional academic excellence with cutting-edge AI technology.
+            Discover our innovative curriculum that combines traditional academic excellence with modern teaching.
           </motion.p>
         </div>
       </section>
@@ -206,7 +206,7 @@ export default function Academics() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">Our AI-Enhanced Curriculum</h2>
+            <h2 className="heading-secondary mb-4">Our Curriculum</h2>
             <p className="text-body max-w-3xl mx-auto">
               A comprehensive educational framework that prepares students for the future through innovative learning methods.
             </p>
@@ -253,7 +253,7 @@ export default function Academics() {
           >
             <h2 className="heading-secondary mb-4">Academic Subjects</h2>
             <p className="text-body max-w-3xl mx-auto">
-              Comprehensive subject offerings enhanced with AI technology and modern teaching methodologies.
+              Comprehensive subject offerings with modern teaching methodologies.
             </p>
           </motion.div>
 
@@ -436,9 +436,9 @@ export default function Academics() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="heading-secondary text-white mb-4">Experience AI-Enhanced Education</h2>
+            <h2 className="heading-secondary text-white mb-4">Experience Our Education</h2>
             <p className="text-xl text-gray-200 mb-8 max-w-3xl mx-auto">
-              Join our innovative academic program and give your child the advantage of AI-powered learning. 
+              Join our academic program and give your child a strong foundation for the future.
               Apply now to secure your child's future in education.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

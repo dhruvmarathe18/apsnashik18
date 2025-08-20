@@ -92,7 +92,7 @@ export default function About() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="heading-primary mb-4"
           >
-            About Our AI-Enhanced School
+            About Our School
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 30 }}
@@ -100,7 +100,7 @@ export default function About() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-xl text-gray-200 max-w-3xl mx-auto"
           >
-            Pioneering the future of education through artificial intelligence and innovative teaching methodologies.
+            Providing quality education with modern teaching methodologies and strong values.
           </motion.p>
         </div>
       </section>
@@ -115,20 +115,19 @@ export default function About() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h2 className="heading-secondary mb-6">Our AI Journey</h2>
+              <h2 className="heading-secondary mb-6">Our Journey</h2>
               <p className="text-body mb-6">
-                Apple Public School Nashik began its transformation into an AI-powered educational institution in 2020, 
-                recognizing the immense potential of artificial intelligence to revolutionize how we teach and learn.
+                Apple Public School Nashik has continuously evolved to adopt modern teaching practices while maintaining
+                the highest academic standards.
               </p>
               <p className="text-body mb-6">
-                What started as a traditional CBSE school has evolved into a cutting-edge learning environment where 
-                every student benefits from personalized AI-enhanced education. Our journey from conventional teaching 
-                methods to AI-integrated learning has been marked by continuous innovation and unwavering commitment 
+                What started as a traditional CBSE school has grown into a contemporary learning environment with
+                student-centered teaching methods, continuous innovation, and unwavering commitment
                 to academic excellence.
               </p>
               <p className="text-body mb-8">
-                Today, we stand as a beacon of educational innovation, demonstrating how technology can enhance 
-                human potential while maintaining the warmth and personal touch that makes education truly meaningful.
+                Today, we stand as a beacon of educational growth, embracing useful technology while maintaining the
+                warmth and personal touch that makes education truly meaningful.
               </p>
             </motion.div>
 
@@ -141,7 +140,7 @@ export default function About() {
             >
               <img
                 src="/images/principal.jpeg"
-                alt="AI-Enhanced Learning Environment"
+                alt="Modern Learning Environment"
                 className="w-full h-auto rounded-2xl shadow-xl"
               />
               <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-6 shadow-lg">
@@ -150,8 +149,8 @@ export default function About() {
                     <Cpu className="w-6 h-6 text-primary-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">AI-Powered Since</p>
-                    <p className="font-semibold text-dark-900">2020</p>
+                    <p className="text-sm text-gray-600">Established</p>
+                    <p className="font-semibold text-dark-900">2009</p>
                   </div>
                 </div>
               </div>
@@ -172,7 +171,7 @@ export default function About() {
           >
             <h2 className="heading-secondary mb-4">Vision & Mission</h2>
             <p className="text-body max-w-3xl mx-auto">
-              Shaping the future of education through AI innovation and academic excellence.
+              Shaping the future of education through innovation and academic excellence.
             </p>
           </motion.div>
 
@@ -190,10 +189,8 @@ export default function About() {
               </div>
               <h3 className="text-2xl font-bold text-dark-900 mb-4">Our Vision</h3>
               <p className="text-body">
-                To be the leading AI-enhanced educational institution that prepares students for a future 
-                where artificial intelligence is seamlessly integrated into every aspect of life and work. 
-                We envision a world where every child has access to personalized, intelligent learning 
-                experiences that unlock their full potential.
+                To be a leading educational institution that prepares students for the future
+                through strong academics, character development, and modern learning environments.
               </p>
             </motion.div>
 
@@ -210,18 +207,17 @@ export default function About() {
               </div>
               <h3 className="text-2xl font-bold text-dark-900 mb-4">Our Mission</h3>
               <p className="text-body">
-                To provide cutting-edge AI-powered education that combines academic excellence with 
-                technological innovation. We are committed to nurturing curious minds, fostering 
-                creativity, and developing future-ready skills through personalized learning experiences 
-                enhanced by artificial intelligence.
+                To provide a modern education that combines academic excellence with
+                holistic development. We are committed to nurturing curious minds, fostering
+                creativity, and developing future-ready skills.
               </p>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* AI Features Section */}
-      <section className="section-padding" id="ai-features">
+      {/* Key Features Section */}
+      <section className="section-padding" id="features">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -230,9 +226,9 @@ export default function About() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">AI-Enhanced Learning Features</h2>
+            <h2 className="heading-secondary mb-4">Key Features</h2>
             <p className="text-body max-w-3xl mx-auto">
-              Discover how artificial intelligence is transforming education at APS Nashik.
+              Discover what makes learning at APS Nashik effective and engaging.
             </p>
           </motion.div>
 
@@ -320,7 +316,7 @@ export default function About() {
           >
             <h2 className="heading-secondary mb-4">Our Core Values</h2>
             <p className="text-body max-w-3xl mx-auto">
-              The principles that guide our AI-enhanced educational approach.
+              The principles that guide our educational approach.
             </p>
           </motion.div>
 
@@ -354,10 +350,9 @@ export default function About() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="heading-secondary text-white mb-4">Join the AI Education Revolution</h2>
+            <h2 className="heading-secondary text-white mb-4">Join Our School Community</h2>
             <p className="text-xl text-gray-200 mb-8 max-w-3xl mx-auto">
-              Be part of the future of education. Experience how artificial intelligence can transform 
-              learning and unlock your child's full potential.
+              Be part of a thriving learning community focused on academic excellence and holistic development.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/contact" className="btn-secondary">
@@ -365,7 +360,7 @@ export default function About() {
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Link>
               <Link href="/gallery" className="btn-outline border-white text-white hover:bg-white hover:text-primary-600">
-                View Our AI Gallery
+                View Our Gallery
               </Link>
             </div>
           </motion.div>

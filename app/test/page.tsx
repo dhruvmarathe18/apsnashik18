@@ -90,7 +90,7 @@ export default function Test() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-xl text-gray-200 max-w-3xl mx-auto"
           >
-            All systems are working correctly! Your AI-enhanced school website is ready.
+            All systems are working correctly! Your school website is ready.
           </motion.p>
         </div>
       </section>
@@ -196,7 +196,7 @@ export default function Test() {
           >
             <h2 className="heading-secondary mb-4">Website Features</h2>
             <p className="text-body max-w-3xl mx-auto">
-              Your AI-enhanced school website includes all the requested features and more.
+              Your school website includes all the requested features and more.
             </p>
           </motion.div>
 
@@ -233,7 +233,7 @@ export default function Test() {
             <CheckCircle className="w-16 h-16 mx-auto mb-6" />
             <h2 className="heading-secondary text-white mb-4">Website Successfully Deployed!</h2>
             <p className="text-xl text-green-100 mb-8 max-w-3xl mx-auto">
-              Your AI-enhanced Apple Public School website is now live and fully functional. 
+              Your Apple Public School website is now live and fully functional. 
               All features are working correctly, including social media integration with Facebook.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
