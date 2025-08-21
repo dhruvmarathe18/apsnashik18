@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server'
-import { put } from '@vercel/blob'
+import { put, list } from '@vercel/blob'
 
 const KEY = 'content/gallery.json'
 
 async function readList(): Promise<any[]> {
   try {
-    const res = await fetch(`https://blob.vercel-storage.com/${KEY}`, { cache: 'no-store' })
-    if (!res.ok) throw new Error('Missing')
+    const { blobs } = await list({ prefix: KEY, token: process.env.BLOB_READ_WRITE_TOKEN })
+    if (!blobs || blobs.length === 0) return []
+    const res = await fetch(blobs[0].url, { cache: 'no-store' })
+    if (!res.ok) return []
     return await res.json()
   } catch {
     return []
