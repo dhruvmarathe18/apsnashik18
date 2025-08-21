@@ -25,6 +25,14 @@ export default function Gallery() {
   // Debug logging
   console.log('Gallery page - galleryImages:', galleryImages)
   console.log('Gallery page - galleryImages length:', galleryImages?.length || 0)
+  console.log('Gallery page - galleryImages type:', typeof galleryImages)
+  console.log('Gallery page - galleryImages isArray:', Array.isArray(galleryImages))
+  
+  // Monitor data changes
+  useEffect(() => {
+    console.log('Gallery page - galleryImages changed:', galleryImages)
+    console.log('Gallery page - New length:', galleryImages?.length || 0)
+  }, [galleryImages])
 
   // Create a flat array of all images with category information
   const allImages = galleryImages.map(img => ({
@@ -120,6 +128,41 @@ export default function Gallery() {
                 {category.label}
               </button>
             ))}
+          </div>
+          
+          {/* Debug Section */}
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => {
+                console.log('Manual refresh clicked')
+                window.location.reload()
+              }}
+              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+            >
+              🔄 Debug: Refresh Page
+            </button>
+            
+            <button
+              onClick={async () => {
+                console.log('Testing API directly...')
+                try {
+                  const res = await fetch('/api/content/gallery', { cache: 'no-store' })
+                  const data = await res.json()
+                  console.log('Direct API response:', res.status, data)
+                } catch (error) {
+                  console.error('API test error:', error)
+                }
+              }}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors ml-2"
+            >
+              🧪 Test API
+            </button>
+            
+            <div className="mt-2 text-sm text-gray-600">
+              Images loaded: {galleryImages?.length || 0} | 
+              Category: {currentCategory} | 
+              Filtered: {filteredImages?.length || 0}
+            </div>
           </div>
         </div>
       </section>
