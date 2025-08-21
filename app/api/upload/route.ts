@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
-    const filename = `gallery/${Date.now()}-${(file as any).name || 'upload'}`
+    const filename = `gallery/${Date.now()}-${file.name || 'upload'}`
     const result = await put(filename, file, {
       access: 'public',
       token: process.env.BLOB_READ_WRITE_TOKEN,

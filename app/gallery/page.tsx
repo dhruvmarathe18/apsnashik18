@@ -21,6 +21,10 @@ export default function Gallery() {
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
 
   const { galleryImages } = useData()
+  
+  // Debug logging
+  console.log('Gallery page - galleryImages:', galleryImages)
+  console.log('Gallery page - galleryImages length:', galleryImages?.length || 0)
 
   // Create a flat array of all images with category information
   const allImages = galleryImages.map(img => ({

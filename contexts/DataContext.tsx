@@ -164,23 +164,52 @@ export function DataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const load = async () => {
       try {
+        console.log('DataContext - Starting to load data from server')
+        
         const [evRes, imgRes, newsRes] = await Promise.all([
           fetch('/api/content/events', { cache: 'no-store' }),
           fetch('/api/content/gallery', { cache: 'no-store' }),
           fetch('/api/content/news', { cache: 'no-store' })
         ])
-        if (evRes.ok) setEvents(await evRes.json())
-        if (imgRes.ok) setGalleryImages(await imgRes.json())
-        if (newsRes.ok) setNewsArticles(await newsRes.json())
+        
+        console.log('DataContext - Server responses:', {
+          events: evRes.status,
+          gallery: imgRes.status,
+          news: newsRes.status
+        })
+        if (evRes.ok) {
+          const eventsData = await evRes.json()
+          console.log('DataContext - Loaded events:', eventsData.length)
+          setEvents(eventsData)
+        }
+        if (imgRes.ok) {
+          const galleryData = await imgRes.json()
+          console.log('DataContext - Loaded gallery images:', galleryData.length)
+          setGalleryImages(galleryData)
+        }
+        if (newsRes.ok) {
+          const newsData = await newsRes.json()
+          console.log('DataContext - Loaded news:', newsData.length)
+          setNewsArticles(newsData)
+        }
         setIsInitialized(true)
+        console.log('DataContext - Successfully loaded from server')
         return
       } catch (e) {
         console.warn('Remote content unavailable, falling back to localStorage:', e)
       }
 
+      console.log('DataContext - Loading from localStorage fallback')
       const storedEvents = loadFromStorage('aps_events', defaultEvents)
       const storedImages = loadFromStorage('aps_gallery_images', defaultGalleryImages)
       const storedNews = loadFromStorage('aps_news_articles', defaultNewsArticles)
+      
+      console.log('DataContext - LocalStorage data:', {
+        events: storedEvents.length,
+        gallery: storedImages.length,
+        news: storedNews.length
+      })
+      
       setEvents(storedEvents)
       setGalleryImages(storedImages)
       setNewsArticles(storedNews)
@@ -220,14 +249,32 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }
 
   const addImage = async (imageData: Omit<GalleryImage, 'id' | 'uploadDate'>) => {
-    const res = await fetch('/api/content/gallery', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(imageData)
-    })
-    if (!res.ok) throw new Error('Failed to save image')
-    const list: GalleryImage[] = await res.json()
-    setGalleryImages(list)
+    try {
+      console.log('DataContext addImage - Starting with data:', imageData)
+      
+      const res = await fetch('/api/content/gallery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(imageData)
+      })
+      
+      console.log('DataContext addImage - Response status:', res.status)
+      
+      if (!res.ok) {
+        const errorText = await res.text()
+        console.error('DataContext addImage - Response not ok:', errorText)
+        throw new Error('Failed to save image')
+      }
+      
+      const list: GalleryImage[] = await res.json()
+      console.log('DataContext addImage - Received updated list:', list)
+      
+      setGalleryImages(list)
+      console.log('DataContext addImage - Updated state with', list.length, 'images')
+    } catch (error) {
+      console.error('DataContext addImage - Error:', error)
+      throw error
+    }
   }
 
   const addNews = async (newsData: Omit<NewsArticle, 'id'>) => {
