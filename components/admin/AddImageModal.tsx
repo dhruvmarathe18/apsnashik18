@@ -98,7 +98,8 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
         })
       } else if (selectedFile) {
         // Prefer Vercel Blob if token present
-        if (process.env.NEXT_PUBLIC_USE_BLOB || process.env.BLOB_READ_WRITE_TOKEN) {
+        // Try Vercel Blob first (no client env required)
+        try {
           const fd = new FormData()
           fd.append('file', selectedFile)
           const res = await fetch('/api/upload', { method: 'POST', body: fd })
@@ -110,7 +111,7 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
             src: data.url,
             alt: formData.alt
           })
-        } else {
+        } catch {
           // Fallback to Firebase Storage (requires billing enabled)
           const storage = getStorage(app)
           const filePath = `gallery/${Date.now()}-${selectedFile.name}`
