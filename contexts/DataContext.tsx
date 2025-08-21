@@ -1,6 +1,17 @@
 'use client'
 
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react'
+import { db } from '@/lib/firebase'
+import {
+  collection,
+  onSnapshot,
+  addDoc,
+  deleteDoc,
+  doc,
+  query,
+  orderBy,
+  serverTimestamp
+} from 'firebase/firestore'
 
 interface Event {
   id: string
@@ -159,9 +170,65 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
   const [newsArticles, setNewsArticles] = useState<NewsArticle[]>([])
   const [isInitialized, setIsInitialized] = useState(false)
+  const firebaseEnabled = Boolean(
+    process.env.NEXT_PUBLIC_FIREBASE_API_KEY &&
+    process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+  )
 
-  // Load data from localStorage on component mount
+  // Load data on mount: Firestore if available, else localStorage
   useEffect(() => {
+    if (firebaseEnabled) {
+      try {
+        const eventsQuery = query(collection(db, 'events'), orderBy('date', 'desc'))
+        const unsubEvents = onSnapshot(eventsQuery, (snapshot) => {
+          const list: Event[] = snapshot.docs.map((d) => ({
+            id: d.id,
+            title: (d.data() as any).title,
+            date: (d.data() as any).date,
+            description: (d.data() as any).description,
+            category: (d.data() as any).category,
+            status: (d.data() as any).status
+          }))
+          setEvents(list)
+        })
+
+        const imagesQuery = query(collection(db, 'galleryImages'), orderBy('uploadDate', 'desc'))
+        const unsubImages = onSnapshot(imagesQuery, (snapshot) => {
+          const list: GalleryImage[] = snapshot.docs.map((d) => ({
+            id: d.id,
+            title: (d.data() as any).title,
+            category: (d.data() as any).category,
+            src: (d.data() as any).src,
+            alt: (d.data() as any).alt,
+            uploadDate: (d.data() as any).uploadDate
+          }))
+          setGalleryImages(list)
+        })
+
+        const newsQuery = query(collection(db, 'newsArticles'), orderBy('publishDate', 'desc'))
+        const unsubNews = onSnapshot(newsQuery, (snapshot) => {
+          const list: NewsArticle[] = snapshot.docs.map((d) => ({
+            id: d.id,
+            title: (d.data() as any).title,
+            content: (d.data() as any).content,
+            publishDate: (d.data() as any).publishDate,
+            status: (d.data() as any).status
+          }))
+          setNewsArticles(list)
+        })
+
+        setIsInitialized(true)
+        return () => {
+          unsubEvents()
+          unsubImages()
+          unsubNews()
+        }
+      } catch (e) {
+        console.warn('Firestore unavailable, falling back to local data:', e)
+      }
+    }
+
+    // Fallback to localStorage
     const storedEvents = loadFromStorage('aps_events', defaultEvents)
     const storedImages = loadFromStorage('aps_gallery_images', defaultGalleryImages)
     const storedNews = loadFromStorage('aps_news_articles', defaultNewsArticles)
@@ -170,62 +237,87 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setGalleryImages(storedImages)
     setNewsArticles(storedNews)
     setIsInitialized(true)
-  }, [])
+  }, [firebaseEnabled])
 
-  // Save data to localStorage whenever it changes
+  // Save to localStorage only if Firestore is not enabled
   useEffect(() => {
-    if (isInitialized) {
+    if (!firebaseEnabled && isInitialized) {
       saveToStorage('aps_events', events)
     }
-  }, [events, isInitialized])
+  }, [events, isInitialized, firebaseEnabled])
 
   useEffect(() => {
-    if (isInitialized) {
+    if (!firebaseEnabled && isInitialized) {
       saveToStorage('aps_gallery_images', galleryImages)
     }
-  }, [galleryImages, isInitialized])
+  }, [galleryImages, isInitialized, firebaseEnabled])
 
   useEffect(() => {
-    if (isInitialized) {
+    if (!firebaseEnabled && isInitialized) {
       saveToStorage('aps_news_articles', newsArticles)
     }
-  }, [newsArticles, isInitialized])
+  }, [newsArticles, isInitialized, firebaseEnabled])
 
-  const addEvent = (eventData: Omit<Event, 'id'>) => {
-    const newEvent: Event = {
-      ...eventData,
-      id: Date.now().toString()
+  const addEvent = async (eventData: Omit<Event, 'id'>) => {
+    if (firebaseEnabled) {
+      await addDoc(collection(db, 'events'), {
+        ...eventData,
+        createdAt: serverTimestamp()
+      })
+      return
     }
-    setEvents(prev => [...prev, newEvent])
+    const newEvent: Event = { ...eventData, id: Date.now().toString() }
+    setEvents((prev) => [...prev, newEvent])
   }
 
-  const addImage = (imageData: Omit<GalleryImage, 'id' | 'uploadDate'>) => {
-    const newImage: GalleryImage = {
-      ...imageData,
-      id: Date.now().toString(),
-      uploadDate: new Date().toISOString().split('T')[0]
+  const addImage = async (imageData: Omit<GalleryImage, 'id' | 'uploadDate'>) => {
+    const uploadDate = new Date().toISOString().split('T')[0]
+    if (firebaseEnabled) {
+      await addDoc(collection(db, 'galleryImages'), {
+        ...imageData,
+        uploadDate,
+        createdAt: serverTimestamp()
+      })
+      return
     }
-    setGalleryImages(prev => [...prev, newImage])
+    const newImage: GalleryImage = { ...imageData, id: Date.now().toString(), uploadDate }
+    setGalleryImages((prev) => [...prev, newImage])
   }
 
-  const addNews = (newsData: Omit<NewsArticle, 'id'>) => {
-    const newArticle: NewsArticle = {
-      ...newsData,
-      id: Date.now().toString()
+  const addNews = async (newsData: Omit<NewsArticle, 'id'>) => {
+    if (firebaseEnabled) {
+      await addDoc(collection(db, 'newsArticles'), {
+        ...newsData,
+        createdAt: serverTimestamp()
+      })
+      return
     }
-    setNewsArticles(prev => [...prev, newArticle])
+    const newArticle: NewsArticle = { ...newsData, id: Date.now().toString() }
+    setNewsArticles((prev) => [...prev, newArticle])
   }
 
-  const deleteEvent = (id: string) => {
-    setEvents(prev => prev.filter(event => event.id !== id))
+  const deleteEvent = async (id: string) => {
+    if (firebaseEnabled) {
+      await deleteDoc(doc(db, 'events', id))
+      return
+    }
+    setEvents((prev) => prev.filter((event) => event.id !== id))
   }
 
-  const deleteImage = (id: string) => {
-    setGalleryImages(prev => prev.filter(img => img.id !== id))
+  const deleteImage = async (id: string) => {
+    if (firebaseEnabled) {
+      await deleteDoc(doc(db, 'galleryImages', id))
+      return
+    }
+    setGalleryImages((prev) => prev.filter((img) => img.id !== id))
   }
 
-  const deleteNews = (id: string) => {
-    setNewsArticles(prev => prev.filter(article => article.id !== id))
+  const deleteNews = async (id: string) => {
+    if (firebaseEnabled) {
+      await deleteDoc(doc(db, 'newsArticles', id))
+      return
+    }
+    setNewsArticles((prev) => prev.filter((article) => article.id !== id))
   }
 
   const getUpcomingEvents = () => {

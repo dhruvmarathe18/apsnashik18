@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import app from '@/lib/firebase'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Upload, Image as ImageIcon } from 'lucide-react'
 
@@ -83,27 +85,37 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
     setPreviewUrl('')
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (useExistingImage && selectedExistingImage) {
-      // Use existing image
-      onAdd({
-        title: formData.title,
-        category: formData.category,
-        src: selectedExistingImage,
-        alt: formData.alt
-      })
-    } else if (selectedFile) {
-      // Use uploaded file (for demo, we'll use the preview URL)
-      onAdd({
-        title: formData.title,
-        category: formData.category,
-        src: formData.src,
-        alt: formData.alt
-      })
-    } else {
-      alert('Please select an image or choose an existing image')
+    try {
+      if (useExistingImage && selectedExistingImage) {
+        onAdd({
+          title: formData.title,
+          category: formData.category,
+          src: selectedExistingImage,
+          alt: formData.alt
+        })
+      } else if (selectedFile) {
+        // Upload to Firebase Storage
+        const storage = getStorage(app)
+        const filePath = `gallery/${Date.now()}-${selectedFile.name}`
+        const storageRef = ref(storage, filePath)
+        await uploadBytes(storageRef, selectedFile)
+        const publicUrl = await getDownloadURL(storageRef)
+
+        onAdd({
+          title: formData.title,
+          category: formData.category,
+          src: publicUrl,
+          alt: formData.alt
+        })
+      } else {
+        alert('Please select an image or choose an existing image')
+        return
+      }
+    } catch (err) {
+      console.error('Upload failed:', err)
+      alert('Upload failed. Please try again.')
       return
     }
 
