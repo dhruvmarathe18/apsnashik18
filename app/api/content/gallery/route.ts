@@ -7,7 +7,8 @@ async function readList(): Promise<any[]> {
   try {
     const { blobs } = await list({ prefix: KEY, token: process.env.BLOB_READ_WRITE_TOKEN })
     if (!blobs || blobs.length === 0) return []
-    const res = await fetch(blobs[0].url, { cache: 'no-store' })
+    const latest = blobs.sort((a: any, b: any) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime())[0]
+    const res = await fetch(latest.url, { cache: 'no-store' })
     if (!res.ok) return []
     return await res.json()
   } catch {
