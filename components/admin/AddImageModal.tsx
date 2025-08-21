@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import app from '@/lib/firebase'
+import toast from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Upload, Image as ImageIcon } from 'lucide-react'
 
@@ -96,26 +97,44 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
           alt: formData.alt
         })
       } else if (selectedFile) {
-        // Upload to Firebase Storage
-        const storage = getStorage(app)
-        const filePath = `gallery/${Date.now()}-${selectedFile.name}`
-        const storageRef = ref(storage, filePath)
-        await uploadBytes(storageRef, selectedFile)
-        const publicUrl = await getDownloadURL(storageRef)
-
-        onAdd({
-          title: formData.title,
-          category: formData.category,
-          src: publicUrl,
-          alt: formData.alt
-        })
+        // Prefer Vercel Blob if token present
+        if (process.env.NEXT_PUBLIC_USE_BLOB || process.env.BLOB_READ_WRITE_TOKEN) {
+          const res = await fetch('/api/upload', { method: 'POST' })
+          const { uploadUrl } = await res.json()
+          const upload = await fetch(uploadUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': selectedFile.type },
+            body: selectedFile
+          })
+          if (!upload.ok) throw new Error('Blob upload failed')
+          const publicUrl = upload.headers.get('Location') || upload.url
+          onAdd({
+            title: formData.title,
+            category: formData.category,
+            src: publicUrl,
+            alt: formData.alt
+          })
+        } else {
+          // Fallback to Firebase Storage (requires billing enabled)
+          const storage = getStorage(app)
+          const filePath = `gallery/${Date.now()}-${selectedFile.name}`
+          const storageRef = ref(storage, filePath)
+          await uploadBytes(storageRef, selectedFile)
+          const publicUrl = await getDownloadURL(storageRef)
+          onAdd({
+            title: formData.title,
+            category: formData.category,
+            src: publicUrl,
+            alt: formData.alt
+          })
+        }
       } else {
         alert('Please select an image or choose an existing image')
         return
       }
     } catch (err) {
       console.error('Upload failed:', err)
-      alert('Upload failed. Please try again.')
+      toast.error('Upload failed. Please try again.')
       return
     }
 
