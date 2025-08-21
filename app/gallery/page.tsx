@@ -158,6 +158,26 @@ export default function Gallery() {
               🧪 Test API
             </button>
             
+            <button
+              onClick={async () => {
+                console.log('Initializing Vercel Blob...')
+                try {
+                  const res = await fetch('/api/init-blob', { cache: 'no-store' })
+                  const data = await res.json()
+                  console.log('Init blob response:', res.status, data)
+                  if (data.success) {
+                    alert('Vercel Blob initialized! Refresh the page to see the data.')
+                    window.location.reload()
+                  }
+                } catch (error) {
+                  console.error('Init blob error:', error)
+                }
+              }}
+              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors ml-2"
+            >
+              🚀 Init Blob
+            </button>
+            
             <div className="mt-2 text-sm text-gray-600">
               Images loaded: {galleryImages?.length || 0} | 
               Category: {currentCategory} | 
