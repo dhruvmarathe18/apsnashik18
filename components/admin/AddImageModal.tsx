@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import app from '@/lib/firebase'
 import toast from 'react-hot-toast'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Upload, Image as ImageIcon } from 'lucide-react'
@@ -111,19 +109,8 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
             src: data.url,
             alt: formData.alt
           })
-        } catch {
-          // Fallback to Firebase Storage (requires billing enabled)
-          const storage = getStorage(app)
-          const filePath = `gallery/${Date.now()}-${selectedFile.name}`
-          const storageRef = ref(storage, filePath)
-          await uploadBytes(storageRef, selectedFile)
-          const publicUrl = await getDownloadURL(storageRef)
-          onAdd({
-            title: formData.title,
-            category: formData.category,
-            src: publicUrl,
-            alt: formData.alt
-          })
+        } catch (e) {
+          throw e
         }
       } else {
         alert('Please select an image or choose an existing image')
