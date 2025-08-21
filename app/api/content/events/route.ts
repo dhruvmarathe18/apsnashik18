@@ -17,8 +17,9 @@ async function readList(): Promise<any[]> {
 }
 
 async function writeList(items: any[]) {
-  const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' })
-  await put(KEY, blob, { access: 'public', token: process.env.BLOB_READ_WRITE_TOKEN, contentType: 'application/json' })
+  const jsonString = JSON.stringify(items, null, 2)
+  const buffer = Buffer.from(jsonString, 'utf-8')
+  await put(KEY, buffer, { access: 'public', token: process.env.BLOB_READ_WRITE_TOKEN, contentType: 'application/json' })
 }
 
 export async function GET() {
