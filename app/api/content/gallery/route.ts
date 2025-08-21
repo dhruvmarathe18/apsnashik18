@@ -64,14 +64,19 @@ async function writeList(items: any[]) {
     console.log('writeList - First few items:', items.slice(0, 2))
     console.log('writeList - JSON preview:', jsonString.substring(0, 200) + '...')
     
-    const buffer = Buffer.from(jsonString, 'utf-8')
-    console.log('writeList - Buffer size:', buffer.length)
-    console.log('writeList - Buffer type:', typeof buffer)
-    console.log('writeList - Buffer is Buffer:', Buffer.isBuffer(buffer))
+    // Create a ReadableStream from the JSON string (this is what Vercel Blob expects)
+    const stream = new ReadableStream({
+      start(controller) {
+        const encoder = new TextEncoder()
+        controller.enqueue(encoder.encode(jsonString))
+        controller.close()
+      }
+    })
     
+    console.log('writeList - Created ReadableStream')
     console.log('writeList - About to call put with token:', process.env.BLOB_READ_WRITE_TOKEN ? 'TOKEN_PRESENT' : 'NO_TOKEN')
     
-    const result = await put(KEY, buffer, { 
+    const result = await put(KEY, stream, { 
       access: 'public', 
       token: process.env.BLOB_READ_WRITE_TOKEN, 
       contentType: 'application/json' 

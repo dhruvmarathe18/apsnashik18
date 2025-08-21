@@ -18,8 +18,14 @@ async function readList(): Promise<any[]> {
 
 async function writeList(items: any[]) {
   const jsonString = JSON.stringify(items, null, 2)
-  const buffer = Buffer.from(jsonString, 'utf-8')
-  await put(KEY, buffer, { access: 'public', token: process.env.BLOB_READ_WRITE_TOKEN, contentType: 'application/json' })
+  const stream = new ReadableStream({
+    start(controller) {
+      const encoder = new TextEncoder()
+      controller.enqueue(encoder.encode(jsonString))
+      controller.close()
+    }
+  })
+  await put(KEY, stream, { access: 'public', token: process.env.BLOB_READ_WRITE_TOKEN, contentType: 'application/json' })
 }
 
 export async function GET() {
