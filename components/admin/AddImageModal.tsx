@@ -99,19 +99,15 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
       } else if (selectedFile) {
         // Prefer Vercel Blob if token present
         if (process.env.NEXT_PUBLIC_USE_BLOB || process.env.BLOB_READ_WRITE_TOKEN) {
-          const res = await fetch('/api/upload', { method: 'POST' })
-          const { uploadUrl } = await res.json()
-          const upload = await fetch(uploadUrl, {
-            method: 'PUT',
-            headers: { 'Content-Type': selectedFile.type },
-            body: selectedFile
-          })
-          if (!upload.ok) throw new Error('Blob upload failed')
-          const publicUrl = upload.headers.get('Location') || upload.url
+          const fd = new FormData()
+          fd.append('file', selectedFile)
+          const res = await fetch('/api/upload', { method: 'POST', body: fd })
+          const data = await res.json()
+          if (!res.ok || !data.url) throw new Error('Blob upload failed')
           onAdd({
             title: formData.title,
             category: formData.category,
-            src: publicUrl,
+            src: data.url,
             alt: formData.alt
           })
         } else {

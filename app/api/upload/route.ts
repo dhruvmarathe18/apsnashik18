@@ -1,22 +1,25 @@
 import { NextResponse } from 'next/server'
-import { generateUploadUrl } from '@vercel/blob'
+import { put } from '@vercel/blob'
 
 export const runtime = 'nodejs'
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    const { url } = await generateUploadUrl({
+    const formData = await request.formData()
+    const file = formData.get('file') as File | null
+    if (!file) {
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+    }
+    const filename = `gallery/${Date.now()}-${(file as any).name || 'upload'}`
+    const result = await put(filename, file, {
       access: 'public',
       token: process.env.BLOB_READ_WRITE_TOKEN,
-      addRandomSuffix: true,
-      allowedContentTypes: ['image/png', 'image/jpeg', 'image/webp', 'image/gif'],
-      maximumSizeInBytes: 10 * 1024 * 1024,
-      contentType: 'image/*'
-    } as any)
-    return NextResponse.json({ uploadUrl: url })
+      contentType: (file as any).type || 'application/octet-stream'
+    })
+    return NextResponse.json({ url: result.url })
   } catch (error) {
-    console.error('Blob upload URL error:', error)
-    return NextResponse.json({ error: 'Failed to create upload URL' }, { status: 500 })
+    console.error('Blob upload error:', error)
+    return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 })
   }
 }
 
