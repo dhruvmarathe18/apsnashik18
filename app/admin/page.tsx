@@ -297,22 +297,22 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.title}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-lg shadow-md p-6"
+              className="bg-white rounded-lg shadow-md p-4 sm:p-6"
             >
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{stat.title}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{stat.value}</p>
                 </div>
-                <div className={`p-3 rounded-full bg-gray-100`}>
-                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                <div className={`p-2 sm:p-3 rounded-full ${stat.color.replace('text-', 'bg-').replace('-600', '-100')} flex-shrink-0`}>
+                  <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.color}`} />
                 </div>
               </div>
             </motion.div>
@@ -320,9 +320,9 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {quickActions.map((action, index) => (
               <motion.button
                 key={action.title}
@@ -330,10 +330,10 @@ export default function AdminDashboard() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
                 onClick={action.action}
-                className={`${action.color} text-white p-4 rounded-lg hover:opacity-90 transition-opacity flex items-center space-x-3`}
+                className={`${action.color} text-white p-3 sm:p-4 rounded-lg hover:opacity-90 transition-opacity flex items-center space-x-2 sm:space-x-3`}
               >
-                <action.icon className="w-5 h-5" />
-                <span className="font-medium">{action.title}</span>
+                <action.icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <span className="font-medium text-sm sm:text-base truncate">{action.title}</span>
               </motion.button>
             ))}
           </div>
@@ -342,7 +342,7 @@ export default function AdminDashboard() {
         {/* Content Management Tabs */}
         <div className="bg-white rounded-lg shadow-md">
           <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-6">
+            <nav className="flex overflow-x-auto space-x-2 sm:space-x-8 px-4 sm:px-6">
               {[
                 { id: 'overview', name: 'Overview', icon: BarChart3 },
                 { id: 'events', name: 'Events', icon: Calendar },
@@ -353,14 +353,15 @@ export default function AdminDashboard() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                  className={`py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm flex items-center space-x-1 sm:space-x-2 whitespace-nowrap flex-shrink-0 ${
                     activeTab === tab.id
                       ? 'border-primary-500 text-primary-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  <tab.icon className="w-4 h-4" />
-                  <span>{tab.name}</span>
+                  <tab.icon className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">{tab.name}</span>
+                  <span className="sm:hidden">{tab.name.split(' ')[0]}</span>
                 </button>
               ))}
             </nav>
@@ -370,17 +371,17 @@ export default function AdminDashboard() {
             {/* Overview Tab */}
             {activeTab === 'overview' && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Events</h3>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Recent Events</h3>
                     <div className="space-y-3">
                       {events.slice(0, 3).map((event: Event) => (
                         <div key={event.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
-                          <div>
-                            <p className="font-medium text-gray-900">{event.title}</p>
-                            <p className="text-sm text-gray-600">{event.date}</p>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{event.title}</p>
+                            <p className="text-xs sm:text-sm text-gray-600">{event.date}</p>
                           </div>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ml-2 ${
                             event.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
                             event.status === 'ongoing' ? 'bg-green-100 text-green-800' :
                             'bg-gray-100 text-gray-800'
@@ -390,22 +391,22 @@ export default function AdminDashboard() {
                         </div>
                       ))}
                       {events.length === 0 && (
-                        <p className="text-gray-500 text-center py-4">No events found. Add your first event!</p>
+                        <p className="text-gray-500 text-center py-4 text-sm">No events found. Add your first event!</p>
                       )}
                     </div>
                   </div>
 
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent News</h3>
+                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Recent News</h3>
                     <div className="space-y-3">
                       {newsArticles.slice(0, 3).map((article: NewsArticle) => (
                         <div key={article.id} className="p-3 bg-white rounded-lg">
-                          <p className="font-medium text-gray-900">{article.title}</p>
-                          <p className="text-sm text-gray-600">{article.publish_date}</p>
+                          <p className="font-medium text-gray-900 text-sm sm:text-base line-clamp-2">{article.title}</p>
+                          <p className="text-xs sm:text-sm text-gray-600">{article.publish_date}</p>
                         </div>
                       ))}
                       {newsArticles.length === 0 && (
-                        <p className="text-gray-500 text-center py-4">No news articles found. Add your first article!</p>
+                        <p className="text-gray-500 text-center py-4 text-sm">No news articles found. Add your first article!</p>
                       )}
                     </div>
                   </div>
@@ -417,7 +418,7 @@ export default function AdminDashboard() {
                     <Database className="w-5 h-5 mr-2" />
                     Data Status
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 text-xs sm:text-sm">
                     <div className="flex items-center justify-between">
                       <span className="text-blue-700">Events stored:</span>
                       <span className="font-medium">{events.length} items</span>
@@ -429,6 +430,10 @@ export default function AdminDashboard() {
                     <div className="flex items-center justify-between">
                       <span className="text-blue-700">News stored:</span>
                       <span className="font-medium">{newsArticles.length} items</span>
+                    </div>
+                    <div className="flex items-center justify-between sm:col-span-2 lg:col-span-1">
+                      <span className="text-blue-700">Hero images:</span>
+                      <span className="font-medium">{heroImages.length} items</span>
                     </div>
                   </div>
                   <p className="text-xs text-blue-600 mt-3">
@@ -685,20 +690,20 @@ export default function AdminDashboard() {
                     </button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {heroImages.map((image: HeroImage) => (
                       <div key={image.id} className="bg-white border rounded-lg overflow-hidden">
                         <div className="aspect-w-16 aspect-h-9">
                           <img
                             src={image.src}
                             alt={image.alt}
-                            className="w-full h-48 object-cover"
+                            className="w-full h-40 sm:h-48 object-cover"
                           />
                         </div>
-                        <div className="p-4">
+                        <div className="p-3 sm:p-4">
                           <div className="flex justify-between items-start mb-2">
-                            <h4 className="text-lg font-medium text-gray-900">{image.title}</h4>
-                            <div className="flex items-center space-x-2">
+                            <h4 className="text-sm sm:text-lg font-medium text-gray-900 flex-1 min-w-0 pr-2">{image.title}</h4>
+                            <div className="flex flex-col items-end space-y-1">
                               {image.is_active && (
                                 <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
                                   Active
@@ -709,21 +714,21 @@ export default function AdminDashboard() {
                               </span>
                             </div>
                           </div>
-                          <p className="text-sm text-gray-600 mb-4">{image.alt}</p>
-                          <div className="flex space-x-2">
+                          <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-2">{image.alt}</p>
+                          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                             <button
                               onClick={() => handleEditHeroImage(image)}
-                              className="text-primary-600 hover:text-primary-900 flex items-center space-x-1"
+                              className="text-primary-600 hover:text-primary-900 flex items-center justify-center space-x-1 text-xs sm:text-sm py-1 px-2 rounded border border-primary-200 hover:bg-primary-50"
                             >
-                              <Edit className="w-4 h-4" />
-                              <span className="text-sm">Edit</span>
+                              <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <span>Edit</span>
                             </button>
                             <button
                               onClick={() => handleDeleteHeroImage(image.id)}
-                              className="text-red-600 hover:text-red-900 flex items-center space-x-1"
+                              className="text-red-600 hover:text-red-900 flex items-center justify-center space-x-1 text-xs sm:text-sm py-1 px-2 rounded border border-red-200 hover:bg-red-50"
                             >
-                              <Trash2 className="w-4 h-4" />
-                              <span className="text-sm">Delete</span>
+                              <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <span>Delete</span>
                             </button>
                           </div>
                         </div>
