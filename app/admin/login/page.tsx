@@ -28,28 +28,38 @@ export default function AdminLogin() {
     // Clear any previous error messages
     toast.dismiss()
 
-    // Demo authentication - replace with Firebase Auth
-    const validEmail = 'admin@apsnashik.com'
-    const validPassword = 'admin123456'
+    try {
+      const apiURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+      const response = await fetch(`${apiURL}/api/admin/auth`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
 
-    console.log('Login attempt:', { email, password, validEmail, validPassword })
+      const data = await response.json()
 
-    if (email === validEmail && password === validPassword) {
-      toast.success('Login successful!')
-      // Store auth token in localStorage
-      localStorage.setItem('adminAuth', 'true')
-      localStorage.setItem('adminEmail', email)
-      localStorage.setItem('loginTime', new Date().toISOString())
-      
-      // Small delay to show success message
-      setTimeout(() => {
-        router.push('/admin')
-      }, 1000)
-    } else {
-      console.log('Login failed - credentials mismatch')
-      toast.error('Invalid credentials. Please try again.')
-      
-      // Clear password field on failed login
+      if (response.ok) {
+        toast.success('Login successful!')
+        // Store auth token in localStorage
+        localStorage.setItem('adminAuth', 'true')
+        localStorage.setItem('adminToken', data.token)
+        localStorage.setItem('adminEmail', data.user.email)
+        localStorage.setItem('adminName', data.user.name)
+        localStorage.setItem('loginTime', new Date().toISOString())
+        
+        // Small delay to show success message
+        setTimeout(() => {
+          router.push('/admin')
+        }, 1000)
+      } else {
+        toast.error(data.error || 'Invalid credentials. Please try again.')
+        setPassword('')
+      }
+    } catch (error) {
+      console.error('Login error:', error)
+      toast.error('Login failed. Please try again.')
       setPassword('')
     }
 
@@ -166,15 +176,16 @@ export default function AdminLogin() {
             </button>
           </form>
 
-          {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900 mb-2">Demo Credentials:</h3>
-            <div className="text-xs text-gray-600 space-y-1">
-              <p><strong>Email:</strong> admin@apsnashik.com</p>
-              <p><strong>Password:</strong> admin123456</p>
+          {/* Setup Instructions */}
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <h3 className="text-sm font-medium text-blue-900 mb-2">First Time Setup:</h3>
+            <div className="text-xs text-blue-700 space-y-1">
+              <p>1. Create your admin account using the API</p>
+              <p>2. Use your registered email and password to login</p>
+              <p>3. Contact your developer for initial setup</p>
             </div>
-            <div className="mt-2 text-xs text-gray-500">
-              <p>💡 Copy and paste these credentials for easy login</p>
+            <div className="mt-2 text-xs text-blue-600">
+              <p>💡 Database authentication is now active</p>
             </div>
           </div>
 

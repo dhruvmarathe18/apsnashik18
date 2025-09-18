@@ -65,12 +65,15 @@ export default function AdminDashboard() {
     events,
     galleryImages,
     newsArticles,
+    loading,
+    error,
     addEvent,
     addImage,
     addNews,
     deleteEvent,
     deleteImage,
-    deleteNews
+    deleteNews,
+    refreshData
   } = useData()
 
   const stats = [
@@ -87,37 +90,61 @@ export default function AdminDashboard() {
     { title: 'View Analytics', icon: BarChart3, action: () => {}, color: 'bg-orange-500' }
   ]
 
-  const handleAddEvent = (eventData: Omit<Event, 'id'>) => {
-    addEvent(eventData)
-    toast.success('Event added successfully!')
-    setShowAddEvent(false)
+  const handleAddEvent = async (eventData: Omit<Event, 'id'>) => {
+    try {
+      await addEvent(eventData)
+      toast.success('Event added successfully!')
+      setShowAddEvent(false)
+    } catch (error) {
+      toast.error('Failed to add event. Please try again.')
+    }
   }
 
-  const handleAddImage = (imageData: Omit<GalleryImage, 'id' | 'uploadDate'>) => {
-    addImage(imageData)
-    toast.success('Image uploaded successfully!')
-    setShowAddImage(false)
+  const handleAddImage = async (imageData: Omit<GalleryImage, 'id' | 'upload_date'>) => {
+    try {
+      await addImage(imageData)
+      toast.success('Image uploaded successfully!')
+      setShowAddImage(false)
+    } catch (error) {
+      toast.error('Failed to upload image. Please try again.')
+    }
   }
 
-  const handleAddNews = (newsData: Omit<NewsArticle, 'id'>) => {
-    addNews(newsData)
-    toast.success('News article added successfully!')
-    setShowAddNews(false)
+  const handleAddNews = async (newsData: Omit<NewsArticle, 'id'>) => {
+    try {
+      await addNews(newsData)
+      toast.success('News article added successfully!')
+      setShowAddNews(false)
+    } catch (error) {
+      toast.error('Failed to add news article. Please try again.')
+    }
   }
 
-  const handleDeleteEvent = (id: string) => {
-    deleteEvent(id)
-    toast.success('Event deleted successfully!')
+  const handleDeleteEvent = async (id: string) => {
+    try {
+      await deleteEvent(id)
+      toast.success('Event deleted successfully!')
+    } catch (error) {
+      toast.error('Failed to delete event. Please try again.')
+    }
   }
 
-  const handleDeleteImage = (id: string) => {
-    deleteImage(id)
-    toast.success('Image deleted successfully!')
+  const handleDeleteImage = async (id: string) => {
+    try {
+      await deleteImage(id)
+      toast.success('Image deleted successfully!')
+    } catch (error) {
+      toast.error('Failed to delete image. Please try again.')
+    }
   }
 
-  const handleDeleteNews = (id: string) => {
-    deleteNews(id)
-    toast.success('News article deleted successfully!')
+  const handleDeleteNews = async (id: string) => {
+    try {
+      await deleteNews(id)
+      toast.success('News article deleted successfully!')
+    } catch (error) {
+      toast.error('Failed to delete news article. Please try again.')
+    }
   }
 
   const handleResetData = async () => {
@@ -142,6 +169,46 @@ export default function AdminDashboard() {
     }
   }
 
+  // Show loading state
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="p-6">
+          <div className="flex items-center justify-center min-h-96">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading dashboard data...</p>
+            </div>
+          </div>
+        </div>
+      </AdminLayout>
+    )
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <AdminLayout>
+        <div className="p-6">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+            <div className="flex items-center mb-4">
+              <AlertCircle className="w-6 h-6 text-red-600 mr-2" />
+              <h3 className="text-lg font-medium text-red-800">Error Loading Data</h3>
+            </div>
+            <p className="text-red-700 mb-4">{error}</p>
+            <button
+              onClick={refreshData}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center space-x-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Retry</span>
+            </button>
+          </div>
+        </div>
+      </AdminLayout>
+    )
+  }
+
   return (
     <AdminLayout>
       <div className="p-6">
@@ -152,14 +219,23 @@ export default function AdminDashboard() {
               <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
               <p className="text-gray-600 mt-2">Manage your school website content and monitor performance</p>
             </div>
-            <button
-              onClick={handleResetData}
-              disabled={isResetting}
-              className="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-            >
-              <RefreshCw className={`w-4 h-4 ${isResetting ? 'animate-spin' : ''}`} />
-              <span>{isResetting ? 'Resetting...' : 'Reset Data'}</span>
-            </button>
+            <div className="flex space-x-2">
+              <button
+                onClick={refreshData}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>Refresh</span>
+              </button>
+              <button
+                onClick={handleResetData}
+                disabled={isResetting}
+                className="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+              >
+                <RefreshCw className={`w-4 h-4 ${isResetting ? 'animate-spin' : ''}`} />
+                <span>{isResetting ? 'Resetting...' : 'Reset Data'}</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -444,7 +520,7 @@ export default function AdminDashboard() {
                         <div className="p-4">
                           <h4 className="font-medium text-gray-900 mb-1">{image.title}</h4>
                           <p className="text-sm text-gray-600 mb-2">{image.category}</p>
-                          <p className="text-xs text-gray-500 mb-3">Uploaded: {image.uploadDate}</p>
+                          <p className="text-xs text-gray-500 mb-3">Uploaded: {image.upload_date}</p>
                           <div className="flex space-x-2">
                             <button className="text-primary-600 hover:text-primary-900">
                               <Edit className="w-4 h-4" />
@@ -497,7 +573,7 @@ export default function AdminDashboard() {
                         <div className="flex justify-between items-start mb-4">
                           <div>
                             <h4 className="text-lg font-medium text-gray-900">{article.title}</h4>
-                            <p className="text-sm text-gray-600">Published: {article.publishDate}</p>
+                            <p className="text-sm text-gray-600">Published: {article.publish_date}</p>
                           </div>
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                             article.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'

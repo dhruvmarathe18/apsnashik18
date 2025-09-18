@@ -2,27 +2,16 @@
   "version": 2,
   "builds": [
     {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "api/*.js",
-      "use": "@vercel/node"
+      "src": "package.json",
+      "use": "@vercel/next"
     }
   ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
   "functions": {
-    "api/contact.js": {
-      "maxDuration": 10
+    "app/api/**/*.ts": {
+      "maxDuration": 30
     }
   }
 }

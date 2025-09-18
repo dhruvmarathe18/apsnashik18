@@ -10,13 +10,13 @@ interface GalleryImage {
   category: string
   src: string
   alt: string
-  uploadDate: string
+  upload_date: string
 }
 
 interface AddImageModalProps {
   isOpen: boolean
   onClose: () => void
-  onAdd: (image: Omit<GalleryImage, 'id' | 'uploadDate'>) => void
+  onAdd: (image: Omit<GalleryImage, 'id' | 'upload_date'>) => void
 }
 
 export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalProps) {

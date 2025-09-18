@@ -8,7 +8,7 @@ interface NewsArticle {
   id: string
   title: string
   content: string
-  publishDate: string
+  publish_date: string
   status: 'draft' | 'published'
 }
 
@@ -22,7 +22,7 @@ export default function AddNewsModal({ isOpen, onClose, onAdd }: AddNewsModalPro
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    publishDate: new Date().toISOString().split('T')[0],
+    publish_date: new Date().toISOString().split('T')[0],
     status: 'draft' as const
   })
 
@@ -32,7 +32,7 @@ export default function AddNewsModal({ isOpen, onClose, onAdd }: AddNewsModalPro
     setFormData({
       title: '',
       content: '',
-      publishDate: new Date().toISOString().split('T')[0],
+      publish_date: new Date().toISOString().split('T')[0],
       status: 'draft'
     })
     onClose()
@@ -88,14 +88,14 @@ export default function AddNewsModal({ isOpen, onClose, onAdd }: AddNewsModalPro
 
               {/* Publish Date */}
               <div>
-                <label htmlFor="publishDate" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="publish_date" className="block text-sm font-medium text-gray-700 mb-2">
                   Publish Date *
                 </label>
                 <input
                   type="date"
-                  id="publishDate"
-                  name="publishDate"
-                  value={formData.publishDate}
+                  id="publish_date"
+                  name="publish_date"
+                  value={formData.publish_date}
                   onChange={handleChange}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
