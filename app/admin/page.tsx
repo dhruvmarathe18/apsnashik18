@@ -25,6 +25,8 @@ import AdminLayout from '@/components/admin/AdminLayout'
 import AddEventModal from '@/components/admin/AddEventModal'
 import AddImageModal from '@/components/admin/AddImageModal'
 import AddNewsModal from '@/components/admin/AddNewsModal'
+import AddHeroImageModal from '@/components/admin/AddHeroImageModal'
+import EditHeroImageModal from '@/components/admin/EditHeroImageModal'
 import toast from 'react-hot-toast'
 import { useData } from '@/contexts/DataContext'
 
@@ -54,25 +56,41 @@ interface NewsArticle {
   status: 'draft' | 'published'
 }
 
+interface HeroImage {
+  id: string
+  title: string
+  src: string
+  alt: string
+  is_active: boolean
+  display_order: number
+}
+
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
   const [showAddEvent, setShowAddEvent] = useState(false)
   const [showAddImage, setShowAddImage] = useState(false)
   const [showAddNews, setShowAddNews] = useState(false)
+  const [showAddHeroImage, setShowAddHeroImage] = useState(false)
+  const [showEditHeroImage, setShowEditHeroImage] = useState(false)
+  const [editingHeroImage, setEditingHeroImage] = useState<HeroImage | null>(null)
   const [isResetting, setIsResetting] = useState(false)
 
   const {
     events,
     galleryImages,
     newsArticles,
+    heroImages,
     loading,
     error,
     addEvent,
     addImage,
     addNews,
+    addHeroImage,
+    updateHeroImage,
     deleteEvent,
     deleteImage,
     deleteNews,
+    deleteHeroImage,
     refreshData
   } = useData()
 
@@ -80,6 +98,7 @@ export default function AdminDashboard() {
     { title: 'Total Events', value: events.length, icon: Calendar, color: 'text-blue-600' },
     { title: 'Gallery Images', value: galleryImages.length, icon: Image, color: 'text-green-600' },
     { title: 'News Articles', value: newsArticles.length, icon: FileText, color: 'text-purple-600' },
+    { title: 'Hero Images', value: heroImages.length, icon: Upload, color: 'text-indigo-600' },
     { title: 'Published Content', value: newsArticles.filter((n: NewsArticle) => n.status === 'published').length, icon: Eye, color: 'text-orange-600' }
   ]
 
@@ -87,6 +106,7 @@ export default function AdminDashboard() {
     { title: 'Add New Event', icon: Plus, action: () => setShowAddEvent(true), color: 'bg-blue-500' },
     { title: 'Upload Image', icon: Upload, action: () => setShowAddImage(true), color: 'bg-green-500' },
     { title: 'Create News', icon: FileText, action: () => setShowAddNews(true), color: 'bg-purple-500' },
+    { title: 'Add Hero Image', icon: Image, action: () => setShowAddHeroImage(true), color: 'bg-indigo-500' },
     { title: 'View Analytics', icon: BarChart3, action: () => {}, color: 'bg-orange-500' }
   ]
 
@@ -117,6 +137,43 @@ export default function AdminDashboard() {
       setShowAddNews(false)
     } catch (error) {
       toast.error('Failed to add news article. Please try again.')
+    }
+  }
+
+  const handleAddHeroImage = async (imageData: Omit<HeroImage, 'id'>) => {
+    try {
+      await addHeroImage(imageData)
+      toast.success('Hero image uploaded successfully!')
+      setShowAddHeroImage(false)
+    } catch (error) {
+      toast.error('Failed to upload hero image. Please try again.')
+    }
+  }
+
+  const handleEditHeroImage = (image: HeroImage) => {
+    setEditingHeroImage(image)
+    setShowEditHeroImage(true)
+  }
+
+  const handleUpdateHeroImage = async (id: string, imageData: Partial<HeroImage>) => {
+    try {
+      await updateHeroImage(id, imageData)
+      toast.success('Hero image updated successfully!')
+      setShowEditHeroImage(false)
+      setEditingHeroImage(null)
+    } catch (error) {
+      toast.error('Failed to update hero image. Please try again.')
+    }
+  }
+
+  const handleDeleteHeroImage = async (id: string) => {
+    if (confirm('Are you sure you want to delete this hero image?')) {
+      try {
+        await deleteHeroImage(id)
+        toast.success('Hero image deleted successfully!')
+      } catch (error) {
+        toast.error('Failed to delete hero image. Please try again.')
+      }
     }
   }
 
@@ -290,6 +347,7 @@ export default function AdminDashboard() {
                 { id: 'overview', name: 'Overview', icon: BarChart3 },
                 { id: 'events', name: 'Events', icon: Calendar },
                 { id: 'gallery', name: 'Gallery', icon: Image },
+                { id: 'hero', name: 'Hero Images', icon: Upload },
                 { id: 'news', name: 'News', icon: FileText }
               ].map((tab) => (
                 <button
@@ -599,6 +657,82 @@ export default function AdminDashboard() {
                 )}
               </div>
             )}
+
+            {/* Hero Images Tab */}
+            {activeTab === 'hero' && (
+              <div>
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900">Manage Hero Images</h3>
+                  <button
+                    onClick={() => setShowAddHeroImage(true)}
+                    className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 flex items-center space-x-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add Hero Image</span>
+                  </button>
+                </div>
+
+                {heroImages.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Upload className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Hero Images Yet</h3>
+                    <p className="text-gray-600 mb-4">Add hero images to showcase your school on the homepage.</p>
+                    <button
+                      onClick={() => setShowAddHeroImage(true)}
+                      className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700"
+                    >
+                      Add Your First Hero Image
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {heroImages.map((image: HeroImage) => (
+                      <div key={image.id} className="bg-white border rounded-lg overflow-hidden">
+                        <div className="aspect-w-16 aspect-h-9">
+                          <img
+                            src={image.src}
+                            alt={image.alt}
+                            className="w-full h-48 object-cover"
+                          />
+                        </div>
+                        <div className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="text-lg font-medium text-gray-900">{image.title}</h4>
+                            <div className="flex items-center space-x-2">
+                              {image.is_active && (
+                                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                                  Active
+                                </span>
+                              )}
+                              <span className="text-xs text-gray-500">
+                                Order: {image.display_order}
+                              </span>
+                            </div>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-4">{image.alt}</p>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleEditHeroImage(image)}
+                              className="text-primary-600 hover:text-primary-900 flex items-center space-x-1"
+                            >
+                              <Edit className="w-4 h-4" />
+                              <span className="text-sm">Edit</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteHeroImage(image.id)}
+                              className="text-red-600 hover:text-red-900 flex items-center space-x-1"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              <span className="text-sm">Delete</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -619,6 +753,23 @@ export default function AdminDashboard() {
           isOpen={showAddNews}
           onClose={() => setShowAddNews(false)}
           onAdd={handleAddNews}
+        />
+
+        <AddHeroImageModal
+          isOpen={showAddHeroImage}
+          onClose={() => setShowAddHeroImage(false)}
+          onAdd={handleAddHeroImage}
+          existingImages={heroImages}
+        />
+
+        <EditHeroImageModal
+          isOpen={showEditHeroImage}
+          onClose={() => {
+            setShowEditHeroImage(false)
+            setEditingHeroImage(null)
+          }}
+          onUpdate={handleUpdateHeroImage}
+          image={editingHeroImage}
         />
       </div>
     </AdminLayout>
