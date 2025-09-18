@@ -29,7 +29,7 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>('')
-  const [useExistingImage, setUseExistingImage] = useState(true)
+  const [useExistingImage, setUseExistingImage] = useState(false)
   const [selectedExistingImage, setSelectedExistingImage] = useState('')
 
   const categories = [
@@ -75,10 +75,15 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // For now, we'll only support existing images
-      // File upload would require backend implementation
-      alert('File upload is not yet implemented. Please use existing images from the gallery.')
-      e.target.value = '' // Clear the file input
+      setSelectedFile(file)
+      const url = URL.createObjectURL(file)
+      setPreviewUrl(url)
+      setFormData(prev => ({
+        ...prev,
+        src: url,
+        alt: file.name
+      }))
+      setUseExistingImage(false)
     }
   }
 
@@ -94,7 +99,7 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
     setPreviewUrl('')
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (useExistingImage && selectedExistingImage) {
@@ -106,13 +111,38 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
         alt: formData.alt
       })
     } else if (selectedFile) {
-      // Use uploaded file (for demo, we'll use the preview URL)
-      onAdd({
-        title: formData.title,
-        category: formData.category,
-        src: formData.src,
-        alt: formData.alt
-      })
+      // Upload new file to backend
+      try {
+        const formDataToSend = new FormData()
+        formDataToSend.append('image', selectedFile)
+        formDataToSend.append('title', formData.title)
+        formDataToSend.append('category', formData.category)
+        formDataToSend.append('alt', formData.alt)
+
+        const apiURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
+        const response = await fetch(`${apiURL}/api/upload/gallery`, {
+          method: 'POST',
+          body: formDataToSend
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          onAdd({
+            title: formData.title,
+            category: formData.category,
+            src: result.image.src,
+            alt: formData.alt
+          })
+        } else {
+          const error = await response.json()
+          alert(`Upload failed: ${error.error}`)
+          return
+        }
+      } catch (error) {
+        console.error('Upload error:', error)
+        alert('Upload failed. Please try again.')
+        return
+      }
     } else {
       alert('Please select an image or choose an existing image')
       return
@@ -178,7 +208,7 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
                         : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    Upload New Image (Coming Soon)
+                    Upload New Image
                   </button>
                   <button
                     type="button"
