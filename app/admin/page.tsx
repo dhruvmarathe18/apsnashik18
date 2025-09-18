@@ -43,14 +43,14 @@ interface GalleryImage {
   category: string
   src: string
   alt: string
-  uploadDate: string
+  upload_date: string
 }
 
 interface NewsArticle {
   id: string
   title: string
   content: string
-  publishDate: string
+  publish_date: string
   status: 'draft' | 'published'
 }
 
@@ -343,7 +343,7 @@ export default function AdminDashboard() {
                       {newsArticles.slice(0, 3).map((article: NewsArticle) => (
                         <div key={article.id} className="p-3 bg-white rounded-lg">
                           <p className="font-medium text-gray-900">{article.title}</p>
-                          <p className="text-sm text-gray-600">{article.publishDate}</p>
+                          <p className="text-sm text-gray-600">{article.publish_date}</p>
                         </div>
                       ))}
                       {newsArticles.length === 0 && (
