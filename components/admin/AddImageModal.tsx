@@ -29,7 +29,7 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string>('')
-  const [useExistingImage, setUseExistingImage] = useState(false)
+  const [useExistingImage, setUseExistingImage] = useState(true)
   const [selectedExistingImage, setSelectedExistingImage] = useState('')
 
   const categories = [
@@ -53,21 +53,32 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
     { name: 'School Building', path: '/images/infra2.jpeg' },
     { name: 'Students Group', path: '/images/kidss.jpg' },
     { name: 'School Logo', path: '/images/aps.jpg' },
-    { name: 'Hero Image', path: '/images/hero.png' }
+    { name: 'Hero Image', path: '/images/hero.png' },
+    { name: 'School Bus', path: '/images/bus.png' },
+    { name: 'Student Portrait', path: '/images/student.png' },
+    { name: 'Teacher 4', path: '/images/teacher-4.jpg' },
+    { name: 'Vinod Marathe', path: '/images/vinod_marathe.jpg' },
+    { name: 'Election Event 1', path: '/images/election/WhatsApp Image 2023-06-26 at 4.45.39 PM.jpeg' },
+    { name: 'Election Event 2', path: '/images/election/WhatsApp Image 2023-06-26 at 4.45.40 PM (1).jpeg' },
+    { name: 'Election Event 3', path: '/images/election/WhatsApp Image 2023-06-26 at 4.45.43 PM (1).jpeg' },
+    { name: 'Election Event 4', path: '/images/election/WhatsApp Image 2023-06-26 at 4.45.49 PM (1).jpeg' },
+    { name: 'Election Event 5', path: '/images/election/WhatsApp Image 2023-06-26 at 4.45.57 PM.jpeg' },
+    { name: 'Election Event 6', path: '/images/election/WhatsApp Image 2023-06-26 at 4.46.04 PM.jpeg' },
+    { name: 'Election Event 7', path: '/images/election/WhatsApp Image 2023-06-26 at 4.46.05 PM (1).jpeg' },
+    { name: 'Election Event 8', path: '/images/election/WhatsApp Image 2023-06-26 at 4.46.05 PM.jpeg' },
+    { name: 'Malkham Event 1', path: '/images/malkham/WhatsApp Image 2023-07-13 at 3.49.12 PM.jpeg' },
+    { name: 'Malkham Event 2', path: '/images/malkham/WhatsApp Image 2023-07-13 at 3.49.14 PM (1).jpeg' },
+    { name: 'Malkham Event 3', path: '/images/malkham/WhatsApp Image 2023-07-13 at 3.49.15 PM (1).jpeg' },
+    { name: 'Malkham Event 4', path: '/images/malkham/WhatsApp Image 2023-07-13 at 8.56.56 PM (1).jpeg' }
   ]
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setSelectedFile(file)
-      const url = URL.createObjectURL(file)
-      setPreviewUrl(url)
-      setFormData(prev => ({
-        ...prev,
-        src: url,
-        alt: file.name
-      }))
-      setUseExistingImage(false)
+      // For now, we'll only support existing images
+      // File upload would require backend implementation
+      alert('File upload is not yet implemented. Please use existing images from the gallery.')
+      e.target.value = '' // Clear the file input
     }
   }
 
@@ -167,7 +178,7 @@ export default function AddImageModal({ isOpen, onClose, onAdd }: AddImageModalP
                         : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    Upload New Image
+                    Upload New Image (Coming Soon)
                   </button>
                   <button
                     type="button"
