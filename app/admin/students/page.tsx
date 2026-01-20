@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
-import { Users, Plus, Search, FileText, Edit, Trash2, Eye } from 'lucide-react'
+import { Users, Plus, Search, FileText, Edit, Trash2, Eye, Upload } from 'lucide-react'
 import { useSchool } from '@/contexts/SchoolContext'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -13,12 +13,15 @@ import toast from 'react-hot-toast'
 import Link from 'next/link'
 import { Student, StudentStatus } from '@/types/school'
 
+import BulkAddStudentsModal from '@/components/admin/BulkAddStudentsModal'
+
 export default function StudentsPage() {
   const { students, deleteStudent, settings } = useSchool()
   const [searchTerm, setSearchTerm] = useState('')
   const [filterClass, setFilterClass] = useState('')
   const [filterStatus, setFilterStatus] = useState<StudentStatus | ''>('')
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showBulkAddModal, setShowBulkAddModal] = useState(false)
   const [editingStudent, setEditingStudent] = useState<Student | null>(null)
 
   const filteredStudents = useMemo(() => {
@@ -73,10 +76,16 @@ export default function StudentsPage() {
               <h1 className="text-3xl font-bold text-gray-900">Student Management</h1>
               <p className="text-gray-600 mt-2">Manage student records, admissions, and information</p>
             </div>
-            <Button onClick={() => setShowAddModal(true)}>
-              <Plus className="w-5 h-5 mr-2" />
-              Add Student
-            </Button>
+            <div className="flex space-x-3">
+              <Button variant="outline" onClick={() => setShowBulkAddModal(true)}>
+                <Upload className="w-5 h-5 mr-2" />
+                Bulk Add
+              </Button>
+              <Button onClick={() => setShowAddModal(true)}>
+                <Plus className="w-5 h-5 mr-2" />
+                Add Student
+              </Button>
+            </div>
           </div>
 
           {/* Stats */}
@@ -269,6 +278,14 @@ export default function StudentsPage() {
                 setShowAddModal(false)
                 setEditingStudent(null)
               }}
+            />
+          )}
+
+          {/* Bulk Add Modal */}
+          {showBulkAddModal && (
+            <BulkAddStudentsModal
+              isOpen={showBulkAddModal}
+              onClose={() => setShowBulkAddModal(false)}
             />
           )}
         </div>

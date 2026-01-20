@@ -152,6 +152,38 @@ export const studentService = {
     return transformStudent(data)
   },
 
+  async createBatch(students: Omit<Student, 'id' | 'createdAt' | 'updatedAt'>[]): Promise<Student[]> {
+    if (students.length === 0) return []
+
+    const now = new Date().toISOString()
+    const newStudents = students.map((student) => ({
+      ...student,
+      id: generateUUID(),
+      createdAt: now,
+      updatedAt: now,
+    }))
+
+    if (!isSupabaseConfigured()) {
+      const existingStudents = await this.getAll()
+      const allStudents = [...existingStudents, ...newStudents]
+      localStorage.setItem('school_students', JSON.stringify(allStudents))
+      return newStudents
+    }
+
+    const dbStudents = newStudents.map(transformToDbStudent)
+    const { data, error } = await supabase
+      .from('students')
+      .insert(dbStudents)
+      .select()
+
+    if (error) {
+      console.error('Error creating students batch:', error)
+      throw error
+    }
+
+    return (data || []).map(transformStudent)
+  },
+
   async update(id: string, updates: Partial<Student>): Promise<void> {
     if (!isSupabaseConfigured()) {
       const students = await this.getAll()
@@ -303,6 +335,38 @@ export const feePlanService = {
     }
 
     return transformFeePlan(data)
+  },
+
+  async createBatch(feePlans: Omit<FeePlan, 'id' | 'createdAt' | 'updatedAt'>[]): Promise<FeePlan[]> {
+    if (feePlans.length === 0) return []
+
+    const now = new Date().toISOString()
+    const newFeePlans = feePlans.map((feePlan) => ({
+      ...feePlan,
+      id: generateUUID(),
+      createdAt: now,
+      updatedAt: now,
+    }))
+
+    if (!isSupabaseConfigured()) {
+      const existingFeePlans = await this.getAll()
+      const allFeePlans = [...existingFeePlans, ...newFeePlans]
+      localStorage.setItem('school_fee_plans', JSON.stringify(allFeePlans))
+      return newFeePlans
+    }
+
+    const dbFeePlans = newFeePlans.map(transformToDbFeePlan)
+    const { data, error } = await supabase
+      .from('fee_plans')
+      .insert(dbFeePlans)
+      .select()
+
+    if (error) {
+      console.error('Error creating fee plans batch:', error)
+      throw error
+    }
+
+    return (data || []).map(transformFeePlan)
   },
 
   async update(id: string, updates: Partial<FeePlan>): Promise<void> {

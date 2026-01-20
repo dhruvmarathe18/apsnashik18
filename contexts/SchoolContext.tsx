@@ -22,6 +22,7 @@ interface SchoolContextType {
 
   // Students
   addStudent: (student: Omit<Student, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Student>
+  addStudentsBatch: (students: Omit<Student, 'id' | 'createdAt' | 'updatedAt'>[], feePlans: Array<Omit<FeePlan, 'id' | 'createdAt' | 'updatedAt'> & { admissionNo: string }>) => Promise<{ students: Student[]; feePlans: FeePlan[] }>
   updateStudent: (id: string, updates: Partial<Student>) => void
   deleteStudent: (id: string) => void
   getStudentById: (id: string) => Student | undefined
@@ -257,6 +258,46 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
     return students.find((s) => s.admissionNo === admissionNo)
   }
 
+  // Batch add students with fee plans
+  const addStudentsBatch = async (
+    studentsData: Omit<Student, 'id' | 'createdAt' | 'updatedAt'>[],
+    feePlansData: Array<Omit<FeePlan, 'id' | 'createdAt' | 'updatedAt'> & { admissionNo: string }>
+  ): Promise<{ students: Student[]; feePlans: FeePlan[] }> => {
+    try {
+      // Create students batch
+      const createdStudents = await studentService.createBatch(studentsData)
+      setStudents((prev) => [...createdStudents, ...prev])
+
+      // Match fee plans with students by admission number and create batch
+      const feePlansToCreate: Omit<FeePlan, 'id' | 'createdAt' | 'updatedAt'>[] = []
+      
+      for (const feePlanData of feePlansData) {
+        // Find the corresponding student by admission number
+        const matchingStudent = createdStudents.find((s) => s.admissionNo === feePlanData.admissionNo)
+        
+        if (matchingStudent) {
+          const { admissionNo, ...feePlanWithoutAdmissionNo } = feePlanData
+          feePlansToCreate.push({
+            ...feePlanWithoutAdmissionNo,
+            studentId: matchingStudent.id,
+          })
+        }
+      }
+      
+      // Create fee plans batch
+      const createdFeePlans = await feePlanService.createBatch(feePlansToCreate)
+      setFeePlans((prev) => [...createdFeePlans, ...prev])
+      
+      toast.success(`Successfully added ${createdStudents.length} students with ${createdFeePlans.length} fee plans`)
+      
+      return { students: createdStudents, feePlans: createdFeePlans }
+    } catch (error: any) {
+      console.error('Error adding students batch:', error)
+      toast.error(error.message || 'Failed to add students batch')
+      throw error
+    }
+  }
+
   // Fee Plan methods
   const addFeePlan = async (feePlanData: Omit<FeePlan, 'id' | 'createdAt' | 'updatedAt'>): Promise<FeePlan> => {
     try {
@@ -342,6 +383,7 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
     updateTransaction,
     deleteTransaction,
     addStudent,
+    addStudentsBatch,
     updateStudent,
     deleteStudent,
     getStudentById,
