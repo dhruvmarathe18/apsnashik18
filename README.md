@@ -242,7 +242,7 @@ This project is licensed under the MIT License.
 
 For support and questions:
 - Email: info@apsnashik.com
-- Phone: +91 1234567890
+- Phone: +91 9226166369
 
 ## 🔄 Updates
 
