@@ -23,12 +23,22 @@ export default function Gallery() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [useCloudinary, setUseCloudinary] = useState(true)
 
-  // Fetch from Cloudinary
-  const { media: cloudinaryMedia, loading: cloudinaryLoading } = useCloudinaryMedia({
-    folder: 'aps-nashik',
+  // Fetch from Cloudinary - Gallery and Student folders
+  const { media: galleryMedia, loading: galleryLoading } = useCloudinaryMedia({
+    folder: 'aps-nashik/gallery', // Gallery folder
     resourceType: 'image',
     maxResults: 100,
   })
+  
+  const { media: studentMedia, loading: studentLoading } = useCloudinaryMedia({
+    folder: 'aps-nashik/students', // Student images folder
+    resourceType: 'image',
+    maxResults: 100,
+  })
+  
+  // Combine gallery and student images
+  const cloudinaryMedia = [...galleryMedia, ...studentMedia]
+  const cloudinaryLoading = galleryLoading || studentLoading
 
   // Fallback to local data
   const { galleryImages } = useData()

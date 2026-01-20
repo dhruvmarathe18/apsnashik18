@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { 
   GraduationCap, 
@@ -42,7 +43,7 @@ export default function Home() {
   
   // Fetch student images from Cloudinary
   const { media: studentMedia } = useCloudinaryMedia({
-    folder: 'aps-nashik/student',
+    folder: 'aps-nashik/students',
     maxResults: 50,
   })
   
@@ -86,36 +87,42 @@ export default function Home() {
     }
   ]
 
-  const teachers = [
-    {
-      name: 'Mrs. Priya Sharma',
-      subject: 'Mathematics',
-      experience: '12 years',
-      image: '/images/teacher-1.jpg',
-      qualification: 'M.Sc. Mathematics, B.Ed'
-    },
-    {
-      name: 'Mr. Rajesh Patel',
-      subject: 'Science',
-      experience: '15 years',
-      image: '/images/teacher-2.jpg',
-      qualification: 'M.Sc. Physics, B.Ed'
-    },
-    {
-      name: 'Mrs. Meera Desai',
-      subject: 'English',
-      experience: '10 years',
-      image: '/images/teacher-3.jpg',
-      qualification: 'M.A. English, B.Ed'
-    },
-    {
-      name: 'Mr. Amit Kumar',
-      subject: 'Social Studies',
-      experience: '8 years',
-      image: '/images/teacher-4.jpg',
-      qualification: 'M.A. History, B.Ed'
-    }
-  ]
+  // Use teacher images from Cloudinary
+  const teachers = useMemo(() => {
+    const baseTeachers = [
+      {
+        name: 'Mrs. Priya Sharma',
+        subject: 'Mathematics',
+        experience: '12 years',
+        qualification: 'M.Sc. Mathematics, B.Ed'
+      },
+      {
+        name: 'Mr. Rajesh Patel',
+        subject: 'Science',
+        experience: '15 years',
+        qualification: 'M.Sc. Physics, B.Ed'
+      },
+      {
+        name: 'Mrs. Meera Desai',
+        subject: 'English',
+        experience: '10 years',
+        qualification: 'M.A. English, B.Ed'
+      },
+      {
+        name: 'Mr. Amit Kumar',
+        subject: 'Social Studies',
+        experience: '8 years',
+        qualification: 'M.A. History, B.Ed'
+      }
+    ]
+    
+    // Map teacher images from Cloudinary
+    return baseTeachers.map((teacher, index) => ({
+      ...teacher,
+      image: teacherMedia[index]?.id || `/images/teacher-${index + 1}.jpg`,
+      imageUrl: teacherMedia[index]?.url || null,
+    }))
+  }, [teacherMedia])
 
   // Get dynamic events from context
   const dynamicEvents = getUpcomingEvents()
@@ -156,29 +163,51 @@ export default function Home() {
       }))
     : fallbackEvents
 
-  const testimonials = [
-    {
-      name: 'Priya Sharma',
-      role: 'Parent',
-      content: 'My daughter has grown tremendously since joining Apple Public School. The teachers are caring and the academic standards are excellent.',
-      rating: 5,
-      image: '/images/kids.jpg'
-    },
-    {
-      name: 'Rajesh Patel',
-      role: 'Parent',
-      content: 'The school provides a perfect balance of academics and extracurricular activities. My son loves coming to school every day.',
-      rating: 5,
-      image: '/images/teacher-1.jpg'
-    },
-    {
-      name: 'Meera Desai',
-      role: 'Parent',
-      content: 'Excellent infrastructure and dedicated teachers. The school focuses on overall development of children.',
-      rating: 5,
-      image: '/images/teacher-2.jpg'
-    }
-  ]
+  // Use student images from Cloudinary for testimonials
+  const testimonials = useMemo(() => {
+    const baseTestimonials = [
+      {
+        name: 'Priya Sharma',
+        role: 'Parent',
+        content: 'My daughter has grown tremendously since joining Apple Public School. The teachers are caring and the academic standards are excellent.',
+        rating: 5,
+      },
+      {
+        name: 'Rajesh Patel',
+        role: 'Parent',
+        content: 'The school provides a perfect balance of academics and extracurricular activities. My son loves coming to school every day.',
+        rating: 5,
+      },
+      {
+        name: 'Meera Desai',
+        role: 'Parent',
+        content: 'Excellent infrastructure and dedicated teachers. The school focuses on overall development of children.',
+        rating: 5,
+      }
+    ]
+    
+    // Map student images to testimonials
+    return baseTestimonials.map((testimonial, index) => ({
+      ...testimonial,
+      image: studentMedia[index]?.id || 'aps-nashik/students',
+      imageUrl: studentMedia[index]?.url || null,
+    }))
+  }, [studentMedia])
+
+  // Use student images from Cloudinary for events
+  const eventsWithStudentImages = useMemo(() => {
+    return events.map((event, index) => {
+      // Use student images from Cloudinary, cycling through them
+      const studentImageIndex = index % (studentMedia.length || 1)
+      const studentImage = studentMedia[studentImageIndex]
+      
+      return {
+        ...event,
+        image: studentImage?.id || event.image || 'aps-nashik/students',
+        imageUrl: studentImage?.url || null,
+      }
+    })
+  }, [events, studentMedia])
 
   return (
     <div className="min-h-screen bg-white">
@@ -453,28 +482,20 @@ export default function Home() {
                 className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group"
               >
                 <div className="relative h-64 overflow-hidden">
-                  {teacher.cloudinaryId ? (
-                    <CloudinaryImage
-                      src={teacher.cloudinaryId}
-                      alt={teacher.name}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                      cloudinaryOptions={{
-                        width: 400,
-                        height: 400,
-                        crop: 'fill',
-                        quality: 'auto',
-                      }}
-                      fallbackSrc={teacher.image}
-                    />
-                  ) : (
-                    <img
-                      src={teacher.image}
-                      alt={teacher.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                  )}
+                  <CloudinaryImage
+                    src={teacher.image || 'aps-nashik/teachers'}
+                    alt={teacher.name}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                    cloudinaryOptions={{
+                      width: 400,
+                      height: 400,
+                      crop: 'fill',
+                      quality: 'auto',
+                    }}
+                    fallbackSrc={teacher.imageUrl || `/images/teacher-${index + 1}.jpg`}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 </div>
                 <div className="p-6">
@@ -506,7 +527,7 @@ export default function Home() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {events.map((event, index) => (
+            {eventsWithStudentImages.map((event, index) => (
               <motion.div
                 key={event.title}
                 initial={{ opacity: 0, y: 30 }}
@@ -517,7 +538,7 @@ export default function Home() {
               >
                 <div className="relative h-64 overflow-hidden">
                   <CloudinaryImage
-                    src={event.image?.startsWith('aps-nashik') ? event.image : `aps-nashik/gallery/school-events`}
+                    src={event.image || 'aps-nashik/students'}
                     alt={event.title}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -528,7 +549,7 @@ export default function Home() {
                       crop: 'fill',
                       quality: 'auto',
                     }}
-                    fallbackSrc={event.image}
+                    fallbackSrc={event.imageUrl || '/images/kids.jpg'}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                   <div className="absolute bottom-4 left-4 flex items-center space-x-2 text-white">
@@ -579,7 +600,7 @@ export default function Home() {
                 <div className="flex items-center mb-4">
                   <div className="w-16 h-16 rounded-full overflow-hidden mr-4 ring-2 ring-primary-100">
                     <CloudinaryImage
-                      src={testimonial.image?.startsWith('aps-nashik') ? testimonial.image : `aps-nashik/gallery`}
+                      src={testimonial.image || 'aps-nashik/students'}
                       alt={testimonial.name}
                       fill
                       className="object-cover"
@@ -590,7 +611,7 @@ export default function Home() {
                         crop: 'fill',
                         quality: 'auto',
                       }}
-                      fallbackSrc={testimonial.image}
+                      fallbackSrc={testimonial.imageUrl || '/images/kids.jpg'}
                     />
                   </div>
                   <div>
