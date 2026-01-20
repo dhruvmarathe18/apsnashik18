@@ -1,11 +1,55 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { busEntryService, BusDailyEntry } from '@/lib/supabase/services'
 
 const TransportContext = createContext<any>(null)
 
 const BUS_NAMES = ['Winger', 'Maximo', 'Verito', 'Audi', 'Fluence']
 const STORAGE_KEY = 'schoolTransportData'
+
+// Convert BusDailyEntry to legacy format for backward compatibility
+const entryToLegacyFormat = (entry: BusDailyEntry): any => {
+  return {
+    id: entry.id,
+    Date: entry.entryDate,
+    'Driver Name': entry.driverName,
+    'Start KM': entry.startKm,
+    'End KM': entry.endKm,
+    'Daily KM': entry.dailyKm,
+    'Diesel Filled': entry.dieselFilled,
+    'Diesel Rate': entry.dieselRate,
+    'Diesel Amount': entry.dieselAmount,
+    'Expense Description': entry.expenseDescription,
+    'Other Expense': entry.otherExpense,
+    'Running KM': entry.runningKm,
+    'Actual Average': entry.actualAverage,
+    'Remarks': entry.remarks,
+    Bus: entry.busName,
+    createdAt: entry.createdAt,
+    updatedAt: entry.updatedAt,
+  }
+}
+
+// Convert legacy format to BusDailyEntry
+const legacyToEntryFormat = (entry: any, busName: string): Omit<BusDailyEntry, 'id' | 'createdAt' | 'updatedAt'> => {
+  return {
+    busName: busName || entry.Bus,
+    entryDate: entry.Date,
+    driverName: entry['Driver Name'],
+    startKm: parseFloat(entry['Start KM'] || 0),
+    endKm: parseFloat(entry['End KM'] || 0),
+    dailyKm: parseFloat(entry['Daily KM'] || 0),
+    dieselFilled: parseFloat(entry['Diesel Filled'] || 0),
+    dieselRate: parseFloat(entry['Diesel Rate'] || 0),
+    dieselAmount: parseFloat(entry['Diesel Amount'] || 0),
+    expenseDescription: entry['Expense Description'],
+    otherExpense: parseFloat(entry['Other Expense'] || 0),
+    runningKm: parseFloat(entry['Running KM'] || 0),
+    actualAverage: parseFloat(entry['Actual Average'] || 0),
+    remarks: entry['Remarks'],
+  }
+}
 
 // Initialize default data structure
 const initializeData = () => {
@@ -16,8 +60,8 @@ const initializeData = () => {
   return data
 }
 
-// Load data from localStorage
-const loadData = () => {
+// Load data from localStorage (fallback)
+const loadDataFromLocalStorage = () => {
   if (typeof window === 'undefined') return initializeData()
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
@@ -30,26 +74,51 @@ const loadData = () => {
   return initializeData()
 }
 
-// Save data to localStorage
-const saveData = (data: any) => {
-  if (typeof window === 'undefined') return false
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-    return true
-  } catch (error) {
-    console.error('Error saving data:', error)
-    return false
-  }
+// Convert entries array to legacy format
+const entriesToLegacyFormat = (entries: BusDailyEntry[]): any => {
+  const data: any = initializeData()
+  entries.forEach((entry) => {
+    if (!data[entry.busName]) {
+      data[entry.busName] = []
+    }
+    data[entry.busName].push(entryToLegacyFormat(entry))
+  })
+  // Sort by date for each bus
+  BUS_NAMES.forEach((bus) => {
+    if (data[bus]) {
+      data[bus].sort((a: any, b: any) => {
+        const dateA = new Date(a.Date)
+        const dateB = new Date(b.Date)
+        return dateA.getTime() - dateB.getTime()
+      })
+    }
+  })
+  return data
 }
 
 export function TransportProvider({ children }: { children: ReactNode }) {
-  const [transportData, setTransportData] = useState(loadData)
-  const [isLoading, setIsLoading] = useState(false)
+  const [transportData, setTransportData] = useState(initializeData)
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Save to localStorage whenever data changes
+  // Load data from Supabase on mount
   useEffect(() => {
-    saveData(transportData)
-  }, [transportData])
+    const loadData = async () => {
+      setIsLoading(true)
+      try {
+        const entries = await busEntryService.getAll()
+        const legacyData = entriesToLegacyFormat(entries)
+        setTransportData(legacyData)
+      } catch (error) {
+        console.error('Error loading bus entries:', error)
+        // Fallback to localStorage
+        const localData = loadDataFromLocalStorage()
+        setTransportData(localData)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadData()
+  }, [])
 
   // Calculate running KM since last diesel fill (internal helper)
   const calculateRunningKMInternal = (busData: any[], currentDate: string) => {
@@ -112,86 +181,166 @@ export function TransportProvider({ children }: { children: ReactNode }) {
   }
 
   // Add new entry
-  const addEntry = (entry: any) => {
+  const addEntry = async (entry: any) => {
     const busName = entry.Bus
     if (!BUS_NAMES.includes(busName)) {
       throw new Error('Invalid bus name')
     }
 
-    setTransportData((prev: any) => {
-      const newData = { ...prev }
+    // Calculate fields before saving
+    const busData = transportData[busName] || []
+    const calculatedEntry = calculateEntryFields({ ...entry }, busData)
+    
+    // Convert to BusDailyEntry format
+    const entryData = legacyToEntryFormat(calculatedEntry, busName)
+    entryData.runningKm = calculatedEntry['Running KM']
+    entryData.actualAverage = calculatedEntry['Actual Average']
+
+    try {
+      // Save to Supabase
+      const savedEntry = await busEntryService.create(entryData)
+      
+      // Update local state
+      setTransportData((prev: any) => {
+        const newData = { ...prev }
+        if (!newData[busName]) {
+          newData[busName] = []
+        }
+        newData[busName] = [...newData[busName], entryToLegacyFormat(savedEntry)]
+        return newData
+      })
+
+      return true
+    } catch (error) {
+      console.error('Error adding entry:', error)
+      // Fallback to localStorage
+      const newData = { ...transportData }
       if (!newData[busName]) {
         newData[busName] = []
       }
-      
-      const calculatedEntry = calculateEntryFields({ ...entry }, newData[busName])
+      calculatedEntry.id = Date.now().toString()
+      calculatedEntry.createdAt = new Date().toISOString()
+      calculatedEntry.updatedAt = new Date().toISOString()
       newData[busName] = [...newData[busName], calculatedEntry]
-      return newData
-    })
-
-    return true
+      setTransportData(newData)
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newData))
+      }
+      return true
+    }
   }
 
   // Update existing entry
-  const updateEntry = (busName: string, entryIndex: number, updatedEntry: any) => {
+  const updateEntry = async (busName: string, entryIndex: number, updatedEntry: any) => {
     if (!BUS_NAMES.includes(busName)) {
       throw new Error('Invalid bus name')
     }
 
-    setTransportData((prev: any) => {
-      const newData = { ...prev }
-      if (!newData[busName] || !newData[busName][entryIndex]) {
-        throw new Error('Entry not found')
+    const busData = transportData[busName] || []
+    if (!busData[entryIndex]) {
+      throw new Error('Entry not found')
+    }
+
+    const oldEntry = busData[entryIndex]
+    const entryId = oldEntry.id
+
+    // Recalculate fields for the updated entry and all subsequent entries
+    const updatedData = [...busData]
+    updatedEntry = calculateEntryFields({ ...updatedEntry }, updatedData.slice(0, entryIndex))
+
+    // Recalculate all entries after this one (in case dates/KM changed)
+    for (let i = entryIndex + 1; i < updatedData.length; i++) {
+      updatedData[i] = calculateEntryFields(
+        { ...updatedData[i] },
+        updatedData.slice(0, i)
+      )
+    }
+
+    try {
+      // Update in Supabase
+      const entryData = legacyToEntryFormat(updatedEntry, busName)
+      entryData.runningKm = updatedEntry['Running KM']
+      entryData.actualAverage = updatedEntry['Actual Average']
+      
+      if (entryId) {
+        await busEntryService.update(entryId, entryData)
       }
 
-      // Recalculate fields for the updated entry and all subsequent entries
-      const updatedData = [...newData[busName]]
-      updatedData[entryIndex] = calculateEntryFields({ ...updatedEntry }, updatedData.slice(0, entryIndex))
+      // Update local state
+      setTransportData((prev: any) => {
+        const newData = { ...prev }
+        newData[busName] = updatedData
+        return newData
+      })
 
-      // Recalculate all entries after this one (in case dates/KM changed)
-      for (let i = entryIndex + 1; i < updatedData.length; i++) {
-        updatedData[i] = calculateEntryFields(
-          { ...updatedData[i] },
-          updatedData.slice(0, i)
-        )
-      }
-
-      newData[busName] = updatedData
-      return newData
-    })
-
-    return true
+      return true
+    } catch (error) {
+      console.error('Error updating entry:', error)
+      // Fallback to localStorage
+      setTransportData((prev: any) => {
+        const newData = { ...prev }
+        newData[busName] = updatedData
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(newData))
+        }
+        return newData
+      })
+      return true
+    }
   }
 
   // Delete entry
-  const deleteEntry = (busName: string, entryIndex: number) => {
+  const deleteEntry = async (busName: string, entryIndex: number) => {
     if (!BUS_NAMES.includes(busName)) {
       throw new Error('Invalid bus name')
     }
 
-    setTransportData((prev: any) => {
-      const newData = { ...prev }
-      if (!newData[busName] || !newData[busName][entryIndex]) {
-        throw new Error('Entry not found')
+    const busData = transportData[busName] || []
+    if (!busData[entryIndex]) {
+      throw new Error('Entry not found')
+    }
+
+    const entryId = busData[entryIndex].id
+
+    // Remove the entry
+    const updatedData = [...busData]
+    updatedData.splice(entryIndex, 1)
+
+    // Recalculate all entries after the deleted one
+    for (let i = entryIndex; i < updatedData.length; i++) {
+      updatedData[i] = calculateEntryFields(
+        { ...updatedData[i] },
+        updatedData.slice(0, i)
+      )
+    }
+
+    try {
+      // Delete from Supabase
+      if (entryId) {
+        await busEntryService.delete(entryId)
       }
 
-      // Remove the entry
-      const updatedData = [...newData[busName]]
-      updatedData.splice(entryIndex, 1)
+      // Update local state
+      setTransportData((prev: any) => {
+        const newData = { ...prev }
+        newData[busName] = updatedData
+        return newData
+      })
 
-      // Recalculate all entries after the deleted one
-      for (let i = entryIndex; i < updatedData.length; i++) {
-        updatedData[i] = calculateEntryFields(
-          { ...updatedData[i] },
-          updatedData.slice(0, i)
-        )
-      }
-
-      newData[busName] = updatedData
-      return newData
-    })
-
-    return true
+      return true
+    } catch (error) {
+      console.error('Error deleting entry:', error)
+      // Fallback to localStorage
+      setTransportData((prev: any) => {
+        const newData = { ...prev }
+        newData[busName] = updatedData
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(newData))
+        }
+        return newData
+      })
+      return true
+    }
   }
 
   // Find entry index by date and bus
@@ -266,7 +415,7 @@ export function TransportProvider({ children }: { children: ReactNode }) {
     let totalDieselAmount = 0
     let totalOtherExpense = 0
 
-    BUS_NAMES.forEach(bus => {
+    BUS_NAMES.forEach((bus: string) => {
       const data = getBusData(bus)
       data.forEach((entry: any) => {
         const driver = entry['Driver Name']
@@ -291,7 +440,7 @@ export function TransportProvider({ children }: { children: ReactNode }) {
   const getAllDrivers = () => {
     const drivers = new Set<string>()
 
-    BUS_NAMES.forEach(bus => {
+    BUS_NAMES.forEach((bus: string) => {
       const data = getBusData(bus)
       data.forEach((entry: any) => {
         const driver = entry['Driver Name']
@@ -310,8 +459,35 @@ export function TransportProvider({ children }: { children: ReactNode }) {
   }
 
   // Import from Excel
-  const importFromExcel = (data: any) => {
-    setTransportData(data)
+  const importFromExcel = async (data: any) => {
+    // Clear existing data
+    const allEntries = await busEntryService.getAll()
+    for (const entry of allEntries) {
+      try {
+        await busEntryService.delete(entry.id)
+      } catch (error) {
+        console.error('Error deleting entry during import:', error)
+      }
+    }
+
+    // Import new data
+    const BUS_NAMES = ['Winger', 'Maximo', 'Verito', 'Audi', 'Fluence']
+    for (const busName of BUS_NAMES) {
+      const entries = data[busName] || []
+      for (const entry of entries) {
+        try {
+          const entryData = legacyToEntryFormat(entry, busName)
+          await busEntryService.create(entryData)
+        } catch (error) {
+          console.error('Error importing entry:', error)
+        }
+      }
+    }
+
+    // Reload data
+    const newEntries = await busEntryService.getAll()
+    const legacyData = entriesToLegacyFormat(newEntries)
+    setTransportData(legacyData)
   }
 
   const value = {

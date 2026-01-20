@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { formatRupee, formatDateReadable, getTodayISO } from '@/lib/utils/format'
-import { Transaction, OtherExpense, ExpenseCategory } from '@/types/school'
+import { Transaction, OtherExpense, BusExpense, ExpenseCategory } from '@/types/school'
 import toast from 'react-hot-toast'
 
 export default function ExpensesPage() {
@@ -19,7 +19,9 @@ export default function ExpensesPage() {
   const [filterCategory, setFilterCategory] = useState('')
 
   const expenseTransactions = useMemo(() => {
-    return transactions.filter((t): t is OtherExpense => t.type === 'other_expense')
+    return transactions.filter((t): t is OtherExpense | BusExpense => 
+      t.type === 'other_expense' || t.type === 'bus_expense'
+    )
   }, [transactions])
 
   const filteredExpenses = useMemo(() => {
@@ -35,7 +37,14 @@ export default function ExpensesPage() {
     }
 
     if (filterCategory) {
-      filtered = filtered.filter((t) => t.category === filterCategory)
+      filtered = filtered.filter((t) => {
+        if (t.type === 'other_expense') {
+          return t.category === filterCategory
+        } else if (t.type === 'bus_expense') {
+          return t.expenseType === filterCategory || filterCategory === 'Bus Expense'
+        }
+        return false
+      })
     }
 
     return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -44,7 +53,12 @@ export default function ExpensesPage() {
   const categoryTotals = useMemo(() => {
     const totals: Record<string, number> = {}
     expenseTransactions.forEach((exp) => {
-      totals[exp.category] = (totals[exp.category] || 0) + exp.amount
+      if (exp.type === 'other_expense') {
+        totals[exp.category] = (totals[exp.category] || 0) + exp.amount
+      } else if (exp.type === 'bus_expense') {
+        const category = exp.expenseType || 'Bus Expense'
+        totals[category] = (totals[category] || 0) + exp.amount
+      }
     })
     return totals
   }, [expenseTransactions])
@@ -142,6 +156,10 @@ export default function ExpensesPage() {
                   options={[
                     { value: '', label: 'All Categories' },
                     ...settings.expenseCategories.map((cat) => ({ value: cat, label: cat })),
+                    { value: 'Diesel', label: 'Bus: Diesel' },
+                    { value: 'Maintenance', label: 'Bus: Maintenance' },
+                    { value: 'Repair', label: 'Bus: Repair' },
+                    { value: 'Other', label: 'Bus: Other' },
                   ]}
                 />
               </div>
@@ -187,7 +205,9 @@ export default function ExpensesPage() {
                           <td className="py-3 px-4 text-sm text-gray-600">{formatDateReadable(expense.date)}</td>
                           <td className="py-3 px-4">
                             <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                              {expense.category}
+                              {expense.type === 'bus_expense' 
+                                ? `${expense.expenseType || 'Bus Expense'} (${expense.busNumber || 'N/A'})`
+                                : expense.category}
                             </span>
                           </td>
                           <td className="py-3 px-4 text-sm font-semibold text-right text-red-600">

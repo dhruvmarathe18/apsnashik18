@@ -647,3 +647,238 @@ function transformToDbSettings(settings: AppSettings | Partial<AppSettings>): an
     theme: (settings as AppSettings).theme,
   }
 }
+
+// Bus Daily Entry type
+export interface BusDailyEntry {
+  id: string
+  busName: string
+  entryDate: string // YYYY-MM-DD
+  driverName?: string
+  startKm?: number
+  endKm?: number
+  dailyKm: number
+  dieselFilled: number
+  dieselRate: number
+  dieselAmount: number
+  expenseDescription?: string
+  otherExpense: number
+  runningKm: number
+  actualAverage: number
+  remarks?: string
+  createdAt: string
+  updatedAt: string
+}
+
+// Bus Daily Entries Service
+export const busEntryService = {
+  async getAll(): Promise<BusDailyEntry[]> {
+    if (!isSupabaseConfigured()) {
+      // Fallback to localStorage
+      const data = localStorage.getItem('schoolTransportData')
+      if (!data) return []
+      const transportData = JSON.parse(data)
+      const entries: BusDailyEntry[] = []
+      const BUS_NAMES = ['Winger', 'Maximo', 'Verito', 'Audi', 'Fluence']
+      
+      BUS_NAMES.forEach((busName) => {
+        const busEntries = transportData[busName] || []
+        busEntries.forEach((entry: any) => {
+          entries.push({
+            id: entry.id || generateUUID(),
+            busName,
+            entryDate: entry.Date,
+            driverName: entry['Driver Name'],
+            startKm: parseFloat(entry['Start KM'] || 0),
+            endKm: parseFloat(entry['End KM'] || 0),
+            dailyKm: parseFloat(entry['Daily KM'] || 0),
+            dieselFilled: parseFloat(entry['Diesel Filled'] || 0),
+            dieselRate: parseFloat(entry['Diesel Rate'] || 0),
+            dieselAmount: parseFloat(entry['Diesel Amount'] || 0),
+            expenseDescription: entry['Expense Description'],
+            otherExpense: parseFloat(entry['Other Expense'] || 0),
+            runningKm: parseFloat(entry['Running KM'] || 0),
+            actualAverage: parseFloat(entry['Actual Average'] || 0),
+            remarks: entry['Remarks'],
+            createdAt: entry.createdAt || new Date().toISOString(),
+            updatedAt: entry.updatedAt || new Date().toISOString(),
+          })
+        })
+      })
+      return entries
+    }
+
+    const { data, error } = await supabase
+      .from('bus_daily_entries')
+      .select('*')
+      .order('entry_date', { ascending: false })
+      .order('bus_name', { ascending: true })
+
+    if (error) {
+      console.error('Error fetching bus entries:', error)
+      return []
+    }
+
+    return (data || []).map(transformBusEntry)
+  },
+
+  async create(entry: Omit<BusDailyEntry, 'id' | 'createdAt' | 'updatedAt'>): Promise<BusDailyEntry> {
+    const newEntry: BusDailyEntry = {
+      ...entry,
+      id: generateUUID(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    } as BusDailyEntry
+
+    if (!isSupabaseConfigured()) {
+      // Fallback to localStorage
+      const data = localStorage.getItem('schoolTransportData')
+      const transportData = data ? JSON.parse(data) : {}
+      if (!transportData[entry.busName]) {
+        transportData[entry.busName] = []
+      }
+      transportData[entry.busName].push({
+        id: newEntry.id,
+        Date: entry.entryDate,
+        'Driver Name': entry.driverName,
+        'Start KM': entry.startKm,
+        'End KM': entry.endKm,
+        'Daily KM': entry.dailyKm,
+        'Diesel Filled': entry.dieselFilled,
+        'Diesel Rate': entry.dieselRate,
+        'Diesel Amount': entry.dieselAmount,
+        'Expense Description': entry.expenseDescription,
+        'Other Expense': entry.otherExpense,
+        'Running KM': entry.runningKm,
+        'Actual Average': entry.actualAverage,
+        'Remarks': entry.remarks,
+        createdAt: newEntry.createdAt,
+        updatedAt: newEntry.updatedAt,
+      })
+      localStorage.setItem('schoolTransportData', JSON.stringify(transportData))
+      return newEntry
+    }
+
+    const dbEntry = transformToDbBusEntry(newEntry)
+    const { data, error } = await supabase
+      .from('bus_daily_entries')
+      .insert(dbEntry)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error creating bus entry:', error)
+      throw error
+    }
+
+    return transformBusEntry(data)
+  },
+
+  async update(id: string, updates: Partial<BusDailyEntry>): Promise<void> {
+    if (!isSupabaseConfigured()) {
+      // Fallback to localStorage
+      const data = localStorage.getItem('schoolTransportData')
+      if (!data) return
+      const transportData = JSON.parse(data)
+      const BUS_NAMES = ['Winger', 'Maximo', 'Verito', 'Audi', 'Fluence']
+      
+      for (const busName of BUS_NAMES) {
+        const entries = transportData[busName] || []
+        const index = entries.findIndex((e: any) => e.id === id)
+        if (index >= 0) {
+          entries[index] = { ...entries[index], ...updates, updatedAt: new Date().toISOString() }
+          localStorage.setItem('schoolTransportData', JSON.stringify(transportData))
+          return
+        }
+      }
+      return
+    }
+
+    const dbUpdates = transformToDbBusEntry(updates as BusDailyEntry)
+    const { error } = await supabase
+      .from('bus_daily_entries')
+      .update(dbUpdates)
+      .eq('id', id)
+
+    if (error) {
+      console.error('Error updating bus entry:', error)
+      throw error
+    }
+  },
+
+  async delete(id: string): Promise<void> {
+    if (!isSupabaseConfigured()) {
+      // Fallback to localStorage
+      const data = localStorage.getItem('schoolTransportData')
+      if (!data) return
+      const transportData = JSON.parse(data)
+      const BUS_NAMES = ['Winger', 'Maximo', 'Verito', 'Audi', 'Fluence']
+      
+      for (const busName of BUS_NAMES) {
+        const entries = transportData[busName] || []
+        const filtered = entries.filter((e: any) => e.id !== id)
+        if (filtered.length !== entries.length) {
+          transportData[busName] = filtered
+          localStorage.setItem('schoolTransportData', JSON.stringify(transportData))
+          return
+        }
+      }
+      return
+    }
+
+    const { error } = await supabase
+      .from('bus_daily_entries')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      console.error('Error deleting bus entry:', error)
+      throw error
+    }
+  },
+
+  async getByBus(busName: string): Promise<BusDailyEntry[]> {
+    const allEntries = await this.getAll()
+    return allEntries.filter((e) => e.busName === busName)
+  },
+}
+
+function transformBusEntry(dbRow: any): BusDailyEntry {
+  return {
+    id: dbRow.id,
+    busName: dbRow.bus_name,
+    entryDate: dbRow.entry_date,
+    driverName: dbRow.driver_name,
+    startKm: dbRow.start_km ? parseFloat(dbRow.start_km) : undefined,
+    endKm: dbRow.end_km ? parseFloat(dbRow.end_km) : undefined,
+    dailyKm: parseFloat(dbRow.daily_km || 0),
+    dieselFilled: parseFloat(dbRow.diesel_filled || 0),
+    dieselRate: parseFloat(dbRow.diesel_rate || 0),
+    dieselAmount: parseFloat(dbRow.diesel_amount || 0),
+    expenseDescription: dbRow.expense_description,
+    otherExpense: parseFloat(dbRow.other_expense || 0),
+    runningKm: parseFloat(dbRow.running_km || 0),
+    actualAverage: parseFloat(dbRow.actual_average || 0),
+    remarks: dbRow.remarks,
+    createdAt: dbRow.created_at,
+    updatedAt: dbRow.updated_at,
+  }
+}
+
+function transformToDbBusEntry(entry: BusDailyEntry | Partial<BusDailyEntry>): any {
+  return {
+    bus_name: (entry as BusDailyEntry).busName,
+    entry_date: (entry as BusDailyEntry).entryDate,
+    driver_name: (entry as BusDailyEntry).driverName || null,
+    start_km: (entry as BusDailyEntry).startKm || null,
+    end_km: (entry as BusDailyEntry).endKm || null,
+    daily_km: (entry as BusDailyEntry).dailyKm || 0,
+    diesel_filled: (entry as BusDailyEntry).dieselFilled || 0,
+    diesel_rate: (entry as BusDailyEntry).dieselRate || 0,
+    diesel_amount: (entry as BusDailyEntry).dieselAmount || 0,
+    expense_description: (entry as BusDailyEntry).expenseDescription || null,
+    other_expense: (entry as BusDailyEntry).otherExpense || 0,
+    running_km: (entry as BusDailyEntry).runningKm || 0,
+    actual_average: (entry as BusDailyEntry).actualAverage || 0,
+    remarks: (entry as BusDailyEntry).remarks || null,
+  }
+}
