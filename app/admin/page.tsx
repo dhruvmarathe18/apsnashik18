@@ -196,7 +196,7 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="p-6">
+      <div className="p-3 sm:p-4 md:p-6">
         {/* Header */}
         <div className="mb-8">
           <div className="flex justify-between items-center">

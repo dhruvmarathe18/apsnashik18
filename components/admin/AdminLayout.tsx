@@ -329,7 +329,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-72'
       }`}>
         {/* Top bar */}
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white/95 backdrop-blur-sm px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-2 sm:gap-x-4 border-b border-gray-200 bg-white/95 backdrop-blur-sm px-3 sm:px-4 lg:px-8 shadow-sm">
           <div className="flex items-center gap-x-2">
             <button
               type="button"
@@ -356,16 +356,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <div className="flex flex-1"></div>
             <div className="flex items-center gap-x-4 lg:gap-x-6">
               <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" />
-              <div className="flex items-center space-x-4">
-                <span className="hidden sm:block text-sm text-gray-700 font-medium">
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <span className="hidden md:block text-xs sm:text-sm text-gray-700 font-medium">
                   Welcome, <span className="text-primary-600">{adminEmail.split('@')[0]}</span>
                 </span>
                 <Link
                   href="/"
-                  className="text-sm text-primary-600 hover:text-primary-700 flex items-center space-x-1.5 px-3 py-1.5 rounded-lg hover:bg-primary-50 transition-colors font-medium"
+                  className="text-xs sm:text-sm text-primary-600 hover:text-primary-700 flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-3 py-1.5 rounded-lg hover:bg-primary-50 transition-colors font-medium"
                 >
-                  <Home className="w-4 h-4" />
-                  <span>View Site</span>
+                  <Home className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">View Site</span>
                 </Link>
               </div>
             </div>
@@ -373,8 +373,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
 
         {/* Page content */}
-        <main className="flex-1">
-          {children}
+        <main className="flex-1 overflow-x-hidden">
+          <div className="w-full max-w-full">
+            {children}
+          </div>
         </main>
       </div>
 

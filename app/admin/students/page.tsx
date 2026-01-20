@@ -69,7 +69,7 @@ export default function StudentsPage() {
 
   return (
     <AdminLayout>
-      <div className="p-6">
+      <div className="p-3 sm:p-4 md:p-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
@@ -195,36 +195,38 @@ export default function StudentsPage() {
                   )}
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+                <div className="overflow-x-auto -mx-3 sm:-mx-4 md:-mx-6 px-3 sm:px-4 md:px-6">
+                  <div className="min-w-full inline-block align-middle">
+                    <div className="overflow-hidden">
+                      <table className="min-w-full divide-y divide-gray-200">
                     <thead>
                       <tr className="border-b">
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Admission No</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Name</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Class</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Phone</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Bus</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Status</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Actions</th>
+                        <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Admission No</th>
+                        <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Name</th>
+                        <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Class</th>
+                        <th className="hidden sm:table-cell text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Phone</th>
+                        <th className="hidden md:table-cell text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Bus</th>
+                        <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Status</th>
+                        <th className="text-right py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredStudents.map((student) => (
-                        <tr key={student.id} className="border-b hover:bg-gray-50">
-                          <td className="py-3 px-4 text-sm font-medium text-gray-900">{student.admissionNo}</td>
-                          <td className="py-3 px-4 text-sm text-gray-900">{student.fullName}</td>
-                          <td className="py-3 px-4 text-sm text-gray-600">{student.className}{student.section ? ` - ${student.section}` : ''}</td>
-                          <td className="py-3 px-4 text-sm text-gray-600">{student.phonePrimary}</td>
-                          <td className="py-3 px-4 text-sm text-gray-600">
+                        <tr key={student.id} className="border-b hover:bg-gray-50 transition-colors">
+                          <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-900 whitespace-nowrap">{student.admissionNo}</td>
+                          <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-900">{student.fullName}</td>
+                          <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-600">{student.className}{student.section ? ` - ${student.section}` : ''}</td>
+                          <td className="hidden sm:table-cell py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-600">{student.phonePrimary}</td>
+                          <td className="hidden md:table-cell py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-600">
                             {student.busOpted ? (
                               <span className="text-green-600 font-medium">Yes</span>
                             ) : (
                               <span className="text-gray-400">No</span>
                             )}
                           </td>
-                          <td className="py-3 px-4">
+                          <td className="py-3 px-2 sm:px-4">
                             <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
                                 student.status === 'Active'
                                   ? 'bg-green-100 text-green-800'
                                   : student.status === 'Inactive'
@@ -235,8 +237,8 @@ export default function StudentsPage() {
                               {student.status}
                             </span>
                           </td>
-                          <td className="py-3 px-4">
-                            <div className="flex items-center justify-end gap-2">
+                          <td className="py-3 px-2 sm:px-4">
+                            <div className="flex items-center justify-end gap-1 sm:gap-2">
                               <Link href={`/admin/students/${student.id}`}>
                                 <Button variant="ghost" size="sm">
                                   <Eye className="w-4 h-4" />
@@ -265,6 +267,8 @@ export default function StudentsPage() {
                       ))}
                     </tbody>
                   </table>
+                    </div>
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -404,13 +408,13 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b">
-          <h2 className="text-2xl font-bold text-gray-900">
+        <div className="p-4 sm:p-6 border-b sticky top-0 bg-white z-10">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
             {student ? 'Edit Student' : 'Add New Student'}
           </h2>
         </div>
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <Input
               label="Admission Number"
               value={formData.admissionNo}
