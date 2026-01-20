@@ -1,8 +1,3 @@
 {
-  "/admin/salaries/page": "app/admin/salaries/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/admin/expenses/page": "app/admin/expenses/page.js",
-  "/admin/bus/driver-report/page": "app/admin/bus/driver-report/page.js",
-  "/admin/students/page": "app/admin/students/page.js",
-  "/admin/settings/page": "app/admin/settings/page.js"
+  "/admin/students/page": "app/admin/students/page.js"
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo, useEffect, Suspense } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { GraduationCap, Plus, BookOpen, FileText, DollarSign, Trash2, Search, User, Calendar, AlertCircle, X } from 'lucide-react'
 import Link from 'next/link'
@@ -16,7 +16,7 @@ import toast from 'react-hot-toast'
 import { parseISO, isSameMonth } from 'date-fns'
 import { useSearchParams } from 'next/navigation'
 
-export default function FeesPage() {
+function FeesPageContent() {
   const searchParams = useSearchParams()
   const { transactions, addTransaction, deleteTransaction, students, settings, feePlans, getStudentById } = useSchool()
   const [selectedMonth, setSelectedMonth] = useState('')
@@ -903,5 +903,26 @@ export default function FeesPage() {
         </div>
       )}
     </AdminLayout>
+  )
+}
+
+export default function FeesPage() {
+  return (
+    <Suspense fallback={
+      <AdminLayout>
+        <div className="p-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex justify-center items-center min-h-[400px]">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </AdminLayout>
+    }>
+      <FeesPageContent />
+    </Suspense>
   )
 }
