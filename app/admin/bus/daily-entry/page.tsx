@@ -4,14 +4,14 @@ import React, { useState, useEffect } from 'react'
 import { useTransport } from '@/contexts/TransportContext'
 import { useSchool } from '@/contexts/SchoolContext'
 import AdminLayout from '@/components/admin/AdminLayout'
-import { formatRupee } from '@/lib/utils/format'
+import { formatRupee, getTodayISO } from '@/lib/utils/format'
 
 function DailyEntry() {
   const { addEntry, getLastEntry, calculateRunningKM, BUS_NAMES } = useTransport()
   const { refreshData } = useSchool()
 
   const [formData, setFormData] = useState({
-    Date: new Date().toISOString().split('T')[0],
+    Date: getTodayISO(),
     Bus: '',
     'Driver Name': '',
     'Start KM': '',
@@ -187,7 +187,7 @@ function DailyEntry() {
                   name="Date"
                   value={formData.Date}
                   onChange={handleChange}
-                  max={new Date().toISOString().split('T')[0]}
+                  max={getTodayISO()}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   required
                 />

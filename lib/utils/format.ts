@@ -45,53 +45,140 @@ export function parseRupee(rupeeString: string): number {
 }
 
 /**
- * Format date to Indian format (DD/MM/YYYY)
+ * Convert date string (YYYY-MM-DD) to Date object
+ * YYYY-MM-DD strings are timezone-agnostic, so we parse them as local date
+ */
+function parseDateString(dateStr: string): Date {
+  if (!dateStr) return new Date()
+  // If it's already in YYYY-MM-DD format, parse it as local date (will be treated as IST in India)
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    const [year, month, day] = dateStr.split('-').map(Number)
+    // Create date in local timezone (which is IST in India)
+    return new Date(year, month - 1, day)
+  }
+  return new Date(dateStr)
+}
+
+/**
+ * Format date to Indian format (DD/MM/YYYY) using IST
  */
 export function formatDate(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : date
+  let d: Date
+  if (typeof date === 'string') {
+    d = parseDateString(date)
+  } else {
+    d = date
+  }
   if (isNaN(d.getTime())) return ''
   
-  const day = String(d.getDate()).padStart(2, '0')
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const year = d.getFullYear()
+  // For Date objects with time, convert to IST for display
+  // For YYYY-MM-DD strings, they're already in local timezone (IST in India)
+  const utcTime = d.getTime() + (d.getTimezoneOffset() * 60 * 1000)
+  const istOffset = 5.5 * 60 * 60 * 1000
+  const istTime = new Date(utcTime + istOffset)
+  
+  const day = String(istTime.getDate()).padStart(2, '0')
+  const month = String(istTime.getMonth() + 1).padStart(2, '0')
+  const year = istTime.getFullYear()
   
   return `${day}/${month}/${year}`
 }
 
 /**
- * Format date to readable format (DD MMM YYYY)
+ * Format date to readable format (DD MMM YYYY) using IST
  */
 export function formatDateReadable(date: string | Date): string {
-  const d = typeof date === 'string' ? new Date(date) : date
+  let d: Date
+  if (typeof date === 'string') {
+    d = parseDateString(date)
+  } else {
+    d = date
+  }
   if (isNaN(d.getTime())) return ''
   
+  // For Date objects with time, convert to IST for display
+  // For YYYY-MM-DD strings, they're already in local timezone (IST in India)
+  const utcTime = d.getTime() + (d.getTimezoneOffset() * 60 * 1000)
+  const istOffset = 5.5 * 60 * 60 * 1000
+  const istTime = new Date(utcTime + istOffset)
+  
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  const day = d.getDate()
-  const month = months[d.getMonth()]
-  const year = d.getFullYear()
+  const day = istTime.getDate()
+  const month = months[istTime.getMonth()]
+  const year = istTime.getFullYear()
   
   return `${day} ${month} ${year}`
 }
 
 /**
- * Format date to ISO string (YYYY-MM-DD)
+ * Get current date/time in Indian Standard Time (IST - UTC+5:30)
+ */
+export function getISTDate(): Date {
+  const now = new Date()
+  // IST is UTC+5:30
+  // Get UTC time
+  const utcTime = now.getTime() + (now.getTimezoneOffset() * 60 * 1000)
+  // Add IST offset (5 hours 30 minutes)
+  const istOffset = 5.5 * 60 * 60 * 1000
+  const istTime = new Date(utcTime + istOffset)
+  return istTime
+}
+
+/**
+ * Get IST timestamp as ISO string (for createdAt, updatedAt)
+ */
+export function getISTTimestamp(): string {
+  return getISTDate().toISOString()
+}
+
+/**
+ * Format date to ISO string (YYYY-MM-DD) using IST
+ * For date strings in YYYY-MM-DD format, returns as-is (timezone-agnostic)
+ * For Date objects, converts to IST before extracting date components
  */
 export function formatDateISO(date: Date | string): string {
-  const d = typeof date === 'string' ? new Date(date) : date
-  if (isNaN(d.getTime())) return ''
+  if (typeof date === 'string') {
+    // If it's already in YYYY-MM-DD format, return as is (timezone-agnostic)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return date
+    }
+    // Parse the date string and convert to IST
+    const d = new Date(date)
+    if (isNaN(d.getTime())) return ''
+    
+    const utcTime = d.getTime() + (d.getTimezoneOffset() * 60 * 1000)
+    const istOffset = 5.5 * 60 * 60 * 1000
+    const istTime = new Date(utcTime + istOffset)
+    
+    const year = istTime.getFullYear()
+    const month = String(istTime.getMonth() + 1).padStart(2, '0')
+    const day = String(istTime.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
   
-  const year = d.getFullYear()
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
+  // For Date objects, convert to IST
+  if (isNaN(date.getTime())) return ''
+  
+  const utcTime = date.getTime() + (date.getTimezoneOffset() * 60 * 1000)
+  const istOffset = 5.5 * 60 * 60 * 1000
+  const istTime = new Date(utcTime + istOffset)
+  
+  const year = istTime.getFullYear()
+  const month = String(istTime.getMonth() + 1).padStart(2, '0')
+  const day = String(istTime.getDate()).padStart(2, '0')
   
   return `${year}-${month}-${day}`
 }
 
 /**
- * Get today's date in ISO format (YYYY-MM-DD)
+ * Get today's date in ISO format (YYYY-MM-DD) using IST
  */
 export function getTodayISO(): string {
-  return formatDateISO(new Date())
+  const istDate = getISTDate()
+  const year = istDate.getFullYear()
+  const month = String(istDate.getMonth() + 1).padStart(2, '0')
+  const day = String(istDate.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 /**

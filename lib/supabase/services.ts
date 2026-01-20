@@ -735,11 +735,17 @@ export const busEntryService = {
   },
 
   async create(entry: Omit<BusDailyEntry, 'id' | 'createdAt' | 'updatedAt'>): Promise<BusDailyEntry> {
+    // Use IST for timestamps
+    const now = new Date()
+    const istOffset = 5.5 * 60 * 60 * 1000
+    const utcTime = now.getTime() + (now.getTimezoneOffset() * 60 * 1000)
+    const istTime = new Date(utcTime + istOffset)
+    
     const newEntry: BusDailyEntry = {
       ...entry,
       id: generateUUID(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: istTime.toISOString(),
+      updatedAt: istTime.toISOString(),
     } as BusDailyEntry
 
     if (!isSupabaseConfigured()) {
