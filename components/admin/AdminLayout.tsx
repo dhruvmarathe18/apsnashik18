@@ -22,7 +22,8 @@ import {
   ChevronRight,
   ChevronLeft,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  ImageIcon
 } from 'lucide-react'
 
 interface AdminLayoutProps {
@@ -88,6 +89,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       title: 'System',
       items: [
+        { name: 'Media', href: '/admin/media', icon: ImageIcon },
         { name: 'Export/Import', href: '/admin/export-import', icon: Download },
         { name: 'Settings', href: '/admin/settings', icon: Settings },
       ]

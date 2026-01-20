@@ -1,9 +1,6 @@
 {
-  "/admin/students/[id]/page": "app/admin/students/[id]/page.js",
-  "/admin/transport/page": "app/admin/transport/page.js",
-  "/admin/expenses/page": "app/admin/expenses/page.js",
-  "/admin/income/page": "app/admin/income/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/admin/salaries/page": "app/admin/salaries/page.js",
-  "/page": "app/page.js"
+  "/gallery/page": "app/gallery/page.js",
+  "/api/cloudinary/media/route": "app/api/cloudinary/media/route.js",
+  "/page": "app/page.js",
+  "/social/page": "app/social/page.js"
 }

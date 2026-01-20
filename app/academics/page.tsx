@@ -4,7 +4,6 @@ import { motion } from 'framer-motion'
 import { 
   BookOpen, 
   Brain, 
-  Cpu, 
   Users, 
   Award, 
   Target,
@@ -23,7 +22,8 @@ import {
   Palette,
   Music,
   Dumbbell,
-  Heart
+  Heart,
+  ArrowRight
 } from 'lucide-react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -65,18 +65,18 @@ export default function Academics() {
       category: 'Additional Subjects',
       items: [
         { name: 'Computer Science', icon: Code, description: 'Basic computer skills and digital literacy for modern world' },
-        { name: 'Physical Education', icon: Cpu, description: 'Sports activities and physical fitness development' },
-        { name: 'Arts & Crafts', icon: BarChart3, description: 'Creative expression and artistic skills development' },
-        { name: 'Music & Dance', icon: Zap, description: 'Cultural activities and performing arts' }
+        { name: 'Physical Education', icon: Dumbbell, description: 'Sports activities and physical fitness development' },
+        { name: 'Arts & Crafts', icon: Palette, description: 'Creative expression and artistic skills development' },
+        { name: 'Music & Dance', icon: Music, description: 'Cultural activities and performing arts' }
       ]
     },
     {
       category: 'Life Skills',
       items: [
-        { name: 'Communication', icon: Palette, description: 'Effective communication and presentation skills' },
-        { name: 'Leadership', icon: Music, description: 'Leadership qualities and team management skills' },
-        { name: 'Critical Thinking', icon: Users, description: 'Analytical thinking and problem-solving abilities' },
-        { name: 'Values Education', icon: Lightbulb, description: 'Moral values and ethical decision making' }
+        { name: 'Communication', icon: Users, description: 'Effective communication and presentation skills' },
+        { name: 'Leadership', icon: Award, description: 'Leadership qualities and team management skills' },
+        { name: 'Critical Thinking', icon: Brain, description: 'Analytical thinking and problem-solving abilities' },
+        { name: 'Values Education', icon: Heart, description: 'Moral values and ethical decision making' }
       ]
     }
   ]
@@ -131,7 +131,7 @@ export default function Academics() {
       year: '2021',
       achievement: 'Innovation in Teaching',
       description: 'Excellence in modern teaching methodologies',
-      icon: Cpu
+      icon: BookOpen
     }
   ]
 
@@ -146,7 +146,7 @@ export default function Academics() {
       icon: Brain,
       title: 'Learning Support',
       description: 'Specialized support for students with different learning needs',
-      features: ['Individual attention', 'Remedial classes', 'AI-assisted learning', 'Progress monitoring']
+      features: ['Individual attention', 'Remedial classes', 'Progress monitoring', 'Customized learning']
     },
     {
       icon: Users,
@@ -163,51 +163,63 @@ export default function Academics() {
   ]
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <Header />
       
-      {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700">
-        <div className="container-custom text-center text-white">
+      {/* Modern Hero Section */}
+      <section className="relative py-24 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}></div>
+        </div>
+        <div className="container-custom text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-6"
+            transition={{ duration: 0.8 }}
+            className="mb-8"
           >
-            <GraduationCap className="w-16 h-16 mx-auto text-yellow-400 mb-4" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-xl mb-6"
+            >
+              <GraduationCap className="w-10 h-10 text-primary-600" />
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight"
+            >
+              Curriculum & Learning
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
+            >
+              Discover our comprehensive curriculum that combines traditional academic excellence with innovative teaching methodologies.
+            </motion.p>
           </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="heading-primary mb-4"
-          >
-            AI-Enhanced Academic Excellence
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-xl text-gray-200 max-w-3xl mx-auto"
-          >
-            Discover our innovative curriculum that combines traditional academic excellence with cutting-edge AI technology.
-          </motion.p>
         </div>
       </section>
 
       {/* Curriculum Overview */}
-      <section className="section-padding">
+      <section className="py-20 bg-white">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">Our AI-Enhanced Curriculum</h2>
-            <p className="text-body max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Our Curriculum</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               A comprehensive educational framework that prepares students for the future through innovative learning methods.
             </p>
           </motion.div>
@@ -220,18 +232,18 @@ export default function Academics() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="card p-8 text-center"
+                className="bg-white p-10 border border-gray-200 rounded-2xl text-center group hover:border-primary-300 hover:shadow-xl transition-all duration-300"
               >
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <item.icon className="w-8 h-8 text-primary-600" />
+                <div className="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-primary-600 group-hover:scale-110 transition-all duration-300">
+                  <item.icon className="w-8 h-8 text-primary-600 group-hover:text-white transition-colors" />
                 </div>
-                <h3 className="text-2xl font-bold text-dark-900 mb-4">{item.title}</h3>
-                <p className="text-dark-600 mb-6">{item.description}</p>
-                <ul className="space-y-2 text-left">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                <p className="text-gray-600 mb-6 leading-relaxed">{item.description}</p>
+                <ul className="space-y-3 text-left">
                   {item.features.map((feature, idx) => (
                     <li key={idx} className="flex items-center space-x-2">
-                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                      <span className="text-dark-600">{feature}</span>
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-gray-700">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -242,22 +254,22 @@ export default function Academics() {
       </section>
 
       {/* Subjects */}
-      <section className="section-padding bg-gray-50">
+      <section className="py-20 bg-gray-50">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">Academic Subjects</h2>
-            <p className="text-body max-w-3xl mx-auto">
-              Comprehensive subject offerings enhanced with AI technology and modern teaching methodologies.
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Academic Subjects</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Comprehensive subject offerings with modern teaching methodologies and digital resources.
             </p>
           </motion.div>
 
-          <div className="space-y-12">
+          <div className="space-y-16">
             {subjects.map((category, categoryIndex) => (
               <motion.div
                 key={category.category}
@@ -266,7 +278,7 @@ export default function Academics() {
                 transition={{ duration: 0.6, delay: categoryIndex * 0.2 }}
                 viewport={{ once: true }}
               >
-                <h3 className="text-2xl font-bold text-dark-900 mb-8 text-center">{category.category}</h3>
+                <h3 className="text-3xl font-bold text-gray-900 mb-10 text-center">{category.category}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {category.items.map((subject, index) => (
                     <motion.div
@@ -275,13 +287,13 @@ export default function Academics() {
                       whileInView={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.6, delay: index * 0.1 }}
                       viewport={{ once: true }}
-                      className="card p-6 text-center group hover:shadow-xl transition-all duration-300"
+                      className="bg-white p-6 border border-gray-200 rounded-xl text-center group hover:border-primary-300 hover:shadow-lg transition-all duration-300"
                     >
-                      <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                        <subject.icon className="w-6 h-6 text-primary-600" />
+                      <div className="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary-600 group-hover:scale-110 transition-all duration-300">
+                        <subject.icon className="w-7 h-7 text-primary-600 group-hover:text-white transition-colors" />
                       </div>
-                      <h4 className="text-lg font-semibold text-dark-900 mb-2">{subject.name}</h4>
-                      <p className="text-sm text-dark-600">{subject.description}</p>
+                      <h4 className="text-lg font-bold text-gray-900 mb-2">{subject.name}</h4>
+                      <p className="text-sm text-gray-600 leading-relaxed">{subject.description}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -292,18 +304,18 @@ export default function Academics() {
       </section>
 
       {/* Teaching Methods */}
-      <section className="section-padding">
+      <section className="py-20 bg-white">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">Innovative Teaching Methods</h2>
-            <p className="text-body max-w-3xl mx-auto">
-              Modern pedagogical approaches that leverage technology to create engaging and effective learning experiences.
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Innovative Teaching Methods</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Modern pedagogical approaches that create engaging and effective learning experiences.
             </p>
           </motion.div>
 
@@ -315,22 +327,22 @@ export default function Academics() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="card p-8"
+                className="bg-white p-8 border border-gray-200 rounded-2xl hover:border-primary-300 hover:shadow-xl transition-all duration-300"
               >
                 <div className="flex items-start space-x-4 mb-6">
-                  <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
                     <method.icon className="w-8 h-8 text-primary-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-dark-900 mb-2">{method.title}</h3>
-                    <p className="text-dark-600">{method.description}</p>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{method.title}</h3>
+                    <p className="text-gray-600 leading-relaxed">{method.description}</p>
                   </div>
                 </div>
-                <ul className="space-y-2">
+                <ul className="space-y-3">
                   {method.benefits.map((benefit, idx) => (
                     <li key={idx} className="flex items-center space-x-2">
-                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                      <span className="text-dark-600">{benefit}</span>
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-gray-700">{benefit}</span>
                     </li>
                   ))}
                 </ul>
@@ -341,17 +353,17 @@ export default function Academics() {
       </section>
 
       {/* Academic Excellence */}
-      <section className="section-padding bg-gray-50">
+      <section className="py-20 bg-gray-50">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">Academic Excellence</h2>
-            <p className="text-body max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Academic Excellence</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Consistent track record of outstanding academic performance and recognition.
             </p>
           </motion.div>
@@ -364,14 +376,14 @@ export default function Academics() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="card p-6 text-center"
+                className="bg-white p-8 border border-gray-200 rounded-2xl text-center group hover:border-primary-300 hover:shadow-xl transition-all duration-300"
               >
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <achievement.icon className="w-8 h-8 text-primary-600" />
+                <div className="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-primary-600 group-hover:scale-110 transition-all duration-300">
+                  <achievement.icon className="w-8 h-8 text-primary-600 group-hover:text-white transition-colors" />
                 </div>
-                <div className="text-2xl font-bold text-primary-600 mb-2">{achievement.year}</div>
-                <h3 className="text-lg font-semibold text-dark-900 mb-2">{achievement.achievement}</h3>
-                <p className="text-sm text-dark-600">{achievement.description}</p>
+                <div className="text-3xl font-bold text-primary-600 mb-2">{achievement.year}</div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{achievement.achievement}</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">{achievement.description}</p>
               </motion.div>
             ))}
           </div>
@@ -379,17 +391,17 @@ export default function Academics() {
       </section>
 
       {/* Student Support */}
-      <section className="section-padding">
+      <section className="py-20 bg-white">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">Comprehensive Student Support</h2>
-            <p className="text-body max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Comprehensive Student Support</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Holistic support system ensuring every student reaches their full potential.
             </p>
           </motion.div>
@@ -402,22 +414,22 @@ export default function Academics() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="card p-8"
+                className="bg-white p-8 border border-gray-200 rounded-2xl hover:border-primary-300 hover:shadow-xl transition-all duration-300"
               >
                 <div className="flex items-start space-x-4 mb-6">
-                  <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
                     <support.icon className="w-8 h-8 text-primary-600" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-dark-900 mb-2">{support.title}</h3>
-                    <p className="text-dark-600">{support.description}</p>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{support.title}</h3>
+                    <p className="text-gray-600 leading-relaxed">{support.description}</p>
                   </div>
                 </div>
-                <ul className="space-y-2">
+                <ul className="space-y-3">
                   {support.features.map((feature, idx) => (
                     <li key={idx} className="flex items-center space-x-2">
-                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                      <span className="text-dark-600">{feature}</span>
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-gray-700">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -428,25 +440,38 @@ export default function Academics() {
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-to-r from-primary-600 to-primary-700">
-        <div className="container-custom text-center text-white">
+      <section className="py-20 bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}></div>
+        </div>
+        <div className="container-custom text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="heading-secondary text-white mb-4">Experience AI-Enhanced Education</h2>
-            <p className="text-xl text-gray-200 mb-8 max-w-3xl mx-auto">
-              Join our innovative academic program and give your child the advantage of AI-powered learning. 
-              Apply now to secure your child's future in education.
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Experience Quality Education</h2>
+            <p className="text-xl text-primary-100 mb-10 max-w-3xl mx-auto">
+              Join our innovative academic program and give your child the advantage of quality education. 
+              Apply now to secure your child's future.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/contact" className="btn-secondary">
-                Apply for Admission
+              <Link 
+                href="/contact" 
+                className="group bg-white hover:bg-gray-50 text-primary-600 font-semibold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center justify-center space-x-2"
+              >
+                <span>Apply for Admission</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link href="/school-info" className="btn-outline border-white text-white hover:bg-white hover:text-primary-600">
-                View School Information
+              <Link 
+                href="/school-info" 
+                className="group bg-transparent border-2 border-white text-white hover:bg-white/10 font-semibold px-8 py-4 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2"
+              >
+                <span>View School Information</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </motion.div>

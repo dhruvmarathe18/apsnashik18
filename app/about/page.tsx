@@ -3,19 +3,20 @@
 import { motion } from 'framer-motion'
 import { 
   Sparkles, 
-  Cpu, 
-  Brain, 
-  Zap, 
   Users, 
   Award, 
   BookOpen, 
   Target,
   CheckCircle,
-  ArrowRight
+  ArrowRight,
+  Heart,
+  GraduationCap,
+  Globe
 } from 'lucide-react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
+import CloudinaryImage from '@/components/ui/CloudinaryImage'
 
 export default function About() {
   const milestones = [
@@ -25,26 +26,26 @@ export default function About() {
     { year: '2024', title: 'Excellence in Education', description: 'Recognized as one of the leading schools in Nashik district' }
   ]
 
-  const aiFeatures = [
+  const features = [
     {
-      icon: Cpu,
+      icon: BookOpen,
       title: 'Modern Teaching Methods',
       description: 'Innovative teaching approaches that engage students and enhance learning outcomes'
-    },
-    {
-      icon: Brain,
-      title: 'Personalized Learning',
-      description: 'Individual attention and customized learning approaches for each student'
-    },
-    {
-      icon: Zap,
-      title: 'Technology Integration',
-      description: 'Smart classrooms and digital resources to support modern education'
     },
     {
       icon: Users,
       title: 'Experienced Faculty',
       description: 'Qualified and dedicated teachers committed to student success'
+    },
+    {
+      icon: Award,
+      title: 'Academic Excellence',
+      description: 'Consistent track record of outstanding board results and achievements'
+    },
+    {
+      icon: Heart,
+      title: 'Holistic Development',
+      description: 'Focus on character building, leadership skills, and overall personality development'
     }
   ]
 
@@ -72,64 +73,96 @@ export default function About() {
   ]
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <Header />
       
-      {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700">
-        <div className="container-custom text-center text-white">
+      {/* Modern Hero Section */}
+      <section className="relative py-24 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}></div>
+        </div>
+        <div className="container-custom text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-6"
+            transition={{ duration: 0.8 }}
+            className="mb-8"
           >
-            <Sparkles className="w-16 h-16 mx-auto text-yellow-400 mb-4" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-xl mb-6"
+            >
+              <GraduationCap className="w-10 h-10 text-primary-600" />
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight"
+            >
+              About Our School
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
+            >
+              Empowering students with the skills, courage, optimism, and integrity to pursue their dreams and enhance the lives of others.
+            </motion.p>
           </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="heading-primary mb-4"
-          >
-            About Our AI-Enhanced School
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-xl text-gray-200 max-w-3xl mx-auto"
-          >
-            Pioneering the future of education through artificial intelligence and innovative teaching methodologies.
-          </motion.p>
         </div>
       </section>
 
       {/* Our Story Section */}
-      <section className="section-padding" id="story">
+      <section className="py-20 bg-white" id="story">
         <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h2 className="heading-secondary mb-6">Our AI Journey</h2>
-              <p className="text-body mb-6">
-                Apple Public School Nashik began its transformation into an AI-powered educational institution in 2020, 
-                recognizing the immense potential of artificial intelligence to revolutionize how we teach and learn.
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Our Story</h2>
+              <p className="text-xl text-gray-600 mb-6 leading-relaxed">
+                Apple Public School Nashik began its journey in 2009 with a vision to provide quality education 
+                that combines academic excellence with holistic development. What started as a small educational institution 
+                has evolved into one of the leading schools in Nashik district.
               </p>
-              <p className="text-body mb-6">
-                What started as a traditional CBSE school has evolved into a cutting-edge learning environment where 
-                every student benefits from personalized AI-enhanced education. Our journey from conventional teaching 
-                methods to AI-integrated learning has been marked by continuous innovation and unwavering commitment 
-                to academic excellence.
+              <p className="text-xl text-gray-600 mb-6 leading-relaxed">
+                Our journey from a traditional CBSE school to a modern learning environment has been marked by continuous 
+                innovation and unwavering commitment to student success. We believe in nurturing every child's potential 
+                while maintaining the warmth and personal touch that makes education truly meaningful.
               </p>
-              <p className="text-body mb-8">
-                Today, we stand as a beacon of educational innovation, demonstrating how technology can enhance 
-                human potential while maintaining the warmth and personal touch that makes education truly meaningful.
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                Today, we stand as a beacon of educational excellence, demonstrating how quality education can transform 
+                lives and prepare students for the challenges of tomorrow.
               </p>
+              <div className="space-y-4">
+                {[
+                  'CBSE affiliated institution',
+                  'Experienced and qualified teachers',
+                  'Modern infrastructure and facilities',
+                  'Holistic development approach'
+                ].map((item, index) => (
+                  <motion.div
+                    key={item}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="flex items-center space-x-3"
+                  >
+                    <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700 text-lg">{item}</span>
+                  </motion.div>
+                ))}
+              </div>
             </motion.div>
 
             <motion.div
@@ -139,19 +172,29 @@ export default function About() {
               viewport={{ once: true }}
               className="relative"
             >
-              <img
-                src="/images/principal.jpeg"
-                alt="AI-Enhanced Learning Environment"
-                className="w-full h-auto rounded-2xl shadow-xl"
-              />
-              <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-6 shadow-lg">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-[4/3]">
+                <CloudinaryImage
+                  src="aps-nashik/hero-images"
+                  alt="Apple Public School"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  cloudinaryOptions={{
+                    quality: 'auto',
+                    format: 'auto',
+                  }}
+                  fallbackSrc="/images/principal.jpeg"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              </div>
+              <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-6 shadow-xl">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                    <Cpu className="w-6 h-6 text-primary-600" />
+                  <div className="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center">
+                    <Award className="w-7 h-7 text-primary-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">AI-Powered Since</p>
-                    <p className="font-semibold text-dark-900">2020</p>
+                    <p className="text-sm text-gray-600">Established</p>
+                    <p className="text-2xl font-bold text-gray-900">2009</p>
                   </div>
                 </div>
               </div>
@@ -161,18 +204,18 @@ export default function About() {
       </section>
 
       {/* Vision & Mission Section */}
-      <section className="section-padding bg-gray-50" id="vision">
+      <section className="py-20 bg-gray-50" id="vision">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">Vision & Mission</h2>
-            <p className="text-body max-w-3xl mx-auto">
-              Shaping the future of education through AI innovation and academic excellence.
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Vision & Mission</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Shaping the future of education through innovation and academic excellence.
             </p>
           </motion.div>
 
@@ -183,17 +226,16 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="card p-8"
+              className="bg-white p-10 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300"
             >
-              <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-primary-100 rounded-xl flex items-center justify-center mb-6">
                 <Target className="w-8 h-8 text-primary-600" />
               </div>
-              <h3 className="text-2xl font-bold text-dark-900 mb-4">Our Vision</h3>
-              <p className="text-body">
-                To be the leading AI-enhanced educational institution that prepares students for a future 
-                where artificial intelligence is seamlessly integrated into every aspect of life and work. 
-                We envision a world where every child has access to personalized, intelligent learning 
-                experiences that unlock their full potential.
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">Our Vision</h3>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                To be the leading educational institution that prepares students for a future where they can 
+                seamlessly integrate into every aspect of life and work. We envision a world where every child 
+                has access to personalized learning experiences that unlock their full potential.
               </p>
             </motion.div>
 
@@ -203,54 +245,53 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
-              className="card p-8"
+              className="bg-white p-10 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300"
             >
-              <div className="w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-secondary-100 rounded-xl flex items-center justify-center mb-6">
                 <Award className="w-8 h-8 text-secondary-600" />
               </div>
-              <h3 className="text-2xl font-bold text-dark-900 mb-4">Our Mission</h3>
-              <p className="text-body">
-                To provide cutting-edge AI-powered education that combines academic excellence with 
-                technological innovation. We are committed to nurturing curious minds, fostering 
-                creativity, and developing future-ready skills through personalized learning experiences 
-                enhanced by artificial intelligence.
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">Our Mission</h3>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                To provide quality education that combines academic excellence with holistic development. 
+                We are committed to nurturing curious minds, fostering creativity, and developing future-ready 
+                skills through personalized learning experiences and modern teaching methodologies.
               </p>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* AI Features Section */}
-      <section className="section-padding" id="ai-features">
+      {/* Features Section */}
+      <section className="py-20 bg-white" id="features">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">AI-Enhanced Learning Features</h2>
-            <p className="text-body max-w-3xl mx-auto">
-              Discover how artificial intelligence is transforming education at APS Nashik.
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">What Makes Us Special</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Discover what sets Apple Public School apart in providing quality education.
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {aiFeatures.map((feature, index) => (
+            {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="card p-6 text-center group hover:shadow-xl transition-all duration-300"
+                className="group p-8 bg-white border border-gray-200 rounded-2xl hover:border-primary-300 hover:shadow-xl transition-all duration-300"
               >
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <feature.icon className="w-8 h-8 text-primary-600" />
+                <div className="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-600 group-hover:scale-110 transition-all duration-300">
+                  <feature.icon className="w-7 h-7 text-primary-600 group-hover:text-white transition-colors" />
                 </div>
-                <h3 className="text-xl font-semibold text-dark-900 mb-3">{feature.title}</h3>
-                <p className="text-dark-600">{feature.description}</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>
@@ -258,26 +299,26 @@ export default function About() {
       </section>
 
       {/* Timeline Section */}
-      <section className="section-padding bg-gray-50" id="history">
+      <section className="py-20 bg-gray-50" id="history">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">Our Innovation Timeline</h2>
-            <p className="text-body max-w-3xl mx-auto">
-              A journey of continuous evolution and technological advancement.
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Our Journey</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              A timeline of continuous growth and educational excellence.
             </p>
           </motion.div>
 
-          <div className="relative">
+          <div className="relative max-w-4xl mx-auto">
             {/* Timeline Line */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-primary-200"></div>
+            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-primary-200 via-primary-400 to-primary-200"></div>
             
-            <div className="space-y-12">
+            <div className="space-y-16">
               {milestones.map((milestone, index) => (
                 <motion.div
                   key={milestone.year}
@@ -287,17 +328,19 @@ export default function About() {
                   viewport={{ once: true }}
                   className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
                 >
-                  <div className={`w-1/2 ${index % 2 === 0 ? 'pr-8 text-right' : 'pl-8 text-left'}`}>
-                    <div className="card p-6">
-                      <h3 className="text-2xl font-bold text-primary-600 mb-2">{milestone.year}</h3>
-                      <h4 className="text-xl font-semibold text-dark-900 mb-2">{milestone.title}</h4>
-                      <p className="text-dark-600">{milestone.description}</p>
+                  <div className={`w-1/2 ${index % 2 === 0 ? 'pr-12 text-right' : 'pl-12 text-left'}`}>
+                    <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                      <h3 className="text-3xl font-bold text-primary-600 mb-2">{milestone.year}</h3>
+                      <h4 className="text-xl font-semibold text-gray-900 mb-3">{milestone.title}</h4>
+                      <p className="text-gray-600 leading-relaxed">{milestone.description}</p>
                     </div>
                   </div>
                   
                   {/* Timeline Dot */}
                   <div className="relative z-10">
-                    <div className="w-8 h-8 bg-primary-600 rounded-full border-4 border-white shadow-lg"></div>
+                    <div className="w-12 h-12 bg-primary-600 rounded-full border-4 border-white shadow-xl flex items-center justify-center">
+                      <div className="w-4 h-4 bg-white rounded-full"></div>
+                    </div>
                   </div>
                   
                   <div className="w-1/2"></div>
@@ -309,18 +352,18 @@ export default function About() {
       </section>
 
       {/* Values Section */}
-      <section className="section-padding" id="values">
+      <section className="py-20 bg-white" id="values">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">Our Core Values</h2>
-            <p className="text-body max-w-3xl mx-auto">
-              The principles that guide our AI-enhanced educational approach.
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Our Core Values</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              The principles that guide our educational approach and shape our school community.
             </p>
           </motion.div>
 
@@ -332,13 +375,13 @@ export default function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="card p-6 text-center group hover:shadow-xl transition-all duration-300"
+                className="bg-white p-8 border border-gray-200 rounded-2xl text-center group hover:border-primary-300 hover:shadow-xl transition-all duration-300"
               >
-                <div className="w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <value.icon className="w-8 h-8 text-secondary-600" />
+                <div className="w-16 h-16 bg-secondary-100 rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-secondary-500 group-hover:scale-110 transition-all duration-300">
+                  <value.icon className="w-8 h-8 text-secondary-600 group-hover:text-white transition-colors" />
                 </div>
-                <h3 className="text-xl font-semibold text-dark-900 mb-3">{value.title}</h3>
-                <p className="text-dark-600">{value.description}</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">{value.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{value.description}</p>
               </motion.div>
             ))}
           </div>
@@ -346,26 +389,40 @@ export default function About() {
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-to-r from-primary-600 to-primary-700">
-        <div className="container-custom text-center text-white">
+      <section className="py-20 bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}></div>
+        </div>
+        <div className="container-custom text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="heading-secondary text-white mb-4">Join the AI Education Revolution</h2>
-            <p className="text-xl text-gray-200 mb-8 max-w-3xl mx-auto">
-              Be part of the future of education. Experience how artificial intelligence can transform 
-              learning and unlock your child's full potential.
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Join Our School Community
+            </h2>
+            <p className="text-xl text-primary-100 mb-10 max-w-3xl mx-auto">
+              Be part of a school that values excellence, innovation, and holistic development. 
+              Experience how quality education can transform lives and unlock potential.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/contact" className="btn-secondary">
-                Apply for Admission
-                <ArrowRight className="w-5 h-5 ml-2" />
+              <Link 
+                href="/contact" 
+                className="group bg-white hover:bg-gray-50 text-primary-600 font-semibold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center justify-center space-x-2"
+              >
+                <span>Apply for Admission</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link href="/gallery" className="btn-outline border-white text-white hover:bg-white hover:text-primary-600">
-                View Our AI Gallery
+              <Link 
+                href="/gallery" 
+                className="group bg-transparent border-2 border-white text-white hover:bg-white/10 font-semibold px-8 py-4 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2"
+              >
+                <span>View Our Gallery</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </motion.div>

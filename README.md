@@ -23,7 +23,8 @@ A modern, professional school website for Apple Public School Nashik built with 
 - **Next.js 14**: Latest React framework with App Router
 - **TypeScript**: Type-safe development
 - **Tailwind CSS**: Utility-first CSS framework
-- **Firebase**: Serverless backend with Firestore and Storage
+- **Supabase**: PostgreSQL database and backend services
+- **Cloudinary**: Cloud-based image and media management
 - **Framer Motion**: Smooth animations and transitions
 - **React Hook Form**: Form handling and validation
 - **Toast Notifications**: User feedback with react-hot-toast
@@ -72,31 +73,38 @@ npm install
 yarn install
 ```
 
-### 3. Firebase Setup
-
-#### Create Firebase Project
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project
-3. Enable Firestore Database
-4. Enable Storage
-5. Enable Authentication (Email/Password)
+### 3. Environment Setup
 
 #### Configure Environment Variables
 Create a `.env.local` file in the root directory:
 
 ```env
-# Firebase Configuration
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
 
-# Admin Credentials (for demo purposes)
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
+CLOUDINARY_API_KEY=your-cloudinary-api-key
+CLOUDINARY_API_SECRET=your-cloudinary-api-secret
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
+
+# Admin Credentials
 ADMIN_EMAIL=admin@apsnashik.com
 ADMIN_PASSWORD=admin123456
 ```
+
+#### Supabase Setup
+1. Go to [Supabase Console](https://supabase.com/)
+2. Create a new project
+3. Run the migrations from `supabase/migrations/` folder
+4. Get your project URL and API keys from Settings → API
+
+#### Cloudinary Setup
+1. Go to [Cloudinary](https://cloudinary.com/) and create a free account
+2. Get your Cloud Name, API Key, and API Secret from the dashboard
+3. See `CLOUDINARY_SETUP.md` for detailed setup instructions
 
 ### 4. Run Development Server
 ```bash

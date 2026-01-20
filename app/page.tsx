@@ -15,15 +15,36 @@ import {
   Heart,
   Target,
   Globe,
-  Sparkles
+  Sparkles,
+  ChevronRight,
+  PlayCircle
 } from 'lucide-react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { useData } from '@/contexts/DataContext'
+import { useHeroImage } from '@/hooks/useHeroImage'
+import { useCloudinaryMedia } from '@/hooks/useCloudinaryMedia'
+import CloudinaryImage from '@/components/ui/CloudinaryImage'
 
 export default function Home() {
   const { getUpcomingEvents, getPublishedNews } = useData()
+  const { heroImage, heroImageId, loading: heroLoading } = useHeroImage()
+  
+  // Direct path to hero-main.jpg
+  const heroMainPath = 'aps-nashik/hero-images/hero-main'
+  
+  // Fetch teacher images from Cloudinary
+  const { media: teacherMedia } = useCloudinaryMedia({
+    folder: 'aps-nashik/teachers',
+    maxResults: 10,
+  })
+  
+  // Fetch student images from Cloudinary
+  const { media: studentMedia } = useCloudinaryMedia({
+    folder: 'aps-nashik/student',
+    maxResults: 50,
+  })
   
   const stats = [
     { number: '500+', label: 'Students', icon: Users },
@@ -131,7 +152,7 @@ export default function Home() {
           day: 'numeric' 
         }),
         description: event.description,
-        image: '/images/kids.jpg' // Default image for events
+        image: '/images/kids.jpg'
       }))
     : fallbackEvents
 
@@ -160,113 +181,136 @@ export default function Home() {
   ]
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <Header />
       
-      {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="container-custom relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      {/* Modern Hero Section - Inspired by ASB */}
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        {/* Hero Background Image from Cloudinary - Using hero-main.jpg */}
+        <div className="absolute inset-0 z-0">
+          <CloudinaryImage
+            src={heroImageId || heroMainPath}
+            alt="Apple Public School Nashik"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            cloudinaryOptions={{
+              quality: 'auto',
+              format: 'auto',
+              effect: 'brightness:1.1,contrast:1.1,saturation:1.1',
+            }}
+            fallbackSrc={heroImage || undefined}
+          />
+          {/* Light gradient overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-br from-black/15 via-transparent to-black/25"></div>
+          {/* Subtle color tint for warmth */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/15 via-transparent to-primary-700/20"></div>
+        </div>
+        
+        {/* Background Pattern Overlay - very subtle */}
+        <div className="absolute inset-0 opacity-[0.03] z-[1]">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}></div>
+        </div>
+
+        <div className="container-custom relative z-10 py-20">
+          <div className="max-w-5xl mx-auto text-center">
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
+              className="mb-8"
             >
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="mb-6"
+                className="inline-flex items-center justify-center w-20 h-20 bg-white/95 backdrop-blur-sm rounded-full shadow-2xl mb-6 ring-4 ring-white/20"
               >
-                <GraduationCap className="w-16 h-16 text-yellow-400 mb-4" />
+                <GraduationCap className="w-10 h-10 text-primary-600" />
               </motion.div>
+              
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="heading-primary text-white mb-6"
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-2xl"
               >
-                Welcome to Apple Public School
+                We inspire all of our students to{' '}
+                <span className="text-yellow-300 drop-shadow-lg">continuous inquiry</span>
               </motion.h1>
+              
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                className="text-xl text-gray-200 mb-8"
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="text-xl md:text-2xl text-white/95 mb-10 max-w-3xl mx-auto leading-relaxed drop-shadow-xl font-medium"
               >
-                Nurturing minds, building character, and shaping futures. 
-                Join us in providing quality education that prepares students for life's challenges.
+                Empowering them with the skills, courage, optimism, and integrity to pursue their dreams and enhance the lives of others.
               </motion.p>
+
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.8 }}
-                className="flex flex-col sm:flex-row gap-4"
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
               >
-                <Link href="/contact" className="btn-secondary">
-                  Apply for Admission
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                <Link 
+                  href="/contact" 
+                  className="group bg-white hover:bg-yellow-50 text-primary-700 font-bold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl flex items-center space-x-2 border-2 border-white/20 backdrop-blur-sm"
+                >
+                  <span>Apply for Admission</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <Link href="/about" className="btn-outline border-white text-white hover:bg-white hover:text-primary-600">
-                  Learn More
+                <Link 
+                  href="/about" 
+                  className="group bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-semibold px-8 py-4 rounded-lg border-2 border-white/30 hover:border-white/50 transition-all duration-300 flex items-center space-x-2 shadow-xl"
+                >
+                  <span>Discover Our School</span>
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </motion.div>
             </motion.div>
-            
+          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 1 }}
+          className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center"
+          >
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
-            >
-              <img
-                src="/images/hero.png"
-                alt="Apple Public School Students"
-                className="w-full h-auto rounded-2xl shadow-2xl"
-              />
-            </motion.div>
-          </div>
-        </div>
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="w-1 h-3 bg-gray-400 rounded-full mt-2"
+            />
+          </motion.div>
+        </motion.div>
       </section>
 
-      {/* Stats Section */}
-      <section className="section-padding bg-gray-50">
-        <div className="container-custom">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="text-center"
-              >
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <stat.icon className="w-8 h-8 text-primary-600" />
-                </div>
-                <div className="text-3xl font-bold text-dark-900 mb-2">{stat.number}</div>
-                <div className="text-dark-600">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Us Section */}
-      <section className="section-padding">
+      {/* Key Values Section - Inspired by ASB */}
+      <section className="py-20 bg-white">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">Why Choose Apple Public School?</h2>
-            <p className="text-body max-w-3xl mx-auto">
-              We focus on holistic development with experienced teachers, modern facilities, and a nurturing environment that prepares students for life.
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Exceptional Values
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Students are empowered by dreams, and they are equipped with skills to become life-long learners.
             </p>
           </motion.div>
 
@@ -278,57 +322,65 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="card p-6 text-center group hover:shadow-xl transition-all duration-300"
+                className="group p-8 bg-white border border-gray-200 rounded-2xl hover:border-primary-300 hover:shadow-xl transition-all duration-300"
               >
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <feature.icon className="w-8 h-8 text-primary-600" />
+                <div className="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-600 group-hover:scale-110 transition-all duration-300">
+                  <feature.icon className="w-7 h-7 text-primary-600 group-hover:text-white transition-colors" />
                 </div>
-                <h3 className="text-xl font-semibold text-dark-900 mb-3">{feature.title}</h3>
-                <p className="text-dark-600">{feature.description}</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* About Our School Section */}
-      <section className="section-padding bg-gray-50">
+      {/* Stats Section - Modern Design */}
+      <section className="py-20 bg-gradient-to-r from-primary-600 to-primary-700">
         <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="text-center"
+              >
+                <div className="text-5xl md:text-6xl font-bold text-white mb-2">{stat.number}</div>
+                <div className="text-primary-100 text-lg font-medium">{stat.label}</div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* About Section - Modern Layout */}
+      <section className="py-20 bg-white">
+        <div className="container-custom">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
+              className="relative"
             >
-              <h2 className="heading-secondary mb-6">About Our School</h2>
-              <p className="text-body mb-6">
-                Apple Public School has been providing quality education since 2009. We are committed to academic excellence and character development, 
-                creating a nurturing environment where every child can thrive and reach their full potential.
-              </p>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
-                  <span className="text-dark-700">CBSE affiliated institution</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
-                  <span className="text-dark-700">Experienced and qualified teachers</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
-                  <span className="text-dark-700">Modern infrastructure and facilities</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
-                  <span className="text-dark-700">Holistic development approach</span>
-                </div>
-              </div>
-              <div className="mt-8">
-                <Link href="/about" className="btn-primary">
-                  Learn More About Us
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl aspect-[4/3]">
+                <CloudinaryImage
+                  src="aps-nashik/gallery/classroom-activities"
+                  alt="Students at Apple Public School"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  cloudinaryOptions={{
+                    quality: 'auto',
+                    format: 'auto',
+                  }}
+                  fallbackSrc="/images/kids.jpg"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
               </div>
             </motion.div>
             
@@ -337,31 +389,56 @@ export default function Home() {
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
-              className="relative"
             >
-              <img
-                src="/images/kids.jpg"
-                alt="Students at Apple Public School"
-                className="w-full h-auto rounded-2xl shadow-2xl"
-              />
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                About Our School
+              </h2>
+              <p className="text-xl text-gray-600 mb-6 leading-relaxed">
+                Apple Public School has been providing quality education since 2009. We are committed to academic excellence and character development, 
+                creating a nurturing environment where every child can thrive and reach their full potential.
+              </p>
+              <div className="space-y-4 mb-8">
+                {[
+                  'CBSE affiliated institution',
+                  'Experienced and qualified teachers',
+                  'Modern infrastructure and facilities',
+                  'Holistic development approach'
+                ].map((item, index) => (
+                  <motion.div
+                    key={item}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="flex items-center space-x-3"
+                  >
+                    <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700 text-lg">{item}</span>
+                  </motion.div>
+                ))}
+              </div>
+              <Link href="/about" className="inline-flex items-center space-x-2 text-primary-600 hover:text-primary-700 font-semibold text-lg group">
+                <span>Learn More About Us</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Our Expert Teachers Section */}
-      <section className="section-padding">
+      {/* Teachers Section - Modern Card Design */}
+      <section className="py-20 bg-gray-50">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">Our Expert Teachers</h2>
-            <p className="text-body max-w-3xl mx-auto">
-              Meet our dedicated team of experienced educators who are committed to nurturing every child's potential and academic growth.
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Remarkable Educators</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Meet our dedicated team of experienced educators who are committed to nurturing every child's potential.
             </p>
           </motion.div>
 
@@ -373,38 +450,58 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="card p-6 text-center group hover:shadow-xl transition-all duration-300"
+                className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group"
               >
-                <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden">
-                  <img
-                    src={teacher.image}
-                    alt={teacher.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
+                <div className="relative h-64 overflow-hidden">
+                  {teacher.cloudinaryId ? (
+                    <CloudinaryImage
+                      src={teacher.cloudinaryId}
+                      alt={teacher.name}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      cloudinaryOptions={{
+                        width: 400,
+                        height: 400,
+                        crop: 'fill',
+                        quality: 'auto',
+                      }}
+                      fallbackSrc={teacher.image}
+                    />
+                  ) : (
+                    <img
+                      src={teacher.image}
+                      alt={teacher.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 </div>
-                <h3 className="text-lg font-semibold text-dark-900 mb-2">{teacher.name}</h3>
-                <p className="text-primary-600 font-medium mb-2">{teacher.subject}</p>
-                <p className="text-sm text-dark-600 mb-2">{teacher.qualification}</p>
-                <p className="text-sm text-dark-500">{teacher.experience} experience</p>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">{teacher.name}</h3>
+                  <p className="text-primary-600 font-semibold mb-2">{teacher.subject}</p>
+                  <p className="text-sm text-gray-600 mb-1">{teacher.qualification}</p>
+                  <p className="text-sm text-gray-500">{teacher.experience} experience</p>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Upcoming Events Section */}
-      <section className="section-padding bg-gray-50">
+      {/* Events Section - Modern Design */}
+      <section className="py-20 bg-white">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">Upcoming Events</h2>
-            <p className="text-body max-w-3xl mx-auto">
-              Stay updated with our latest school events, activities, and celebrations that enrich the learning experience.
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">School Stories</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Stay updated with our latest school events, activities, and celebrations.
             </p>
           </motion.div>
 
@@ -416,25 +513,35 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="card overflow-hidden group hover:shadow-xl transition-all duration-300"
+                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
               >
-                <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={event.image}
+                <div className="relative h-64 overflow-hidden">
+                  <CloudinaryImage
+                    src={event.image?.startsWith('aps-nashik') ? event.image : `aps-nashik/gallery/school-events`}
                     alt={event.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    cloudinaryOptions={{
+                      width: 800,
+                      height: 600,
+                      crop: 'fill',
+                      quality: 'auto',
+                    }}
+                    fallbackSrc={event.image}
                   />
-                  <div className="absolute inset-0 bg-black/20"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 flex items-center space-x-2 text-white">
+                    <Calendar className="w-5 h-5" />
+                    <span className="font-medium">{event.date}</span>
+                  </div>
                 </div>
                 <div className="p-6">
-                  <div className="flex items-center space-x-2 text-sm text-primary-600 mb-2">
-                    <Calendar className="w-4 h-4" />
-                    <span>{event.date}</span>
-                  </div>
-                  <h3 className="text-xl font-semibold text-dark-900 mb-3">{event.title}</h3>
-                  <p className="text-dark-600 mb-4">{event.description}</p>
-                  <Link href="/gallery" className="text-primary-600 hover:text-primary-700 font-medium">
-                    Learn More →
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{event.title}</h3>
+                  <p className="text-gray-600 mb-4 leading-relaxed">{event.description}</p>
+                  <Link href="/gallery" className="inline-flex items-center space-x-2 text-primary-600 hover:text-primary-700 font-semibold group">
+                    <span>Read More</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </motion.div>
@@ -443,18 +550,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Student Testimonials Section */}
-      <section className="section-padding">
+      {/* Testimonials Section */}
+      <section className="py-20 bg-gray-50">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="heading-secondary mb-4">What Parents Say</h2>
-            <p className="text-body max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">What Parents Say</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Hear from our satisfied parents about their experience with Apple Public School.
             </p>
           </motion.div>
@@ -467,53 +574,76 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="card p-6"
+                className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300"
               >
                 <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
-                    <img
-                      src={testimonial.image}
+                  <div className="w-16 h-16 rounded-full overflow-hidden mr-4 ring-2 ring-primary-100">
+                    <CloudinaryImage
+                      src={testimonial.image?.startsWith('aps-nashik') ? testimonial.image : `aps-nashik/gallery`}
                       alt={testimonial.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="64px"
+                      cloudinaryOptions={{
+                        width: 64,
+                        height: 64,
+                        crop: 'fill',
+                        quality: 'auto',
+                      }}
+                      fallbackSrc={testimonial.image}
                     />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-dark-900">{testimonial.name}</h4>
-                    <p className="text-sm text-dark-600">{testimonial.role}</p>
+                    <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
+                    <p className="text-sm text-gray-600">{testimonial.role}</p>
                   </div>
                 </div>
-                <div className="flex items-center mb-3">
+                <div className="flex items-center mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <p className="text-dark-700 italic">"{testimonial.content}"</p>
+                <p className="text-gray-700 leading-relaxed italic">"{testimonial.content}"</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="section-padding bg-gradient-to-r from-primary-600 to-primary-700">
-        <div className="container-custom text-center text-white">
+      {/* CTA Section - Modern Design */}
+      <section className="py-20 bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}></div>
+        </div>
+        <div className="container-custom text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="heading-secondary text-white mb-4">Ready to Join Our School?</h2>
-            <p className="text-xl text-primary-100 mb-8 max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Ready to Join Our School?
+            </h2>
+            <p className="text-xl text-primary-100 mb-10 max-w-3xl mx-auto">
               Give your child the best start in life with quality education and holistic development at Apple Public School.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/contact" className="btn-secondary">
-                Apply for Admission
-                <ArrowRight className="w-5 h-5 ml-2" />
+              <Link 
+                href="/contact" 
+                className="group bg-white hover:bg-gray-50 text-primary-600 font-semibold px-8 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center justify-center space-x-2"
+              >
+                <span>Apply for Admission</span>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link href="/about" className="btn-outline border-white text-white hover:bg-white hover:text-primary-600">
-                Learn More About Us
+              <Link 
+                href="/about" 
+                className="group bg-transparent border-2 border-white text-white hover:bg-white/10 font-semibold px-8 py-4 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2"
+              >
+                <span>Learn More About Us</span>
+                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </motion.div>
@@ -524,4 +654,3 @@ export default function Home() {
     </div>
   )
 }
-
