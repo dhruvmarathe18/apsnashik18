@@ -13,7 +13,7 @@ import {
   BulkStudentValidation,
 } from '@/lib/utils/bulkStudentImport'
 import { useSchool } from '@/contexts/SchoolContext'
-import { Student, FeePlan, AppSettings, Gender, StudentStatus, FeeFrequency } from '@/types/school'
+import { Student, FeePlan, AppSettings, Gender, StudentStatus } from '@/types/school'
 import toast from 'react-hot-toast'
 
 function StudentEditRow({
@@ -136,12 +136,6 @@ function StudentEditRow({
             <h4 className="font-semibold text-gray-900 mb-3">Fee Plan Details</h4>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Input
-                label="Tuition Fee Monthly"
-                type="number"
-                value={editedStudent.tuitionFeeMonthly || 0}
-                onChange={(e) => setEditedStudent({ ...editedStudent, tuitionFeeMonthly: parseFloat(e.target.value) || 0 })}
-              />
-              <Input
                 label="Annual Fee"
                 type="number"
                 value={editedStudent.annualFee || 0}
@@ -176,16 +170,6 @@ function StudentEditRow({
                 type="number"
                 value={editedStudent.miscFee || 0}
                 onChange={(e) => setEditedStudent({ ...editedStudent, miscFee: parseFloat(e.target.value) || 0 })}
-              />
-              <Select
-                label="Fee Frequency"
-                value={editedStudent.feeFrequency || 'Monthly'}
-                onChange={(e) => setEditedStudent({ ...editedStudent, feeFrequency: e.target.value as FeeFrequency })}
-                options={[
-                  { value: 'Monthly', label: 'Monthly' },
-                  { value: 'Quarterly', label: 'Quarterly' },
-                  { value: 'Yearly', label: 'Yearly' },
-                ]}
               />
             </div>
           </div>
@@ -319,14 +303,12 @@ export default function BulkAddStudentsModal({ isOpen, onClose }: BulkAddStudent
       const feePlansData = students.map((s) => ({
         admissionNo: s.admissionNo,
         studentId: '', // Will be set after student creation
-        tuitionFeeMonthly: s.tuitionFeeMonthly || 0,
         annualFee: s.annualFee || 0,
         examFee: s.examFee || 0,
         bookFee: s.bookFee || 0,
         uniformFee: s.uniformFee || 0,
         discount: s.discount || 0,
         miscFee: s.miscFee || 0,
-        feeFrequency: s.feeFrequency || 'Monthly',
       }))
 
       const result = await addStudentsBatch(studentsData, feePlansData)

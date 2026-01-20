@@ -81,7 +81,7 @@ export default function TransportPage() {
 
           {/* Transport Modules */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <Link href="/admin/quick-entry">
+            <Link href="/admin/expenses">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-green-500">
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4">
@@ -97,7 +97,7 @@ export default function TransportPage() {
               </Card>
             </Link>
 
-            <Link href="/admin/quick-entry">
+            <Link href="/admin/expenses">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-red-500">
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4">

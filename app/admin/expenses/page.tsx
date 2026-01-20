@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { formatRupee, formatDateReadable, getTodayISO } from '@/lib/utils/format'
-import { Transaction, OtherExpense, BusExpense, ExpenseCategory } from '@/types/school'
+import { Transaction, OtherExpense, BusExpense, Salary, ExpenseCategory, BusExpenseType } from '@/types/school'
 import toast from 'react-hot-toast'
 
 export default function ExpensesPage() {
@@ -19,8 +19,8 @@ export default function ExpensesPage() {
   const [filterCategory, setFilterCategory] = useState('')
 
   const expenseTransactions = useMemo(() => {
-    return transactions.filter((t): t is OtherExpense | BusExpense => 
-      t.type === 'other_expense' || t.type === 'bus_expense'
+    return transactions.filter((t): t is OtherExpense | BusExpense | Salary => 
+      t.type === 'other_expense' || t.type === 'bus_expense' || t.type === 'salary'
     )
   }, [transactions])
 
@@ -42,6 +42,11 @@ export default function ExpensesPage() {
           return t.category === filterCategory
         } else if (t.type === 'bus_expense') {
           return t.expenseType === filterCategory || filterCategory === 'Bus Expense'
+        } else if (t.type === 'salary') {
+          if (filterCategory === 'Salary' || filterCategory === 'Teacher Salary' || filterCategory === 'Staff Salary') {
+            return true
+          }
+          return t.employeeType === filterCategory.replace(' Salary', '')
         }
         return false
       })
@@ -58,6 +63,10 @@ export default function ExpensesPage() {
       } else if (exp.type === 'bus_expense') {
         const category = exp.expenseType || 'Bus Expense'
         totals[category] = (totals[category] || 0) + exp.amount
+      } else if (exp.type === 'salary') {
+        const category = `${exp.employeeType} Salary`
+        totals[category] = (totals[category] || 0) + exp.amount
+        totals['Salary'] = (totals['Salary'] || 0) + exp.amount
       }
     })
     return totals
@@ -155,9 +164,16 @@ export default function ExpensesPage() {
                   onChange={(e) => setFilterCategory(e.target.value)}
                   options={[
                     { value: '', label: 'All Categories' },
+                    { value: 'Salary', label: 'All Salaries' },
+                    { value: 'Teacher Salary', label: 'Teacher Salary' },
+                    { value: 'Staff Salary', label: 'Staff Salary' },
                     ...settings.expenseCategories.map((cat) => ({ value: cat, label: cat })),
                     { value: 'Diesel', label: 'Bus: Diesel' },
                     { value: 'Maintenance', label: 'Bus: Maintenance' },
+                    { value: 'Driver Salary', label: 'Bus: Driver Salary' },
+                    { value: 'Cleaner Salary', label: 'Bus: Cleaner Salary' },
+                    { value: 'Toll', label: 'Bus: Toll' },
+                    { value: 'Tyre', label: 'Bus: Tyre' },
                     { value: 'Repair', label: 'Bus: Repair' },
                     { value: 'Other', label: 'Bus: Other' },
                   ]}
@@ -193,6 +209,7 @@ export default function ExpensesPage() {
                       <tr className="border-b">
                         <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Date</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Category</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Details</th>
                         <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Amount</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Payment Mode</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Notes</th>
@@ -204,11 +221,36 @@ export default function ExpensesPage() {
                         <tr key={expense.id} className="border-b hover:bg-gray-50">
                           <td className="py-3 px-4 text-sm text-gray-600">{formatDateReadable(expense.date)}</td>
                           <td className="py-3 px-4">
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              expense.type === 'bus_expense' 
+                                ? 'bg-purple-100 text-purple-800'
+                                : expense.type === 'salary'
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-orange-100 text-orange-800'
+                            }`}>
                               {expense.type === 'bus_expense' 
-                                ? `${expense.expenseType || 'Bus Expense'} (${expense.busNumber || 'N/A'})`
+                                ? expense.expenseType || 'Bus Expense'
+                                : expense.type === 'salary'
+                                ? `${expense.employeeType} Salary`
                                 : expense.category}
                             </span>
+                          </td>
+                          <td className="py-3 px-4 text-sm text-gray-600">
+                            {expense.type === 'bus_expense' ? (
+                              <div>
+                                <div className="font-medium">Bus: {expense.busNumber || 'N/A'}</div>
+                                {expense.vendor && (
+                                  <div className="text-xs text-gray-500">Vendor: {expense.vendor}</div>
+                                )}
+                              </div>
+                            ) : expense.type === 'salary' ? (
+                              <div>
+                                <div className="font-medium">{expense.employeeName}</div>
+                                <div className="text-xs text-gray-500">Month: {expense.salaryMonth}</div>
+                              </div>
+                            ) : (
+                              '-'
+                            )}
                           </td>
                           <td className="py-3 px-4 text-sm font-semibold text-right text-red-600">
                             {formatRupee(expense.amount)}
@@ -244,15 +286,36 @@ export default function ExpensesPage() {
 }
 
 function ExpenseModal({ onClose }: { onClose: () => void }) {
-  const { addTransaction, settings } = useSchool()
+  const { addTransaction, settings, transactions } = useSchool()
+  const [expenseType, setExpenseType] = useState<'regular' | 'bus' | 'salary'>('regular')
   const [formData, setFormData] = useState({
     date: getTodayISO(),
     category: 'Misc' as ExpenseCategory,
     amount: '',
     paymentMode: 'Cash' as any,
     notes: '',
+    // Bus expense fields
+    busNumber: '',
+    busExpenseType: 'Diesel' as BusExpenseType,
+    vendor: '',
+    // Salary fields
+    employeeName: '',
+    employeeType: 'Teacher' as 'Teacher' | 'Staff',
+    salaryMonth: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Get unique employee names from previous salary transactions
+  const previousEmployees = useMemo(() => {
+    const salaryTransactions = transactions.filter((t): t is Salary => t.type === 'salary')
+    const employeeMap = new Map<string, 'Teacher' | 'Staff'>()
+    salaryTransactions.forEach((t) => {
+      if (!employeeMap.has(t.employeeName)) {
+        employeeMap.set(t.employeeName, t.employeeType)
+      }
+    })
+    return Array.from(employeeMap.entries()).map(([name, type]) => ({ name, type }))
+  }, [transactions])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -262,17 +325,57 @@ function ExpenseModal({ onClose }: { onClose: () => void }) {
       return
     }
 
+    if (expenseType === 'bus' && !formData.busNumber) {
+      toast.error('Please select bus number')
+      return
+    }
+
+    if (expenseType === 'salary') {
+      if (!formData.employeeName || formData.employeeName === '__new__') {
+        toast.error('Please enter employee name')
+        return
+      }
+      if (!formData.salaryMonth) {
+        toast.error('Please select salary month')
+        return
+      }
+    }
+
     setIsSubmitting(true)
 
     try {
-      addTransaction({
-        type: 'other_expense',
-        date: formData.date,
-        amount: parseFloat(formData.amount),
-        paymentMode: formData.paymentMode,
-        notes: formData.notes || undefined,
-        category: formData.category,
-      } as Omit<Transaction, 'id' | 'createdAt'>)
+      if (expenseType === 'bus') {
+        addTransaction({
+          type: 'bus_expense',
+          date: formData.date,
+          amount: parseFloat(formData.amount),
+          paymentMode: formData.paymentMode,
+          notes: formData.notes || undefined,
+          busNumber: formData.busNumber,
+          expenseType: formData.busExpenseType,
+          vendor: formData.vendor || undefined,
+        } as Omit<Transaction, 'id' | 'createdAt'>)
+      } else if (expenseType === 'salary') {
+        addTransaction({
+          type: 'salary',
+          date: formData.date,
+          amount: parseFloat(formData.amount),
+          paymentMode: formData.paymentMode,
+          notes: formData.notes || undefined,
+          employeeName: formData.employeeName,
+          employeeType: formData.employeeType,
+          salaryMonth: formData.salaryMonth,
+        } as Omit<Transaction, 'id' | 'createdAt'>)
+      } else {
+        addTransaction({
+          type: 'other_expense',
+          date: formData.date,
+          amount: parseFloat(formData.amount),
+          paymentMode: formData.paymentMode,
+          notes: formData.notes || undefined,
+          category: formData.category,
+        } as Omit<Transaction, 'id' | 'createdAt'>)
+      }
 
       toast.success('Expense added successfully')
       onClose()
@@ -285,12 +388,23 @@ function ExpenseModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b">
           <h2 className="text-2xl font-bold text-gray-900">Add Expense</h2>
         </div>
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-4">
+            <Select
+              label="Expense Type"
+              value={expenseType}
+              onChange={(e) => setExpenseType(e.target.value as 'regular' | 'bus' | 'salary')}
+              options={[
+                { value: 'regular', label: 'Regular Expense' },
+                { value: 'bus', label: 'Bus Expense' },
+                { value: 'salary', label: 'Salary' },
+              ]}
+              required
+            />
             <Input
               label="Date"
               type="date"
@@ -298,13 +412,117 @@ function ExpenseModal({ onClose }: { onClose: () => void }) {
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               required
             />
-            <Select
-              label="Category"
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value as ExpenseCategory })}
-              options={settings.expenseCategories.map((cat) => ({ value: cat, label: cat }))}
-              required
-            />
+            {expenseType === 'regular' ? (
+              <>
+                <Select
+                  label="Category"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value as ExpenseCategory })}
+                  options={settings.expenseCategories.map((cat) => ({ value: cat, label: cat }))}
+                  required
+                />
+              </>
+            ) : expenseType === 'bus' ? (
+              <>
+                <Select
+                  label="Bus Number"
+                  value={formData.busNumber}
+                  onChange={(e) => setFormData({ ...formData, busNumber: e.target.value })}
+                  options={[
+                    { value: '', label: 'Select Bus' },
+                    ...settings.buses.map((bus) => ({ value: bus.busNumber, label: `${bus.busNumber} - ${bus.route}` })),
+                  ]}
+                  required
+                />
+                <Select
+                  label="Expense Type"
+                  value={formData.busExpenseType}
+                  onChange={(e) => setFormData({ ...formData, busExpenseType: e.target.value as BusExpenseType })}
+                  options={[
+                    { value: 'Diesel', label: 'Diesel' },
+                    { value: 'Maintenance', label: 'Maintenance' },
+                    { value: 'Driver Salary', label: 'Driver Salary' },
+                    { value: 'Cleaner Salary', label: 'Cleaner Salary' },
+                    { value: 'Toll', label: 'Toll' },
+                    { value: 'Tyre', label: 'Tyre' },
+                    { value: 'Repair', label: 'Repair' },
+                    { value: 'Other', label: 'Other' },
+                  ]}
+                  required
+                />
+                <Input
+                  label="Vendor (Optional)"
+                  type="text"
+                  value={formData.vendor}
+                  onChange={(e) => setFormData({ ...formData, vendor: e.target.value })}
+                  placeholder="Vendor name"
+                />
+              </>
+            ) : (
+              <>
+                <Select
+                  label="Employee Type"
+                  value={formData.employeeType}
+                  onChange={(e) => setFormData({ ...formData, employeeType: e.target.value as 'Teacher' | 'Staff' })}
+                  options={[
+                    { value: 'Teacher', label: 'Teacher' },
+                    { value: 'Staff', label: 'Staff' },
+                  ]}
+                  required
+                />
+                {previousEmployees.length > 0 ? (
+                  <>
+                    <Select
+                      label="Employee Name"
+                      value={formData.employeeName && formData.employeeName !== '__new__' && previousEmployees.some(emp => emp.name === formData.employeeName) ? formData.employeeName : ''}
+                      onChange={(e) => {
+                        if (e.target.value === '__new__') {
+                          setFormData({ ...formData, employeeName: '' })
+                        } else {
+                          const selected = previousEmployees.find((emp) => emp.name === e.target.value)
+                          setFormData({
+                            ...formData,
+                            employeeName: e.target.value,
+                            employeeType: selected?.type || formData.employeeType,
+                          })
+                        }
+                      }}
+                      options={[
+                        { value: '', label: 'Select Employee' },
+                        ...previousEmployees.map((emp) => ({ value: emp.name, label: emp.name })),
+                        { value: '__new__', label: '+ Add New Employee' },
+                      ]}
+                    />
+                    {(!formData.employeeName || !previousEmployees.some(emp => emp.name === formData.employeeName)) && (
+                      <Input
+                        label="Employee Name"
+                        type="text"
+                        value={formData.employeeName}
+                        onChange={(e) => setFormData({ ...formData, employeeName: e.target.value })}
+                        placeholder="Enter employee name"
+                        required
+                      />
+                    )}
+                  </>
+                ) : (
+                  <Input
+                    label="Employee Name"
+                    type="text"
+                    value={formData.employeeName}
+                    onChange={(e) => setFormData({ ...formData, employeeName: e.target.value })}
+                    placeholder="Enter employee name"
+                    required
+                  />
+                )}
+                <Input
+                  label="Salary Month"
+                  type="month"
+                  value={formData.salaryMonth}
+                  onChange={(e) => setFormData({ ...formData, salaryMonth: e.target.value })}
+                  required
+                />
+              </>
+            )}
             <Input
               label="Amount (₹)"
               type="number"
@@ -327,6 +545,7 @@ function ExpenseModal({ onClose }: { onClose: () => void }) {
               type="text"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              placeholder="Additional notes (optional)"
             />
           </div>
           <div className="flex gap-4 mt-6">

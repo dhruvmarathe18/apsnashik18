@@ -173,7 +173,8 @@ export class StorageService {
       localStorage.removeItem(STORAGE_KEYS.TRANSACTIONS)
       localStorage.removeItem(STORAGE_KEYS.STUDENTS)
       localStorage.removeItem(STORAGE_KEYS.FEE_PLANS)
-      // Keep settings and transport data
+      localStorage.removeItem('schoolTransportData') // Clear bus entries
+      // Keep settings and admin users
     } catch (error) {
       console.error('Error clearing data:', error)
     }

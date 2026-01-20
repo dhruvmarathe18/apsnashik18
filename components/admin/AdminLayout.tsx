@@ -16,7 +16,6 @@ import {
   Download,
   Upload,
   Settings,
-  PlusCircle,
   LogOut,
   Menu,
   X,
@@ -51,7 +50,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { name: 'Quick Entry', href: '/admin/quick-entry', icon: PlusCircle },
     { name: 'Students', href: '/admin/students', icon: Users },
     { name: 'Fee Ledger', href: '/admin/fee-ledger', icon: BookOpen },
     { name: 'Fee Due Reports', href: '/admin/fee-due-reports', icon: FileText },

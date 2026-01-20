@@ -99,6 +99,23 @@ export const transactionService = {
       throw error
     }
   },
+
+  async deleteAll(): Promise<void> {
+    if (!isSupabaseConfigured()) {
+      localStorage.removeItem('school_transactions')
+      return
+    }
+
+    const { error } = await supabase
+      .from('transactions')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000') // Delete all
+
+    if (error) {
+      console.error('Error deleting all transactions:', error)
+      throw error
+    }
+  },
 }
 
 // Student Services
@@ -285,6 +302,24 @@ export const studentService = {
       throw error
     }
   },
+
+  async deleteAll(): Promise<void> {
+    if (!isSupabaseConfigured()) {
+      localStorage.removeItem('school_students')
+      return
+    }
+
+    // Delete all students (CASCADE will handle fee_plans and related transactions)
+    const { error } = await supabase
+      .from('students')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000') // Delete all
+
+    if (error) {
+      console.error('Error deleting all students:', error)
+      throw error
+    }
+  },
 }
 
 // Fee Plan Services
@@ -407,6 +442,23 @@ export const feePlanService = {
 
     if (error) {
       console.error('Error deleting fee plan:', error)
+      throw error
+    }
+  },
+
+  async deleteAll(): Promise<void> {
+    if (!isSupabaseConfigured()) {
+      localStorage.removeItem('school_fee_plans')
+      return
+    }
+
+    const { error } = await supabase
+      .from('fee_plans')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000') // Delete all
+
+    if (error) {
+      console.error('Error deleting all fee plans:', error)
       throw error
     }
   },
@@ -666,14 +718,12 @@ function transformFeePlan(dbRow: any): FeePlan {
   return {
     id: dbRow.id,
     studentId: dbRow.student_id,
-    tuitionFeeMonthly: parseFloat(dbRow.tuition_fee_monthly),
-    annualFee: parseFloat(dbRow.annual_fee),
-    examFee: parseFloat(dbRow.exam_fee),
-    bookFee: parseFloat(dbRow.book_fee),
-    uniformFee: parseFloat(dbRow.uniform_fee),
-    discount: parseFloat(dbRow.discount),
-    miscFee: parseFloat(dbRow.misc_fee),
-    feeFrequency: dbRow.fee_frequency,
+    annualFee: parseFloat(dbRow.annual_fee || 0),
+    examFee: parseFloat(dbRow.exam_fee || 0),
+    bookFee: parseFloat(dbRow.book_fee || 0),
+    uniformFee: parseFloat(dbRow.uniform_fee || 0),
+    discount: parseFloat(dbRow.discount || 0),
+    miscFee: parseFloat(dbRow.misc_fee || 0),
     createdAt: dbRow.created_at,
     updatedAt: dbRow.updated_at,
   }
@@ -682,14 +732,12 @@ function transformFeePlan(dbRow: any): FeePlan {
 function transformToDbFeePlan(feePlan: FeePlan | Partial<FeePlan>): any {
   return {
     student_id: (feePlan as FeePlan).studentId,
-    tuition_fee_monthly: (feePlan as FeePlan).tuitionFeeMonthly || 0,
-    annual_fee: (feePlan as FeePlan).annualFee || 0,
-    exam_fee: (feePlan as FeePlan).examFee || 0,
-    book_fee: (feePlan as FeePlan).bookFee || 0,
-    uniform_fee: (feePlan as FeePlan).uniformFee || 0,
-    discount: (feePlan as FeePlan).discount || 0,
-    misc_fee: (feePlan as FeePlan).miscFee || 0,
-    fee_frequency: (feePlan as FeePlan).feeFrequency || 'Monthly',
+    annual_fee: (feePlan as FeePlan).annualFee ?? 0,
+    exam_fee: (feePlan as FeePlan).examFee ?? 0,
+    book_fee: (feePlan as FeePlan).bookFee ?? 0,
+    uniform_fee: (feePlan as FeePlan).uniformFee ?? 0,
+    discount: (feePlan as FeePlan).discount ?? 0,
+    misc_fee: (feePlan as FeePlan).miscFee ?? 0,
   }
 }
 
@@ -922,6 +970,24 @@ export const busEntryService = {
   async getByBus(busName: string): Promise<BusDailyEntry[]> {
     const allEntries = await this.getAll()
     return allEntries.filter((e) => e.busName === busName)
+  },
+
+  async deleteAll(): Promise<void> {
+    if (!isSupabaseConfigured()) {
+      // Clear localStorage
+      localStorage.removeItem('schoolTransportData')
+      return
+    }
+
+    const { error } = await supabase
+      .from('bus_daily_entries')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000') // Delete all (using a condition that's always true)
+
+    if (error) {
+      console.error('Error deleting all bus entries:', error)
+      throw error
+    }
   },
 }
 

@@ -222,7 +222,9 @@ export default function SalariesPage() {
       {/* Add Salary Modal */}
       {showAddModal && (
         <SalaryModal
-          onClose={() => setShowAddModal(false)}
+          onClose={() => {
+            setShowAddModal(false)
+          }}
         />
       )}
     </AdminLayout>
@@ -230,7 +232,7 @@ export default function SalariesPage() {
 }
 
 function SalaryModal({ onClose }: { onClose: () => void }) {
-  const { addTransaction, settings } = useSchool()
+  const { addTransaction, settings, transactions } = useSchool()
   const [formData, setFormData] = useState({
     date: getTodayISO(),
     employeeName: '',
@@ -241,6 +243,42 @@ function SalaryModal({ onClose }: { onClose: () => void }) {
     notes: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [useDropdown, setUseDropdown] = useState(true)
+
+  // Get unique employee names from previous salary records
+  const previousEmployees = useMemo(() => {
+    const salaryTransactions = transactions.filter((t): t is Salary => t.type === 'salary')
+    const employeeMap = new Map<string, { name: string; type: EmployeeType; lastDate: string }>()
+    
+    salaryTransactions.forEach((salary) => {
+      if (salary.employeeName) {
+        const existing = employeeMap.get(salary.employeeName)
+        // Store the most recent entry for each employee
+        if (!existing || new Date(salary.date) > new Date(existing.lastDate)) {
+          employeeMap.set(salary.employeeName, {
+            name: salary.employeeName,
+            type: salary.employeeType,
+            lastDate: salary.date,
+          })
+        }
+      }
+    })
+    
+    return Array.from(employeeMap.values())
+      .map(({ name, type }) => ({ name, type }))
+      .sort((a, b) => a.name.localeCompare(b.name))
+  }, [transactions])
+
+  const handleEmployeeSelect = (employeeName: string) => {
+    const employee = previousEmployees.find((e) => e.name === employeeName)
+    if (employee) {
+      setFormData((prev) => ({
+        ...prev,
+        employeeName: employee.name,
+        employeeType: employee.type,
+      }))
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -265,6 +303,17 @@ function SalaryModal({ onClose }: { onClose: () => void }) {
       } as Omit<Transaction, 'id' | 'createdAt'>)
 
       toast.success('Salary entry added successfully')
+      // Reset form
+      setFormData({
+        date: getTodayISO(),
+        employeeName: '',
+        employeeType: 'Teacher' as EmployeeType,
+        salaryMonth: '',
+        amount: '',
+        paymentMode: 'Cash' as any,
+        notes: '',
+      })
+      setUseDropdown(true)
       onClose()
     } catch (error: any) {
       toast.error(error.message || 'Failed to add salary entry')
@@ -288,13 +337,57 @@ function SalaryModal({ onClose }: { onClose: () => void }) {
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               required
             />
-            <Input
-              label="Employee Name"
-              type="text"
-              value={formData.employeeName}
-              onChange={(e) => setFormData({ ...formData, employeeName: e.target.value })}
-              required
-            />
+            {previousEmployees.length > 0 && useDropdown ? (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-medium text-gray-700">Employee Name</label>
+                  <button
+                    type="button"
+                    onClick={() => setUseDropdown(false)}
+                    className="text-xs text-blue-600 hover:text-blue-800"
+                  >
+                    Enter manually
+                  </button>
+                </div>
+                <Select
+                  value={formData.employeeName}
+                  onChange={(e) => {
+                    const selectedName = e.target.value
+                    handleEmployeeSelect(selectedName)
+                  }}
+                  options={[
+                    { value: '', label: 'Select Employee' },
+                    ...previousEmployees.map((emp) => ({
+                      value: emp.name,
+                      label: `${emp.name} (${emp.type})`,
+                    })),
+                  ]}
+                  required
+                />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-medium text-gray-700">Employee Name</label>
+                  {previousEmployees.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setUseDropdown(true)}
+                      className="text-xs text-blue-600 hover:text-blue-800"
+                    >
+                      Select from list
+                    </button>
+                  )}
+                </div>
+                <Input
+                  type="text"
+                  value={formData.employeeName}
+                  onChange={(e) => setFormData({ ...formData, employeeName: e.target.value })}
+                  placeholder="Enter employee name"
+                  required
+                />
+              </div>
+            )}
             <Select
               label="Employee Type"
               value={formData.employeeType}

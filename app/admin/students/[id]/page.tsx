@@ -300,10 +300,6 @@ export default function StudentProfilePage() {
                   <CardContent>
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Tuition Fee:</span>
-                        <span className="text-sm font-medium">{formatRupee(feePlan.tuitionFeeMonthly)}/month</span>
-                      </div>
-                      <div className="flex justify-between">
                         <span className="text-sm text-gray-600">Annual Fee:</span>
                         <span className="text-sm font-medium">{formatRupee(feePlan.annualFee)}</span>
                       </div>
@@ -329,7 +325,7 @@ export default function StudentProfilePage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <Link href={`/admin/quick-entry?studentId=${student.id}`} className="block">
+                    <Link href={`/admin/fees?studentId=${student.id}`} className="block">
                       <Button variant="outline" className="w-full">
                         Collect Fee
                       </Button>

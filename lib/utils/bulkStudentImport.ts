@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
-import { Student, Gender, StudentStatus, FeeFrequency } from '@/types/school'
+import { Student, Gender, StudentStatus } from '@/types/school'
 import { generateUUID, getTodayISO } from './format'
 
 export interface BulkStudentRow {
@@ -26,14 +26,12 @@ export interface BulkStudentRow {
   busFeeMonthly?: number
   status: StudentStatus
   // Fee Plan fields
-  tuitionFeeMonthly?: number
   annualFee?: number
   examFee?: number
   bookFee?: number
   uniformFee?: number
   discount?: number
   miscFee?: number
-  feeFrequency?: FeeFrequency
 }
 
 export interface BulkStudentValidation {
@@ -72,14 +70,12 @@ export function downloadStudentTemplate(academicYear: string, classes: string[])
     'Bus Route ID',
     'Bus Fee Monthly',
     'Status (Active/Inactive/Left)',
-    'Tuition Fee Monthly',
     'Annual Fee',
     'Exam Fee',
     'Book Fee',
     'Uniform Fee',
     'Discount',
-    'Misc Fee',
-    'Fee Frequency (Monthly/Quarterly/Yearly)'
+    'Misc Fee'
   ]
 
   const exampleRow = [
@@ -104,14 +100,12 @@ export function downloadStudentTemplate(academicYear: string, classes: string[])
     'Route A',
     '500',
     'Active',
-    '2000',
     '5000',
     '500',
     '1000',
     '800',
     '0',
-    '0',
-    'Monthly'
+    '0'
   ]
 
   const instructions = [
@@ -120,8 +114,7 @@ export function downloadStudentTemplate(academicYear: string, classes: string[])
     ['2. Gender: Male, Female, or Other'],
     ['3. Bus Opted: Yes or No'],
     ['4. Status: Active, Inactive, or Left'],
-    ['5. Fee Frequency: Monthly, Quarterly, or Yearly'],
-    ['6. Date format: YYYY-MM-DD (e.g., 2010-05-15)'],
+    ['5. Date format: YYYY-MM-DD (e.g., 2010-05-15)'],
     ['7. Academic Year will be set to: ' + academicYear],
     ['8. Do not modify the header row'],
     [''],
@@ -213,14 +206,12 @@ export function parseStudentExcel(
           const busRouteId = String(row['Bus Route ID'] || row['busRouteId'] || row['BusRouteId'] || '').trim()
           const busFeeMonthly = row['Bus Fee Monthly'] || row['busFeeMonthly'] || row['BusFeeMonthly'] || ''
           const statusStr = String(row['Status'] || row['status'] || 'Active').trim()
-          const tuitionFeeMonthly = row['Tuition Fee Monthly'] || row['tuitionFeeMonthly'] || row['TuitionFeeMonthly'] || 0
           const annualFee = row['Annual Fee'] || row['annualFee'] || row['AnnualFee'] || 0
           const examFee = row['Exam Fee'] || row['examFee'] || row['ExamFee'] || 0
           const bookFee = row['Book Fee'] || row['bookFee'] || row['BookFee'] || 0
           const uniformFee = row['Uniform Fee'] || row['uniformFee'] || row['UniformFee'] || 0
           const discount = row['Discount'] || row['discount'] || 0
           const miscFee = row['Misc Fee'] || row['miscFee'] || row['MiscFee'] || 0
-          const feeFrequencyStr = String(row['Fee Frequency'] || row['feeFrequency'] || row['FeeFrequency'] || 'Monthly').trim()
 
           // Validation
           if (!admissionNo) errors.push('Admission No is required')
@@ -289,22 +280,8 @@ export function parseStudentExcel(
             errors.push('Status must be Active, Inactive, or Left')
           }
 
-          // Validate fee frequency
-          let validFeeFrequency: FeeFrequency = 'Monthly'
-          const freqLower = feeFrequencyStr.toLowerCase()
-          if (freqLower === 'monthly' || freqLower === 'm') {
-            validFeeFrequency = 'Monthly'
-          } else if (freqLower === 'quarterly' || freqLower === 'q') {
-            validFeeFrequency = 'Quarterly'
-          } else if (freqLower === 'yearly' || freqLower === 'y') {
-            validFeeFrequency = 'Yearly'
-          } else if (feeFrequencyStr && feeFrequencyStr !== 'Monthly') {
-            warnings.push('Invalid Fee Frequency, defaulting to Monthly')
-          }
-
           // Validate numeric fields
           const numBusFee = busFeeMonthly ? parseFloat(String(busFeeMonthly)) : undefined
-          const numTuition = tuitionFeeMonthly ? parseFloat(String(tuitionFeeMonthly)) : 0
           const numAnnual = annualFee ? parseFloat(String(annualFee)) : 0
           const numExam = examFee ? parseFloat(String(examFee)) : 0
           const numBook = bookFee ? parseFloat(String(bookFee)) : 0
@@ -315,7 +292,6 @@ export function parseStudentExcel(
           if (numBusFee !== undefined && isNaN(numBusFee)) {
             warnings.push('Invalid Bus Fee Monthly, will be set to 0')
           }
-          if (isNaN(numTuition)) warnings.push('Invalid Tuition Fee Monthly, will be set to 0')
           if (isNaN(numAnnual)) warnings.push('Invalid Annual Fee, will be set to 0')
           if (isNaN(numExam)) warnings.push('Invalid Exam Fee, will be set to 0')
           if (isNaN(numBook)) warnings.push('Invalid Book Fee, will be set to 0')
@@ -345,14 +321,12 @@ export function parseStudentExcel(
             busRouteId: busRouteId || undefined,
             busFeeMonthly: numBusFee !== undefined && !isNaN(numBusFee) ? numBusFee : undefined,
             status: validStatus,
-            tuitionFeeMonthly: !isNaN(numTuition) ? numTuition : 0,
             annualFee: !isNaN(numAnnual) ? numAnnual : 0,
             examFee: !isNaN(numExam) ? numExam : 0,
             bookFee: !isNaN(numBook) ? numBook : 0,
             uniformFee: !isNaN(numUniform) ? numUniform : 0,
             discount: !isNaN(numDiscount) ? numDiscount : 0,
             miscFee: !isNaN(numMisc) ? numMisc : 0,
-            feeFrequency: validFeeFrequency,
           }
 
           students.push(student)

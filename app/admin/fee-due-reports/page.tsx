@@ -44,8 +44,8 @@ export default function FeeDueReportsPage() {
 
       const paid = studentTransactions.reduce((sum, t) => sum + t.amount, 0)
 
-      // Calculate expected fees (simplified - would need proper monthly calculation)
-      const expectedFees = feePlan.tuitionFeeMonthly * 12 + feePlan.annualFee + feePlan.examFee
+      // Calculate expected fees (annual fee + exam fee + book fee + uniform fee + misc fee - discount)
+      const expectedFees = feePlan.annualFee + feePlan.examFee + feePlan.bookFee + feePlan.uniformFee + (feePlan.miscFee || 0) - (feePlan.discount || 0)
       const remaining = expectedFees - paid
 
       if (remaining > 0) {
@@ -55,7 +55,7 @@ export default function FeeDueReportsPage() {
           totalDue: expectedFees,
           paid,
           remaining,
-          unpaidMonths: Math.ceil(remaining / feePlan.tuitionFeeMonthly),
+          unpaidMonths: 0, // No longer tracking unpaid months since we removed monthly tuition
         })
       }
     })
@@ -159,7 +159,7 @@ export default function FeeDueReportsPage() {
                                   View
                                 </Button>
                               </Link>
-                              <Link href={`/admin/quick-entry?studentId=${due.student.id}&type=fee_collection`}>
+                              <Link href={`/admin/fees?studentId=${due.student.id}`}>
                                 <Button size="sm">
                                   Collect Fee
                                 </Button>

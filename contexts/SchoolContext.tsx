@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Transaction, Student, FeePlan, AppSettings } from '@/types/school'
 import { StorageService } from '@/lib/utils/storage'
 import { generateUUID, getTodayISO } from '@/lib/utils/format'
-import { transactionService, studentService, feePlanService, settingsService } from '@/lib/supabase/services'
+import { transactionService, studentService, feePlanService, settingsService, busEntryService } from '@/lib/supabase/services'
 import toast from 'react-hot-toast'
 
 interface SchoolContextType {
@@ -39,6 +39,7 @@ interface SchoolContextType {
 
   // Utilities
   refreshData: () => void
+  resetAllData: () => Promise<void>
 }
 
 const SchoolContext = createContext<SchoolContextType | undefined>(undefined)
@@ -373,6 +374,34 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const resetAllData = async () => {
+    try {
+      // Delete all transactions first (to avoid foreign key constraints)
+      await transactionService.deleteAll()
+      
+      // Delete all bus entries
+      await busEntryService.deleteAll()
+      
+      // Delete all students (this will cascade delete fee plans)
+      await studentService.deleteAll()
+      
+      // Delete all fee plans (in case cascade didn't work)
+      await feePlanService.deleteAll()
+      
+      // Clear localStorage as well
+      StorageService.clearAll()
+      
+      // Refresh data to update UI
+      await refreshData()
+      
+      toast.success('All data has been reset successfully')
+    } catch (error) {
+      console.error('Error resetting data:', error)
+      toast.error('Failed to reset all data. Please try again.')
+      throw error
+    }
+  }
+
   const value: SchoolContextType = {
     transactions,
     students,
@@ -394,6 +423,7 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
     getFeePlanByStudentId,
     updateSettings,
     refreshData,
+    resetAllData,
   }
 
   return <SchoolContext.Provider value={value}>{children}</SchoolContext.Provider>

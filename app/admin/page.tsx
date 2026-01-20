@@ -11,7 +11,8 @@ import {
   DollarSign,
   Receipt,
   BookOpen,
-  FileText
+  FileText,
+  AlertCircle
 } from 'lucide-react'
 import AdminLayout from '@/components/admin/AdminLayout'
 import Link from 'next/link'
@@ -22,7 +23,7 @@ import { parseISO, isSameMonth, startOfMonth } from 'date-fns'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 
 export default function AdminDashboard() {
-  const { transactions, students, settings, isLoading } = useSchool()
+  const { transactions, students, feePlans, settings, isLoading } = useSchool()
 
   const today = getTodayISO()
   const todayReport = useMemo(() => generateDailyReport(transactions, today), [transactions, today])
@@ -34,18 +35,45 @@ export default function AdminDashboard() {
   
   const monthReport = useMemo(() => generateMonthlyReport(transactions, currentMonth), [transactions, currentMonth])
 
-  const activeStudents = useMemo(() => {
-    return students.filter((s) => s.status === 'Active').length
-  }, [students])
-
   const busStudents = useMemo(() => {
     return students.filter((s) => s.busOpted).length
   }, [students])
 
-  const feeDefaulters = useMemo(() => {
-    // This would need fee ledger logic - simplified for now
-    return 0
-  }, [])
+  // Calculate pending fee collection
+  const pendingFeeCollection = useMemo(() => {
+    let totalPending = 0
+    let studentsWithPendingFees = 0
+
+    students.forEach((student) => {
+      if (student.status !== 'Active') return
+
+      const feePlan = feePlans.find((p) => p.studentId === student.id)
+      if (!feePlan) return
+
+      // Get all fee transactions for this student
+      const studentTransactions = transactions.filter(
+        (t) =>
+          t.type === 'fee_collection' &&
+          (t.studentId === student.id || t.admissionNo === student.admissionNo)
+      )
+
+      const paid = studentTransactions.reduce((sum, t) => sum + t.amount, 0)
+
+      // Calculate expected fees (annual fee + exam fee + book fee + uniform fee + misc fee - discount)
+      const expectedFees = feePlan.annualFee + feePlan.examFee + feePlan.bookFee + feePlan.uniformFee + (feePlan.miscFee || 0) - (feePlan.discount || 0)
+      const remaining = expectedFees - paid
+
+      if (remaining > 0) {
+        totalPending += remaining
+        studentsWithPendingFees++
+      }
+    })
+
+    return {
+      amount: totalPending,
+      count: studentsWithPendingFees
+    }
+  }, [students, transactions, feePlans])
 
   const stats = [
     { 
@@ -57,12 +85,12 @@ export default function AdminDashboard() {
       change: null
     },
     { 
-      title: 'Active Students', 
-      value: activeStudents.toString(), 
-      icon: Users, 
-      color: 'text-green-600', 
-      href: '/admin/students',
-      change: null
+      title: 'Pending Fee Collection', 
+      value: formatRupee(pendingFeeCollection.amount), 
+      icon: AlertCircle, 
+      color: 'text-orange-600', 
+      href: '/admin/fee-due-reports',
+      change: `${pendingFeeCollection.count} student(s)`,
     },
     { 
       title: 'Today Income', 
@@ -81,15 +109,31 @@ export default function AdminDashboard() {
       change: null
     },
     { 
-      title: 'Today Net', 
-      value: formatRupee(todayReport.net), 
-      icon: DollarSign, 
-      color: todayReport.net >= 0 ? 'text-green-600' : 'text-red-600', 
+      title: 'Monthly Income', 
+      value: formatRupee(monthReport.income.total), 
+      icon: TrendingUp, 
+      color: 'text-green-600', 
       href: '/admin/reports',
-      change: null
+      change: currentMonth,
     },
     { 
-      title: 'Month Net', 
+      title: 'Monthly Expenses', 
+      value: formatRupee(monthReport.expenses.total), 
+      icon: TrendingDown, 
+      color: 'text-red-600', 
+      href: '/admin/expenses',
+      change: currentMonth,
+    },
+    { 
+      title: 'Bus Expenses', 
+      value: formatRupee(monthReport.expenses.busExpenses), 
+      icon: Bus, 
+      color: 'text-red-600', 
+      href: '/admin/expenses',
+      change: currentMonth,
+    },
+    { 
+      title: 'Month Profit', 
       value: formatRupee(monthReport.net), 
       icon: Receipt, 
       color: monthReport.net >= 0 ? 'text-green-600' : 'text-red-600', 
@@ -116,8 +160,8 @@ export default function AdminDashboard() {
 
   const quickActions = [
     { title: 'Add Student', icon: Users, color: 'bg-blue-500', href: '/admin/students' },
-    { title: 'Quick Entry', icon: Receipt, color: 'bg-green-500', href: '/admin/quick-entry' },
-    { title: 'Fee Collection', icon: GraduationCap, color: 'bg-purple-500', href: '/admin/fees' },
+    { title: 'Fee Collection', icon: GraduationCap, color: 'bg-green-500', href: '/admin/fees' },
+    { title: 'Expenses', icon: Receipt, color: 'bg-red-500', href: '/admin/expenses' },
     { title: 'Bus Management', icon: Bus, color: 'bg-indigo-500', href: '/admin/bus' },
   ]
 
@@ -177,6 +221,9 @@ export default function AdminDashboard() {
                   <div className="flex-1 min-w-0">
                     <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{stat.title}</p>
                     <p className={`text-xl sm:text-2xl font-bold mt-1 ${stat.color}`}>{stat.value}</p>
+                    {stat.change && (
+                      <p className="text-xs text-gray-500 mt-1">{stat.change}</p>
+                    )}
                   </div>
                   <div className={`p-2 sm:p-3 rounded-full ${stat.color.replace('text-', 'bg-').replace('-600', '-100')} flex-shrink-0`}>
                     <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.color}`} />

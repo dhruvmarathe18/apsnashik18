@@ -72,14 +72,12 @@ export interface Database {
         Row: {
           id: string
           student_id: string
-          tuition_fee_monthly: number
           annual_fee: number
           exam_fee: number
           book_fee: number
           uniform_fee: number
           discount: number
           misc_fee: number
-          fee_frequency: string
           created_at: string
           updated_at: string
         }

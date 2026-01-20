@@ -1,30 +1,78 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
-import { GraduationCap, Plus, BookOpen, FileText, DollarSign, Trash2, Search } from 'lucide-react'
+import { GraduationCap, Plus, BookOpen, FileText, DollarSign, Trash2, Search, User, Calendar, AlertCircle, X } from 'lucide-react'
 import Link from 'next/link'
 import { useSchool } from '@/contexts/SchoolContext'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { formatRupee, formatDateReadable } from '@/lib/utils/format'
+import { formatRupee, formatDateReadable, getTodayISO, formatDateReadable as formatDate } from '@/lib/utils/format'
 import { generateClassWiseFeeReport } from '@/lib/utils/reports'
-import { FeeCollection } from '@/types/school'
+import { FeeCollection, FeeType, PaymentMode } from '@/types/school'
 import toast from 'react-hot-toast'
 import { parseISO, isSameMonth } from 'date-fns'
+import { useSearchParams } from 'next/navigation'
 
 export default function FeesPage() {
-  const { transactions, deleteTransaction, students, settings } = useSchool()
+  const searchParams = useSearchParams()
+  const { transactions, addTransaction, deleteTransaction, students, settings, feePlans, getStudentById } = useSchool()
   const [selectedMonth, setSelectedMonth] = useState('')
   const [filterClass, setFilterClass] = useState('')
   const [filterFeeType, setFilterFeeType] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [formData, setFormData] = useState<any>({
+    date: getTodayISO(),
+    amount: '',
+    paymentMode: 'Cash',
+    notes: '',
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [studentSearchTerm, setStudentSearchTerm] = useState('')
+  const [studentSearchClass, setStudentSearchClass] = useState('')
+  const [showStudentSearch, setShowStudentSearch] = useState(false)
+
+  // Handle studentId from URL query params
+  useEffect(() => {
+    const studentId = searchParams?.get('studentId')
+    if (studentId && !showAddModal) {
+      const student = getStudentById(studentId)
+      if (student) {
+        setShowAddModal(true)
+        setFormData((prev: any) => ({
+          ...prev,
+          studentId: student.id,
+          admissionNo: student.admissionNo,
+          class: student.className,
+          studentName: student.fullName,
+        }))
+      }
+    }
+  }, [searchParams, getStudentById, showAddModal])
 
   const feeTransactions = useMemo(() => {
     return transactions.filter((t): t is FeeCollection => t.type === 'fee_collection')
   }, [transactions])
+
+  // Helper functions - defined before useMemo hooks that use them
+  const getStudentName = (transaction: FeeCollection) => {
+    if (transaction.studentId) {
+      const student = students.find((s) => s.id === transaction.studentId)
+      return student?.fullName || transaction.studentName || '-'
+    }
+    return transaction.studentName || '-'
+  }
+
+  const getAdmissionNo = (transaction: FeeCollection) => {
+    if (transaction.studentId) {
+      const student = students.find((s) => s.id === transaction.studentId)
+      return student?.admissionNo || transaction.admissionNo || '-'
+    }
+    return transaction.admissionNo || '-'
+  }
 
   const filteredTransactions = useMemo(() => {
     let filtered = feeTransactions
@@ -57,7 +105,7 @@ export default function FeesPage() {
     }
 
     return filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-  }, [feeTransactions, selectedMonth, filterClass, filterFeeType, searchTerm])
+  }, [feeTransactions, selectedMonth, filterClass, filterFeeType, searchTerm, students])
 
   const classWiseReport = useMemo(() => {
     return generateClassWiseFeeReport(transactions)
@@ -68,6 +116,166 @@ export default function FeesPage() {
     thisMonth: filteredTransactions.reduce((sum, t) => sum + t.amount, 0),
     pending: 0, // Would need fee ledger calculation
     defaulters: 0, // Would need fee ledger calculation
+  }
+
+  const selectedStudent = useMemo(() => {
+    if (formData.studentId) {
+      return students.find((s) => s.id === formData.studentId)
+    }
+    if (formData.admissionNo) {
+      return students.find((s) => s.admissionNo === formData.admissionNo)
+    }
+    return null
+  }, [formData.studentId, formData.admissionNo, students])
+
+  // Calculate student fee details
+  const studentFeeDetails = useMemo(() => {
+    if (!selectedStudent) return null
+
+    const feePlan = feePlans.find((p) => p.studentId === selectedStudent.id)
+    if (!feePlan) return null
+
+    const studentTransactions = transactions.filter(
+      (t) =>
+        t.type === 'fee_collection' &&
+        (t.studentId === selectedStudent.id || t.admissionNo === selectedStudent.admissionNo)
+    )
+
+    const paid = studentTransactions.reduce((sum, t) => sum + t.amount, 0)
+    const expectedFees = feePlan.annualFee + feePlan.examFee + feePlan.bookFee + feePlan.uniformFee + (feePlan.miscFee || 0) - (feePlan.discount || 0)
+    const remaining = expectedFees - paid
+    const paidPercentage = expectedFees > 0 ? (paid / expectedFees) * 100 : 0
+
+    return {
+      feePlan,
+      expectedFees,
+      paid,
+      remaining,
+      paidPercentage,
+      transactionCount: studentTransactions.length,
+      lastPayment: studentTransactions.length > 0 
+        ? studentTransactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
+        : null
+    }
+  }, [selectedStudent, feePlans, transactions])
+
+  // Calculate students with pending fees for search
+  const studentsWithPendingFees = useMemo(() => {
+    return students
+      .filter((student) => {
+        if (student.status !== 'Active') return false
+
+        if (studentSearchTerm) {
+          const term = studentSearchTerm.toLowerCase()
+          const matchesName = student.fullName.toLowerCase().includes(term)
+          const matchesAdmission = student.admissionNo.toLowerCase().includes(term)
+          if (!matchesName && !matchesAdmission) return false
+        }
+
+        if (studentSearchClass && student.className !== studentSearchClass) return false
+
+        const feePlan = feePlans.find((p) => p.studentId === student.id)
+        if (!feePlan) return false
+
+        const studentTransactions = transactions.filter(
+          (t) =>
+            t.type === 'fee_collection' &&
+            (t.studentId === student.id || t.admissionNo === student.admissionNo)
+        )
+
+        const paid = studentTransactions.reduce((sum, t) => sum + t.amount, 0)
+        const expectedFees = feePlan.annualFee + feePlan.examFee + feePlan.bookFee + feePlan.uniformFee + (feePlan.miscFee || 0) - (feePlan.discount || 0)
+        const remaining = expectedFees - paid
+
+        return remaining > 0
+      })
+      .map((student) => {
+        const feePlan = feePlans.find((p) => p.studentId === student.id)!
+        const studentTransactions = transactions.filter(
+          (t) =>
+            t.type === 'fee_collection' &&
+            (t.studentId === student.id || t.admissionNo === student.admissionNo)
+        )
+        const paid = studentTransactions.reduce((sum, t) => sum + t.amount, 0)
+        const expectedFees = feePlan.annualFee + feePlan.examFee + feePlan.bookFee + feePlan.uniformFee + (feePlan.miscFee || 0) - (feePlan.discount || 0)
+        const remaining = expectedFees - paid
+
+        return {
+          student,
+          feePlan,
+          remaining,
+          paid,
+          expectedFees,
+        }
+      })
+      .sort((a, b) => b.remaining - a.remaining)
+  }, [students, feePlans, transactions, studentSearchTerm, studentSearchClass])
+
+  const handleSelectStudent = (studentId: string) => {
+    const student = students.find((s) => s.id === studentId)
+    if (student) {
+      setFormData((prev: any) => ({
+        ...prev,
+        studentId: student.id,
+        admissionNo: student.admissionNo,
+        class: student.className,
+        studentName: student.fullName,
+      }))
+      setShowStudentSearch(false)
+      setStudentSearchTerm('')
+      setStudentSearchClass('')
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!formData.amount || parseFloat(formData.amount) <= 0) {
+      toast.error('Please enter a valid amount')
+      return
+    }
+
+    if (!formData.class && !selectedStudent && !formData.admissionNo) {
+      toast.error('Please select a student or enter admission number/class')
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const transaction = {
+        date: formData.date,
+        amount: parseFloat(formData.amount),
+        paymentMode: formData.paymentMode as PaymentMode,
+        notes: formData.notes || undefined,
+        type: 'fee_collection' as const,
+        studentId: formData.studentId || selectedStudent?.id || undefined,
+        admissionNo: formData.admissionNo || selectedStudent?.admissionNo || undefined,
+        class: selectedStudent?.className || formData.class || '',
+        studentName: selectedStudent?.fullName || formData.studentName || undefined,
+        feeType: (formData.feeType || 'Tuition') as FeeType,
+        feeForMonth: formData.feeForMonth || undefined,
+        status: formData.status || 'Paid',
+      }
+
+      await addTransaction(transaction)
+      toast.success('Fee entry added successfully!')
+      
+      // Reset form
+      setShowAddModal(false)
+      setFormData({
+        date: getTodayISO(),
+        amount: '',
+        paymentMode: 'Cash',
+        notes: '',
+      })
+      setStudentSearchTerm('')
+      setStudentSearchClass('')
+      setShowStudentSearch(false)
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to add entry')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleDelete = async (id: string) => {
@@ -84,22 +292,6 @@ export default function FeesPage() {
     }
   }
 
-  const getStudentName = (transaction: FeeCollection) => {
-    if (transaction.studentId) {
-      const student = students.find((s) => s.id === transaction.studentId)
-      return student?.fullName || transaction.studentName || '-'
-    }
-    return transaction.studentName || '-'
-  }
-
-  const getAdmissionNo = (transaction: FeeCollection) => {
-    if (transaction.studentId) {
-      const student = students.find((s) => s.id === transaction.studentId)
-      return student?.admissionNo || transaction.admissionNo || '-'
-    }
-    return transaction.admissionNo || '-'
-  }
-
   return (
     <AdminLayout>
       <div className="p-6">
@@ -109,12 +301,10 @@ export default function FeesPage() {
               <h1 className="text-3xl font-bold text-gray-900">Fee Management</h1>
               <p className="text-gray-600 mt-2">Manage fee collection, ledger, and due reports</p>
             </div>
-            <Link href="/admin/quick-entry">
-              <Button>
-                <Plus className="w-5 h-5 mr-2" />
-                Add Fee Entry
-              </Button>
-            </Link>
+            <Button onClick={() => setShowAddModal(true)}>
+              <Plus className="w-5 h-5 mr-2" />
+              Add Fee Entry
+            </Button>
           </div>
 
           {/* Stats Cards */}
@@ -265,12 +455,10 @@ export default function FeesPage() {
                       : 'Get started by adding your first fee entry'}
                   </p>
                   {!selectedMonth && !filterClass && !filterFeeType && (
-                    <Link href="/admin/quick-entry">
-                      <Button>
-                        <Plus className="w-5 h-5 mr-2" />
-                        Add Fee Entry
-                      </Button>
-                    </Link>
+                    <Button onClick={() => setShowAddModal(true)}>
+                      <Plus className="w-5 h-5 mr-2" />
+                      Add Fee Entry
+                    </Button>
                   )}
                 </div>
               ) : (
@@ -366,24 +554,354 @@ export default function FeesPage() {
               </Card>
             </Link>
 
-            <Link href="/admin/quick-entry">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-green-500">
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="p-3 bg-green-100 rounded-lg">
-                      <Plus className="w-6 h-6 text-green-600" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900">Quick Entry</h3>
-                      <p className="text-sm text-gray-600 mt-1">Add new fee entry quickly</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
           </div>
         </div>
       </div>
+
+      {/* Fee Collection Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900">Collect Fee</h2>
+              <Button variant="ghost" size="sm" onClick={() => {
+                setShowAddModal(false)
+                setFormData({
+                  date: getTodayISO(),
+                  amount: '',
+                  paymentMode: 'Cash',
+                  notes: '',
+                })
+                setStudentSearchTerm('')
+                setStudentSearchClass('')
+                setShowStudentSearch(false)
+              }}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            <form onSubmit={handleSubmit} className="p-6">
+              {/* Student Fee Details Card */}
+              {selectedStudent && studentFeeDetails && (
+                <Card className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="w-5 h-5 text-blue-600" />
+                      Student Fee Details
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <h3 className="font-semibold text-gray-700 mb-3">Student Information</h3>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-gray-600">Name:</span>
+                            <span className="text-sm text-gray-900">{selectedStudent.fullName}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-gray-600">Admission No:</span>
+                            <span className="text-sm text-gray-900 font-mono">{selectedStudent.admissionNo}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-gray-600">Class:</span>
+                            <span className="text-sm text-gray-900">{selectedStudent.className}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <h3 className="font-semibold text-gray-700 mb-3">Fee Plan</h3>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">Annual Fee:</span>
+                            <span className="text-sm font-medium text-gray-900">{formatRupee(studentFeeDetails.feePlan.annualFee)}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">Exam Fee:</span>
+                            <span className="text-sm font-medium text-gray-900">{formatRupee(studentFeeDetails.feePlan.examFee)}</span>
+                          </div>
+                          {studentFeeDetails.feePlan.bookFee > 0 && (
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600">Books:</span>
+                              <span className="text-sm font-medium text-gray-900">{formatRupee(studentFeeDetails.feePlan.bookFee)}</span>
+                            </div>
+                          )}
+                          {studentFeeDetails.feePlan.uniformFee > 0 && (
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600">Uniform:</span>
+                              <span className="text-sm font-medium text-gray-900">{formatRupee(studentFeeDetails.feePlan.uniformFee)}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mt-6 pt-6 border-t border-blue-200">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-white rounded-lg p-4 border border-blue-100">
+                          <div className="flex items-center gap-2 mb-2">
+                            <DollarSign className="w-4 h-4 text-blue-600" />
+                            <span className="text-sm font-medium text-gray-600">Total Expected</span>
+                          </div>
+                          <p className="text-xl font-bold text-gray-900">{formatRupee(studentFeeDetails.expectedFees)}</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 border border-green-100">
+                          <div className="flex items-center gap-2 mb-2">
+                            <FileText className="w-4 h-4 text-green-600" />
+                            <span className="text-sm font-medium text-gray-600">Total Paid</span>
+                          </div>
+                          <p className="text-xl font-bold text-green-600">{formatRupee(studentFeeDetails.paid)}</p>
+                          <p className="text-xs text-gray-500 mt-1">{studentFeeDetails.paidPercentage.toFixed(1)}% paid</p>
+                        </div>
+                        <div className={`bg-white rounded-lg p-4 border ${studentFeeDetails.remaining > 0 ? 'border-red-100' : 'border-green-100'}`}>
+                          <div className="flex items-center gap-2 mb-2">
+                            <AlertCircle className={`w-4 h-4 ${studentFeeDetails.remaining > 0 ? 'text-red-600' : 'text-green-600'}`} />
+                            <span className="text-sm font-medium text-gray-600">Pending Amount</span>
+                          </div>
+                          <p className={`text-xl font-bold ${studentFeeDetails.remaining > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                            {formatRupee(studentFeeDetails.remaining)}
+                          </p>
+                          {studentFeeDetails.lastPayment && (
+                            <p className="text-xs text-gray-500 mt-1">
+                              Last payment: {formatDate(studentFeeDetails.lastPayment.date)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Student Search Section */}
+              {!selectedStudent && (
+                <Card className="mb-6 border-2 border-blue-200">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Search className="w-5 h-5 text-blue-600" />
+                      Search Students with Pending Fees
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <Input
+                          type="text"
+                          placeholder="Search by student name or admission number..."
+                          value={studentSearchTerm}
+                          onChange={(e) => setStudentSearchTerm(e.target.value)}
+                          className="pl-10"
+                          onFocus={() => setShowStudentSearch(true)}
+                        />
+                      </div>
+                      <Select
+                        label="Filter by Class"
+                        value={studentSearchClass}
+                        onChange={(e) => {
+                          setStudentSearchClass(e.target.value)
+                          setShowStudentSearch(true)
+                        }}
+                        options={[
+                          { value: '', label: 'All Classes' },
+                          ...settings.classes.map((cls) => ({ value: cls, label: cls })),
+                        ]}
+                      />
+                    </div>
+
+                    {showStudentSearch && (studentSearchTerm || studentSearchClass) && studentsWithPendingFees.length > 0 && (
+                      <div className="border rounded-lg max-h-64 overflow-y-auto">
+                        <div className="divide-y">
+                          {studentsWithPendingFees.map((item) => (
+                            <button
+                              key={item.student.id}
+                              type="button"
+                              onClick={() => handleSelectStudent(item.student.id)}
+                              className="w-full text-left p-3 hover:bg-blue-50 transition-colors"
+                            >
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="font-medium text-gray-900">{item.student.fullName}</p>
+                                  <p className="text-sm text-gray-600">
+                                    {item.student.admissionNo} - {item.student.className}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-sm font-semibold text-red-600">
+                                    Pending: {formatRupee(item.remaining)}
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    Paid: {formatRupee(item.paid)} / {formatRupee(item.expectedFees)}
+                                  </p>
+                                </div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {showStudentSearch && (studentSearchTerm || studentSearchClass) && studentsWithPendingFees.length === 0 && (
+                      <div className="text-center py-8 text-gray-500">
+                        <p>No students found with pending fees matching your search.</p>
+                      </div>
+                    )}
+
+                    {!studentSearchTerm && !studentSearchClass && (
+                      <div className="text-center py-4 text-gray-500 text-sm">
+                        <p>Enter a search term or select a class to find students with pending fees.</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Form Fields */}
+              <div className="space-y-4">
+                <Input
+                  label="Date"
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  required
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="Admission No"
+                    type="text"
+                    value={formData.admissionNo || ''}
+                    onChange={(e) => {
+                      const admissionNo = e.target.value
+                      setFormData({ ...formData, admissionNo, studentId: '' })
+                      const student = students.find((s) => s.admissionNo === admissionNo)
+                      if (student) {
+                        setFormData((prev: any) => ({
+                          ...prev,
+                          admissionNo,
+                          studentId: student.id,
+                          class: student.className,
+                          studentName: student.fullName,
+                        }))
+                      } else {
+                        setFormData((prev: any) => ({
+                          ...prev,
+                          studentId: '',
+                          studentName: '',
+                        }))
+                      }
+                    }}
+                    placeholder="Enter admission number"
+                  />
+                  <Select
+                    label="Class"
+                    value={formData.class || ''}
+                    onChange={(e) => setFormData({ ...formData, class: e.target.value })}
+                    options={[
+                      { value: '', label: 'Select Class' },
+                      ...settings.classes.map((cls) => ({ value: cls, label: cls })),
+                    ]}
+                  />
+                </div>
+                {selectedStudent && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center justify-between">
+                    <p className="text-sm text-blue-800">
+                      <strong>Student Found:</strong> {selectedStudent.fullName} - {selectedStudent.className}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setFormData((prev: any) => ({
+                          ...prev,
+                          studentId: '',
+                          admissionNo: '',
+                          class: '',
+                          studentName: '',
+                        }))
+                        setShowStudentSearch(true)
+                      }}
+                    >
+                      Change Student
+                    </Button>
+                  </div>
+                )}
+                <Input
+                  label="Student Name"
+                  type="text"
+                  value={formData.studentName || selectedStudent?.fullName || ''}
+                  onChange={(e) => setFormData({ ...formData, studentName: e.target.value })}
+                />
+                <Input
+                  label="Amount (₹)"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.amount}
+                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                  placeholder="0.00"
+                  required
+                />
+                <Select
+                  label="Payment Mode"
+                  value={formData.paymentMode}
+                  onChange={(e) => setFormData({ ...formData, paymentMode: e.target.value })}
+                  options={settings.paymentModes.map((mode) => ({ value: mode, label: mode }))}
+                  required
+                />
+                <Select
+                  label="Fee Type"
+                  value={formData.feeType || 'Tuition'}
+                  onChange={(e) => setFormData({ ...formData, feeType: e.target.value })}
+                  options={[
+                    { value: 'Tuition', label: 'Tuition' },
+                    { value: 'Exam', label: 'Exam' },
+                    { value: 'Annual', label: 'Annual' },
+                    { value: 'Books', label: 'Books' },
+                    { value: 'Uniform', label: 'Uniform' },
+                    { value: 'Other', label: 'Other' },
+                  ]}
+                />
+                <Input
+                  label="Fee For Month (YYYY-MM)"
+                  type="month"
+                  value={formData.feeForMonth || ''}
+                  onChange={(e) => setFormData({ ...formData, feeForMonth: e.target.value })}
+                />
+                <Input
+                  label="Notes"
+                  type="text"
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  placeholder="Optional notes..."
+                />
+              </div>
+
+              <div className="flex gap-4 mt-6">
+                <Button type="submit" disabled={isSubmitting} className="flex-1">
+                  {isSubmitting ? 'Saving...' : 'Collect Fee'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setShowAddModal(false)
+                    setFormData({
+                      date: getTodayISO(),
+                      amount: '',
+                      paymentMode: 'Cash',
+                      notes: '',
+                    })
+                    setStudentSearchTerm('')
+                    setStudentSearchClass('')
+                    setShowStudentSearch(false)
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   )
 }

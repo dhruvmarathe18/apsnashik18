@@ -141,13 +141,13 @@ export default function StudentsPage() {
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10 pointer-events-none" />
                   <Input
                     type="text"
                     placeholder="Search by name, admission number, or phone..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 w-full"
                   />
                 </div>
                 <Select
@@ -322,14 +322,12 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
     busFeeMonthly: student?.busFeeMonthly || '',
     status: student?.status || 'Active',
     // Fee Plan fields
-    tuitionFeeMonthly: existingFeePlan?.tuitionFeeMonthly || '',
     annualFee: existingFeePlan?.annualFee || '',
     examFee: existingFeePlan?.examFee || '',
     bookFee: existingFeePlan?.bookFee || '',
     uniformFee: existingFeePlan?.uniformFee || '',
     discount: existingFeePlan?.discount || '',
     miscFee: existingFeePlan?.miscFee || '',
-    feeFrequency: existingFeePlan?.feeFrequency || 'Monthly',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -365,7 +363,7 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
       }
 
       // Remove fee plan fields from student data
-      const { tuitionFeeMonthly, annualFee, examFee, bookFee, uniformFee, discount, miscFee, feeFrequency, ...studentInfo } = studentData
+      const { annualFee, examFee, bookFee, uniformFee, discount, miscFee, ...studentInfo } = studentData
 
       let savedStudent: Student
 
@@ -381,14 +379,12 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
       // Create or update fee plan
       const feePlanData = {
         studentId: savedStudent.id,
-        tuitionFeeMonthly: parseFloat(tuitionFeeMonthly) || 0,
         annualFee: parseFloat(annualFee) || 0,
         examFee: parseFloat(examFee) || 0,
         bookFee: parseFloat(bookFee) || 0,
         uniformFee: parseFloat(uniformFee) || 0,
         discount: parseFloat(discount) || 0,
         miscFee: parseFloat(miscFee) || 0,
-        feeFrequency: feeFrequency || 'Monthly',
       }
 
       if (existingFeePlan) {
@@ -573,15 +569,6 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Fee Plan Details</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
-                label="Tuition Fee Monthly (₹)"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.tuitionFeeMonthly}
-                onChange={(e) => setFormData({ ...formData, tuitionFeeMonthly: e.target.value })}
-                placeholder="0.00"
-              />
-              <Input
                 label="Annual Fee (₹)"
                 type="number"
                 step="0.01"
@@ -634,16 +621,6 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
                 value={formData.miscFee}
                 onChange={(e) => setFormData({ ...formData, miscFee: e.target.value })}
                 placeholder="0.00"
-              />
-              <Select
-                label="Fee Frequency"
-                value={formData.feeFrequency}
-                onChange={(e) => setFormData({ ...formData, feeFrequency: e.target.value })}
-                options={[
-                  { value: 'Monthly', label: 'Monthly' },
-                  { value: 'Quarterly', label: 'Quarterly' },
-                  { value: 'Yearly', label: 'Yearly' },
-                ]}
               />
             </div>
           </div>

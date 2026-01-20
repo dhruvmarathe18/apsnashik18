@@ -136,14 +136,12 @@ export interface Student {
 export interface FeePlan {
   id: string
   studentId: string
-  tuitionFeeMonthly: number
   annualFee: number
   examFee: number
   bookFee: number
   uniformFee: number
   discount: number
   miscFee: number
-  feeFrequency: FeeFrequency
   createdAt: string
   updatedAt: string
 }
