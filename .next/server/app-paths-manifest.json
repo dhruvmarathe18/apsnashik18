@@ -1,3 +1,7 @@
 {
-  "/admin/students/page": "app/admin/students/page.js"
+  "/admin/salaries/page": "app/admin/salaries/page.js",
+  "/admin/reports/page": "app/admin/reports/page.js",
+  "/admin/expenses/page": "app/admin/expenses/page.js",
+  "/admin/settings/page": "app/admin/settings/page.js",
+  "/admin/income/page": "app/admin/income/page.js"
 }

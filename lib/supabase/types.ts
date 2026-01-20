@@ -19,7 +19,6 @@ export interface Database {
           class: string | null
           student_name: string | null
           fee_type: string | null
-          fee_for_month: string | null
           status: string | null
           // Bus fields
           bus_number: string | null

@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
-import { FileText, Download, AlertCircle } from 'lucide-react'
+import { FileText, Download, AlertCircle, Search } from 'lucide-react'
 import { useSchool } from '@/contexts/SchoolContext'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -15,6 +15,7 @@ export default function FeeDueReportsPage() {
   const { students, transactions, feePlans, settings } = useSchool()
   const [selectedMonth, setSelectedMonth] = useState('')
   const [filterClass, setFilterClass] = useState('')
+  const [searchName, setSearchName] = useState('')
 
   // Calculate fee dues for each student
   const feeDues = useMemo(() => {
@@ -31,6 +32,16 @@ export default function FeeDueReportsPage() {
       if (student.status !== 'Active') return
 
       if (filterClass && student.className !== filterClass) return
+
+      // Filter by student name search
+      if (searchName) {
+        const searchTerm = searchName.toLowerCase()
+        const studentName = student.fullName.toLowerCase()
+        const admissionNo = student.admissionNo.toLowerCase()
+        if (!studentName.includes(searchTerm) && !admissionNo.includes(searchTerm)) {
+          return
+        }
+      }
 
       const feePlan = feePlans.find((p) => p.studentId === student.id)
       if (!feePlan) return
@@ -61,7 +72,7 @@ export default function FeeDueReportsPage() {
     })
 
     return dues.sort((a, b) => b.remaining - a.remaining)
-  }, [students, transactions, feePlans, filterClass])
+  }, [students, transactions, feePlans, filterClass, searchName])
 
   const totalDue = useMemo(() => {
     return feeDues.reduce((sum, d) => sum + d.remaining, 0)
@@ -93,7 +104,18 @@ export default function FeeDueReportsPage() {
           {/* Filters */}
           <Card className="mb-6">
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10 pointer-events-none" />
+                  <Input
+                    label="Search by Student Name"
+                    type="text"
+                    placeholder="Search by name or admission number..."
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                    className="pl-10 w-full"
+                  />
+                </div>
                 <Input
                   label="Filter by Month"
                   type="month"
@@ -159,7 +181,7 @@ export default function FeeDueReportsPage() {
                                   View
                                 </Button>
                               </Link>
-                              <Link href={`/admin/fees?studentId=${due.student.id}`}>
+                              <Link href={`/admin/fees?studentId=${due.student.id}&from=fee-due-reports`}>
                                 <Button size="sm">
                                   Collect Fee
                                 </Button>

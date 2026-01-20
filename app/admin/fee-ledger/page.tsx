@@ -153,7 +153,6 @@ export default function FeeLedgerPage() {
                           <tr className="border-b">
                             <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Date</th>
                             <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Fee Type</th>
-                            <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Fee For Month</th>
                             <th className="text-right py-2 px-4 text-sm font-medium text-gray-700">Amount</th>
                             <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Payment Mode</th>
                             <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Status</th>
@@ -166,9 +165,6 @@ export default function FeeLedgerPage() {
                               <tr key={transaction.id} className="border-b hover:bg-gray-50">
                                 <td className="py-2 px-4 text-sm text-gray-600">{formatDateReadable(transaction.date)}</td>
                                 <td className="py-2 px-4 text-sm text-gray-900">{transaction.feeType}</td>
-                                <td className="py-2 px-4 text-sm text-gray-600">
-                                  {transaction.feeForMonth || '-'}
-                                </td>
                                 <td className="py-2 px-4 text-sm font-semibold text-right text-green-600">
                                   {formatRupee(transaction.amount)}
                                 </td>

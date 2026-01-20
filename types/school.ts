@@ -57,7 +57,6 @@ export interface FeeCollection extends BaseTransaction {
   class: string
   studentName?: string
   feeType: FeeType
-  feeForMonth?: string // YYYY-MM format
   status?: 'Paid' | 'Pending'
 }
 

@@ -14,7 +14,9 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.91.0",
+    "@types/bcryptjs": "^2.4.6",
     "autoprefixer": "^10.4.16",
+    "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "date-fns": "^2.30.0",
     "file-saver": "^2.0.5",

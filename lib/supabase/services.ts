@@ -563,7 +563,6 @@ function transformTransaction(dbRow: any): Transaction {
       class: dbRow.class,
       studentName: dbRow.student_name,
       feeType: dbRow.fee_type,
-      feeForMonth: dbRow.fee_for_month,
       status: dbRow.status,
     } as Transaction
   }
@@ -629,7 +628,6 @@ function transformToDbTransaction(transaction: Transaction | Partial<Transaction
     dbRow.class = fee.class || null
     dbRow.student_name = fee.studentName || null
     dbRow.fee_type = fee.feeType || null
-    dbRow.fee_for_month = fee.feeForMonth || null
     dbRow.status = fee.status || 'Paid'
   } else if (transaction.type === 'bus_fee_collection') {
     const busFee = transaction as any

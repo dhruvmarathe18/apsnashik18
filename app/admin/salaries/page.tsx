@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
-import { UserCog, Plus, Trash2 } from 'lucide-react'
+import { UserCog, Plus, Trash2, Edit, ArrowLeft } from 'lucide-react'
 import { useSchool } from '@/contexts/SchoolContext'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -13,8 +13,9 @@ import { Transaction, Salary, EmployeeType } from '@/types/school'
 import toast from 'react-hot-toast'
 
 export default function SalariesPage() {
-  const { transactions, addTransaction, deleteTransaction, settings } = useSchool()
+  const { transactions, addTransaction, updateTransaction, deleteTransaction, settings } = useSchool()
   const [showAddModal, setShowAddModal] = useState(false)
+  const [editingSalary, setEditingSalary] = useState<Salary | null>(null)
   const [filterMonth, setFilterMonth] = useState('')
   const [filterType, setFilterType] = useState<EmployeeType | ''>('')
 
@@ -202,7 +203,17 @@ export default function SalariesPage() {
                           </td>
                           <td className="py-3 px-4 text-sm text-gray-600">{salary.paymentMode}</td>
                           <td className="py-3 px-4">
-                            <div className="flex items-center justify-end">
+                            <div className="flex items-center justify-end gap-2">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => {
+                                  setEditingSalary(salary)
+                                  setShowAddModal(true)
+                                }}
+                              >
+                                <Edit className="w-4 h-4 text-blue-600" />
+                              </Button>
                               <Button variant="ghost" size="sm" onClick={() => handleDelete(salary.id)}>
                                 <Trash2 className="w-4 h-4 text-red-600" />
                               </Button>
@@ -219,11 +230,13 @@ export default function SalariesPage() {
         </div>
       </div>
 
-      {/* Add Salary Modal */}
+      {/* Add/Edit Salary Modal */}
       {showAddModal && (
         <SalaryModal
+          salary={editingSalary}
           onClose={() => {
             setShowAddModal(false)
+            setEditingSalary(null)
           }}
         />
       )}
@@ -231,19 +244,20 @@ export default function SalariesPage() {
   )
 }
 
-function SalaryModal({ onClose }: { onClose: () => void }) {
-  const { addTransaction, settings, transactions } = useSchool()
+function SalaryModal({ salary, onClose }: { salary: Salary | null; onClose: () => void }) {
+  const { addTransaction, updateTransaction, settings, transactions } = useSchool()
   const [formData, setFormData] = useState({
-    date: getTodayISO(),
-    employeeName: '',
-    employeeType: 'Teacher' as EmployeeType,
-    salaryMonth: '',
-    amount: '',
-    paymentMode: 'Cash' as any,
-    notes: '',
+    date: salary?.date || getTodayISO(),
+    employeeName: salary?.employeeName || '',
+    employeeType: (salary?.employeeType || 'Teacher') as EmployeeType,
+    salaryMonth: salary?.salaryMonth || '',
+    amount: salary?.amount.toString() || '',
+    paymentMode: (salary?.paymentMode || 'Cash') as any,
+    notes: salary?.notes || '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [useDropdown, setUseDropdown] = useState(true)
+  const [isClosing, setIsClosing] = useState(false)
 
   // Get unique employee names from previous salary records
   const previousEmployees = useMemo(() => {
@@ -291,19 +305,45 @@ function SalaryModal({ onClose }: { onClose: () => void }) {
     setIsSubmitting(true)
 
     try {
-      addTransaction({
-        type: 'salary',
-        date: formData.date,
-        amount: parseFloat(formData.amount),
-        paymentMode: formData.paymentMode,
-        notes: formData.notes || undefined,
-        employeeType: formData.employeeType,
-        employeeName: formData.employeeName,
-        salaryMonth: formData.salaryMonth || '',
-      } as Omit<Transaction, 'id' | 'createdAt'>)
+      if (salary) {
+        // Update existing salary
+        await updateTransaction(salary.id, {
+          type: 'salary',
+          date: formData.date,
+          amount: parseFloat(formData.amount),
+          paymentMode: formData.paymentMode,
+          notes: formData.notes || undefined,
+          employeeType: formData.employeeType,
+          employeeName: formData.employeeName,
+          salaryMonth: formData.salaryMonth || '',
+        } as Partial<Transaction>)
+        toast.success('Salary entry updated successfully')
+      } else {
+        // Add new salary
+        addTransaction({
+          type: 'salary',
+          date: formData.date,
+          amount: parseFloat(formData.amount),
+          paymentMode: formData.paymentMode,
+          notes: formData.notes || undefined,
+          employeeType: formData.employeeType,
+          employeeName: formData.employeeName,
+          salaryMonth: formData.salaryMonth || '',
+        } as Omit<Transaction, 'id' | 'createdAt'>)
+        toast.success('Salary entry added successfully')
+      }
 
-      toast.success('Salary entry added successfully')
-      // Reset form
+      // Close with animation
+      handleClose()
+    } catch (error: any) {
+      toast.error(error.message || `Failed to ${salary ? 'update' : 'add'} salary entry`)
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleClose = () => {
+    setIsClosing(true)
+    setTimeout(() => {
       setFormData({
         date: getTodayISO(),
         employeeName: '',
@@ -314,19 +354,41 @@ function SalaryModal({ onClose }: { onClose: () => void }) {
         notes: '',
       })
       setUseDropdown(true)
+      setIsClosing(false)
       onClose()
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to add salary entry')
-    } finally {
-      setIsSubmitting(false)
-    }
+    }, 300) // Match animation duration
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-        <div className="p-6 border-b">
-          <h2 className="text-2xl font-bold text-gray-900">Add Salary Entry</h2>
+    <div 
+      className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 transition-opacity duration-300 ${
+        isClosing ? 'opacity-0' : 'opacity-100'
+      }`}
+      onClick={handleClose}
+    >
+      <div 
+        className={`bg-white rounded-lg shadow-xl max-w-2xl w-full transition-all duration-300 ease-in-out ${
+          isClosing 
+            ? 'transform translate-x-[100%] opacity-0 scale-95' 
+            : 'transform translate-x-0 opacity-100 scale-100'
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6 border-b flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {salary && (
+              <button
+                onClick={handleClose}
+                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Go back"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-600" />
+              </button>
+            )}
+            <h2 className="text-2xl font-bold text-gray-900">
+              {salary ? 'Edit Salary Entry' : 'Add Salary Entry'}
+            </h2>
+          </div>
         </div>
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-4">
@@ -432,7 +494,7 @@ function SalaryModal({ onClose }: { onClose: () => void }) {
             <Button type="submit" disabled={isSubmitting} className="flex-1">
               {isSubmitting ? 'Saving...' : 'Add Salary'}
             </Button>
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={handleClose}>
               Cancel
             </Button>
           </div>

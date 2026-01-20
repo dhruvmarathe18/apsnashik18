@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, Suspense } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
-import { GraduationCap, Plus, BookOpen, FileText, DollarSign, Trash2, Search, User, Calendar, AlertCircle, X } from 'lucide-react'
+import { GraduationCap, Plus, BookOpen, FileText, DollarSign, Trash2, Search, User, Calendar, AlertCircle, X, CheckCircle, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useSchool } from '@/contexts/SchoolContext'
 import { Button } from '@/components/ui/Button'
@@ -14,16 +14,19 @@ import { generateClassWiseFeeReport } from '@/lib/utils/reports'
 import { FeeCollection, FeeType, PaymentMode } from '@/types/school'
 import toast from 'react-hot-toast'
 import { parseISO, isSameMonth } from 'date-fns'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 
 function FeesPageContent() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const { transactions, addTransaction, deleteTransaction, students, settings, feePlans, getStudentById } = useSchool()
   const [selectedMonth, setSelectedMonth] = useState('')
   const [filterClass, setFilterClass] = useState('')
   const [filterFeeType, setFilterFeeType] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [showAddModal, setShowAddModal] = useState(false)
+  const [isClosing, setIsClosing] = useState(false)
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false)
   const [formData, setFormData] = useState<any>({
     date: getTodayISO(),
     amount: '',
@@ -253,15 +256,37 @@ function FeesPageContent() {
         class: selectedStudent?.className || formData.class || '',
         studentName: selectedStudent?.fullName || formData.studentName || undefined,
         feeType: (formData.feeType || 'Tuition') as FeeType,
-        feeForMonth: formData.feeForMonth || undefined,
         status: formData.status || 'Paid',
       }
 
       await addTransaction(transaction)
-      toast.success('Fee entry added successfully!')
+      
+      // Show success animation
+      setShowSuccessAnimation(true)
+      toast.success('Fee collected successfully!', {
+        icon: '✅',
+        duration: 2000,
+      })
+      
+      // Wait for animation, then close and navigate
+      setTimeout(() => {
+        handleCloseModal(true)
+      }, 1500)
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to add entry')
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleCloseModal = (navigateBack = false) => {
+    setIsClosing(true)
+    setShowSuccessAnimation(false)
+    
+    setTimeout(() => {
+      setShowAddModal(false)
+      setIsClosing(false)
       
       // Reset form
-      setShowAddModal(false)
       setFormData({
         date: getTodayISO(),
         amount: '',
@@ -271,11 +296,12 @@ function FeesPageContent() {
       setStudentSearchTerm('')
       setStudentSearchClass('')
       setShowStudentSearch(false)
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to add entry')
-    } finally {
-      setIsSubmitting(false)
-    }
+      
+      // Navigate back to fee due reports if came from there
+      if (navigateBack && searchParams?.get('from') === 'fee-due-reports') {
+        router.push('/admin/fee-due-reports')
+      }
+    }, 300) // Match animation duration
   }
 
   const handleDelete = async (id: string) => {
@@ -560,22 +586,47 @@ function FeesPageContent() {
 
       {/* Fee Collection Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div 
+          className={`fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 transition-opacity duration-300 ${
+            isClosing ? 'opacity-0' : 'opacity-100'
+          }`}
+          onClick={() => handleCloseModal()}
+        >
+          <div 
+            className={`bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transition-all duration-300 ease-in-out ${
+              isClosing 
+                ? 'transform translate-x-[100%] opacity-0 scale-95' 
+                : 'transform translate-x-0 opacity-100 scale-100'
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Success Animation Overlay */}
+            {showSuccessAnimation && (
+              <div className="absolute inset-0 bg-green-500 bg-opacity-95 flex items-center justify-center z-10 rounded-lg animate-pulse">
+                <div className="text-center">
+                  <div className="mb-4">
+                    <CheckCircle className="w-20 h-20 text-white mx-auto animate-bounce" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Fee Collected!</h3>
+                  <p className="text-white text-lg">₹{formatRupee(parseFloat(formData.amount || '0'))}</p>
+                </div>
+              </div>
+            )}
+            
             <div className="p-6 border-b flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">Collect Fee</h2>
-              <Button variant="ghost" size="sm" onClick={() => {
-                setShowAddModal(false)
-                setFormData({
-                  date: getTodayISO(),
-                  amount: '',
-                  paymentMode: 'Cash',
-                  notes: '',
-                })
-                setStudentSearchTerm('')
-                setStudentSearchClass('')
-                setShowStudentSearch(false)
-              }}>
+              <div className="flex items-center gap-3">
+                {searchParams?.get('from') === 'fee-due-reports' && (
+                  <button
+                    onClick={() => handleCloseModal(true)}
+                    className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                    aria-label="Go back"
+                  >
+                    <ArrowLeft className="w-5 h-5 text-gray-600" />
+                  </button>
+                )}
+                <h2 className="text-2xl font-bold text-gray-900">Collect Fee</h2>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => handleCloseModal()}>
                 <X className="w-5 h-5" />
               </Button>
             </div>
@@ -859,12 +910,6 @@ function FeesPageContent() {
                     { value: 'Uniform', label: 'Uniform' },
                     { value: 'Other', label: 'Other' },
                   ]}
-                />
-                <Input
-                  label="Fee For Month (YYYY-MM)"
-                  type="month"
-                  value={formData.feeForMonth || ''}
-                  onChange={(e) => setFormData({ ...formData, feeForMonth: e.target.value })}
                 />
                 <Input
                   label="Notes"

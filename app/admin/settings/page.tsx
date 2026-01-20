@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
-import { Settings as SettingsIcon, AlertTriangle, Trash2 } from 'lucide-react'
+import { Settings as SettingsIcon, AlertTriangle, Trash2, Lock, Eye, EyeOff } from 'lucide-react'
 import { useSchool } from '@/contexts/SchoolContext'
 import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import toast from 'react-hot-toast'
 
@@ -13,6 +14,18 @@ export default function SettingsPage() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [isResetting, setIsResetting] = useState(false)
   const [confirmText, setConfirmText] = useState('')
+  const [showPasswordChange, setShowPasswordChange] = useState(false)
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  })
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  })
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
 
   const handleReset = async () => {
     if (confirmText !== 'DELETE ALL DATA') {
@@ -29,6 +42,66 @@ export default function SettingsPage() {
       // Error is already handled in resetAllData
     } finally {
       setIsResetting(false)
+    }
+  }
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      toast.error('Please fill all fields')
+      return
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      toast.error('New password must be at least 6 characters long')
+      return
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error('New passwords do not match')
+      return
+    }
+
+    if (passwordData.currentPassword === passwordData.newPassword) {
+      toast.error('New password must be different from current password')
+      return
+    }
+
+    setIsChangingPassword(true)
+
+    try {
+      const email = localStorage.getItem('adminEmail') || 'admin@apsnashik.com'
+      const response = await fetch('/api/admin/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        toast.success('Password changed successfully!')
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        })
+        setShowPasswordChange(false)
+      } else {
+        toast.error(data.error || 'Failed to change password')
+      }
+    } catch (error: any) {
+      console.error('Password change error:', error)
+      toast.error('Failed to change password. Please try again.')
+    } finally {
+      setIsChangingPassword(false)
     }
   }
 
@@ -67,6 +140,105 @@ export default function SettingsPage() {
                   <p className="text-2xl font-bold text-gray-900 mt-1">{dataStats.feePlans}</p>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Change Password Section */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lock className="w-5 h-5 text-blue-600" />
+                Change Password
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!showPasswordChange ? (
+                <div className="space-y-4">
+                  <p className="text-gray-600">
+                    Update your admin account password to keep your account secure.
+                  </p>
+                  <Button onClick={() => setShowPasswordChange(true)}>
+                    <Lock className="w-4 h-4 mr-2" />
+                    Change Password
+                  </Button>
+                </div>
+              ) : (
+                <form onSubmit={handlePasswordChange} className="space-y-4">
+                  <div className="relative">
+                    <Input
+                      label="Current Password"
+                      type={showPasswords.current ? 'text' : 'password'}
+                      value={passwordData.currentPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                      placeholder="Enter current password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPasswords({ ...showPasswords, current: !showPasswords.current })}
+                      className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPasswords.current ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <Input
+                      label="New Password"
+                      type={showPasswords.new ? 'text' : 'password'}
+                      value={passwordData.newPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                      placeholder="Enter new password (min. 6 characters)"
+                      required
+                      minLength={6}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPasswords({ ...showPasswords, new: !showPasswords.new })}
+                      className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPasswords.new ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <Input
+                      label="Confirm New Password"
+                      type={showPasswords.confirm ? 'text' : 'password'}
+                      value={passwordData.confirmPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                      placeholder="Confirm new password"
+                      required
+                      minLength={6}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPasswords({ ...showPasswords, confirm: !showPasswords.confirm })}
+                      className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPasswords.confirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  <div className="flex gap-3">
+                    <Button type="submit" disabled={isChangingPassword} className="flex-1">
+                      {isChangingPassword ? 'Changing...' : 'Change Password'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setShowPasswordChange(false)
+                        setPasswordData({
+                          currentPassword: '',
+                          newPassword: '',
+                          confirmPassword: '',
+                        })
+                      }}
+                      disabled={isChangingPassword}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              )}
             </CardContent>
           </Card>
 
