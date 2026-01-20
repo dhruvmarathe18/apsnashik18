@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from 'react'
 import { useTransport } from '@/contexts/TransportContext'
+import { useSchool } from '@/contexts/SchoolContext'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { formatRupee } from '@/lib/utils/format'
 
 function DailyEntry() {
   const { addEntry, getLastEntry, calculateRunningKM, BUS_NAMES } = useTransport()
+  const { refreshData } = useSchool()
 
   const [formData, setFormData] = useState({
     Date: new Date().toISOString().split('T')[0],
@@ -122,9 +124,11 @@ function DailyEntry() {
     setIsSaving(true)
     
     // Simulate save animation delay
-    setTimeout(() => {
+    setTimeout(async () => {
       try {
-        addEntry(entry)
+        await addEntry(entry)
+        // Refresh transactions to include the new bus expense transaction
+        await refreshData()
         setIsSaving(false)
         setAlert({ type: 'success', message: 'Entry saved successfully!' })
         

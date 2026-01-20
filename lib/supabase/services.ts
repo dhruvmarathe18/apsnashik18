@@ -415,10 +415,23 @@ export const settingsService = {
 
 // Transformation functions
 function transformTransaction(dbRow: any): Transaction {
+  // Normalize date to YYYY-MM-DD format
+  let normalizedDate = dbRow.date
+  if (normalizedDate && typeof normalizedDate === 'string') {
+    // If date includes time, extract just the date part
+    normalizedDate = normalizedDate.split('T')[0]
+  } else if (normalizedDate instanceof Date) {
+    // Convert Date object to YYYY-MM-DD string
+    const year = normalizedDate.getFullYear()
+    const month = String(normalizedDate.getMonth() + 1).padStart(2, '0')
+    const day = String(normalizedDate.getDate()).padStart(2, '0')
+    normalizedDate = `${year}-${month}-${day}`
+  }
+  
   const base: any = {
     id: dbRow.id,
     type: dbRow.type,
-    date: dbRow.date,
+    date: normalizedDate,
     amount: parseFloat(dbRow.amount),
     paymentMode: dbRow.payment_mode,
     notes: dbRow.notes,

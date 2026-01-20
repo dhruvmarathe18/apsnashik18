@@ -3,7 +3,13 @@ import { FeeCollection, BusFeeCollection, BusExpense, Salary } from '@/types/sch
 import { parseISO, isSameDay, isSameMonth, startOfMonth, format } from 'date-fns'
 
 export function generateDailyReport(transactions: Transaction[], date: string): DailyReport {
-  const dayTransactions = transactions.filter((t) => t.date === date)
+  // Normalize date to YYYY-MM-DD format for comparison
+  const normalizedDate = date.includes('T') ? date.split('T')[0] : date
+  const dayTransactions = transactions.filter((t) => {
+    // Normalize transaction date for comparison
+    const tDate = t.date.includes('T') ? t.date.split('T')[0] : t.date
+    return tDate === normalizedDate
+  })
 
   const fees = dayTransactions
     .filter((t): t is FeeCollection => t.type === 'fee_collection')
