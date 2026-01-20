@@ -11,7 +11,7 @@ import { formatRupee, formatDateReadable, getTodayISO } from '@/lib/utils/format
 import { generateDailyReport, generateMonthlyReport, generateClassWiseFeeReport, generateTransportReport, generateSalaryReport } from '@/lib/utils/reports'
 
 export default function ReportsPage() {
-  const { transactions, settings } = useSchool()
+  const { transactions, settings, students } = useSchool()
   const [reportType, setReportType] = useState<'daily' | 'monthly' | 'classwise' | 'transport' | 'salary'>('daily')
   const [selectedDate, setSelectedDate] = useState(getTodayISO())
   const [selectedMonth, setSelectedMonth] = useState(() => {
@@ -32,7 +32,7 @@ export default function ReportsPage() {
   }, [transactions, selectedMonth])
 
   const transportReport = useMemo(() => {
-    return generateTransportReport(transactions)
+    return generateTransportReport(transactions, undefined, students, settings)
   }, [transactions])
 
   const salaryReport = useMemo(() => {

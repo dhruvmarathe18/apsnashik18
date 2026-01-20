@@ -145,7 +145,11 @@ function FeesPageContent() {
     )
 
     const paid = studentTransactions.reduce((sum, t) => sum + t.amount, 0)
-    const expectedFees = feePlan.annualFee + feePlan.examFee + feePlan.bookFee + feePlan.uniformFee + (feePlan.miscFee || 0) - (feePlan.discount || 0)
+    // Include bus fee if student has opted for bus transport
+    const busFeeYearly = selectedStudent.busOpted && selectedStudent.busFeeMonthly 
+      ? (selectedStudent.busFeeMonthly * (settings.tuitionMonthsCount || 12)) 
+      : 0
+    const expectedFees = feePlan.annualFee + feePlan.examFee + feePlan.bookFee + feePlan.uniformFee + (feePlan.miscFee || 0) - (feePlan.discount || 0) + busFeeYearly
     const remaining = expectedFees - paid
     const paidPercentage = expectedFees > 0 ? (paid / expectedFees) * 100 : 0
 
@@ -160,7 +164,7 @@ function FeesPageContent() {
         ? studentTransactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
         : null
     }
-  }, [selectedStudent, feePlans, transactions])
+  }, [selectedStudent, feePlans, transactions, settings])
 
   // Calculate students with pending fees for search
   const studentsWithPendingFees = useMemo(() => {
@@ -200,7 +204,11 @@ function FeesPageContent() {
             (t.studentId === student.id || t.admissionNo === student.admissionNo)
         )
         const paid = studentTransactions.reduce((sum, t) => sum + t.amount, 0)
-        const expectedFees = feePlan.annualFee + feePlan.examFee + feePlan.bookFee + feePlan.uniformFee + (feePlan.miscFee || 0) - (feePlan.discount || 0)
+        // Include bus fee if student has opted for bus transport
+        const busFeeYearly = student.busOpted && student.busFeeMonthly 
+          ? (student.busFeeMonthly * (settings.tuitionMonthsCount || 12)) 
+          : 0
+        const expectedFees = feePlan.annualFee + feePlan.examFee + feePlan.bookFee + feePlan.uniformFee + (feePlan.miscFee || 0) - (feePlan.discount || 0) + busFeeYearly
         const remaining = expectedFees - paid
 
         return {
@@ -682,6 +690,14 @@ function FeesPageContent() {
                               <span className="text-sm font-medium text-gray-900">{formatRupee(studentFeeDetails.feePlan.uniformFee)}</span>
                             </div>
                           )}
+                          {selectedStudent?.busOpted && selectedStudent?.busFeeMonthly && (
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600">Bus Fee (Yearly):</span>
+                              <span className="text-sm font-medium text-gray-900">
+                                {formatRupee(selectedStudent.busFeeMonthly * (settings.tuitionMonthsCount || 12))}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -908,6 +924,7 @@ function FeesPageContent() {
                     { value: 'Annual', label: 'Annual' },
                     { value: 'Books', label: 'Books' },
                     { value: 'Uniform', label: 'Uniform' },
+                    { value: 'Bus', label: 'Bus' },
                     { value: 'Other', label: 'Other' },
                   ]}
                 />

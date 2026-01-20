@@ -1,4 +1,4 @@
-import { Transaction, DailyReport, MonthlyReport, ClassWiseFeeReport, TransportReport, SalaryReport } from '@/types/school'
+import { Transaction, DailyReport, MonthlyReport, ClassWiseFeeReport, TransportReport, SalaryReport, Student, AppSettings } from '@/types/school'
 import { FeeCollection, BusFeeCollection, BusExpense, Salary } from '@/types/school'
 import { parseISO, isSameDay, isSameMonth, startOfMonth, format } from 'date-fns'
 
@@ -141,10 +141,15 @@ export function generateClassWiseFeeReport(transactions: Transaction[], month?: 
   }))
 }
 
-export function generateTransportReport(transactions: Transaction[], busNumber?: string): TransportReport[] {
+export function generateTransportReport(
+  transactions: Transaction[], 
+  busNumber?: string,
+  students?: Student[],
+  settings?: AppSettings
+): TransportReport[] {
   const busMap: Record<string, { route: string; fees: BusFeeCollection[]; expenses: BusExpense[] }> = {}
 
-  // Collect bus fees
+  // Collect bus fees from bus_fee_collection transactions
   transactions
     .filter((t): t is BusFeeCollection => t.type === 'bus_fee_collection')
     .forEach((t) => {
@@ -154,6 +159,46 @@ export function generateTransportReport(transactions: Transaction[], busNumber?:
       }
       busMap[t.busNumber].fees.push(t)
     })
+
+  // Collect bus fees from fee_collection transactions with feeType 'Bus'
+  if (students && settings) {
+    transactions
+      .filter((t): t is FeeCollection => t.type === 'fee_collection' && t.feeType === 'Bus')
+      .forEach((t) => {
+        // Find student to get busRouteId
+        const student = students.find(
+          (s) => s.id === t.studentId || s.admissionNo === t.admissionNo
+        )
+        
+        if (student && student.busRouteId) {
+          // Find bus info from settings
+          const busInfo = settings.buses.find((b) => b.busNumber === student.busRouteId)
+          
+          if (busInfo) {
+            if (busNumber && busInfo.busNumber !== busNumber) return
+            
+            // Create a pseudo BusFeeCollection for calculation purposes
+            const busFee: BusFeeCollection = {
+              id: t.id,
+              type: 'bus_fee_collection',
+              date: t.date,
+              amount: t.amount,
+              paymentMode: t.paymentMode,
+              notes: t.notes,
+              createdAt: t.createdAt,
+              busNumber: busInfo.busNumber,
+              busRoute: busInfo.route,
+              studentName: t.studentName,
+            }
+            
+            if (!busMap[busInfo.busNumber]) {
+              busMap[busInfo.busNumber] = { route: busInfo.route, fees: [], expenses: [] }
+            }
+            busMap[busInfo.busNumber].fees.push(busFee)
+          }
+        }
+      })
+  }
 
   // Collect bus expenses
   transactions

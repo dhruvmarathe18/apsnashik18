@@ -8,13 +8,23 @@ import { useSchool } from '@/contexts/SchoolContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { formatRupee } from '@/lib/utils/format'
 import { generateTransportReport } from '@/lib/utils/reports'
-import { BusFeeCollection, BusExpense } from '@/types/school'
+import { BusFeeCollection, BusExpense, FeeCollection } from '@/types/school'
 
 export default function TransportPage() {
-  const { transactions, settings } = useSchool()
+  const { transactions, settings, students } = useSchool()
 
   const busFeeTransactions = useMemo(() => {
-    return transactions.filter((t): t is BusFeeCollection => t.type === 'bus_fee_collection')
+    // Include both bus_fee_collection transactions and fee_collection transactions with feeType 'Bus'
+    return transactions.filter((t) => {
+      if (t.type === 'bus_fee_collection') {
+        return true
+      }
+      if (t.type === 'fee_collection') {
+        const feeCollection = t as FeeCollection
+        return feeCollection.feeType === 'Bus'
+      }
+      return false
+    })
   }, [transactions])
 
   const busExpenseTransactions = useMemo(() => {
@@ -22,8 +32,8 @@ export default function TransportPage() {
   }, [transactions])
 
   const transportReports = useMemo(() => {
-    return generateTransportReport(transactions)
-  }, [transactions])
+    return generateTransportReport(transactions, undefined, students, settings)
+  }, [transactions, students, settings])
 
   const stats = {
     totalBusFees: busFeeTransactions.reduce((sum, t) => sum + t.amount, 0),

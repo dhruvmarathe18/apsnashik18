@@ -10,7 +10,7 @@ export type TransactionType =
 
 export type PaymentMode = 'Cash' | 'UPI' | 'Bank' | 'Cheque' | 'Online'
 
-export type FeeType = 'Tuition' | 'Exam' | 'Annual' | 'Books' | 'Uniform' | 'Other'
+export type FeeType = 'Tuition' | 'Exam' | 'Annual' | 'Books' | 'Uniform' | 'Bus' | 'Other'
 
 export type BusExpenseType =
   | 'Diesel'

@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
+import { Eye, EyeOff, Lock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState('')
+  const [email] = useState('admin@apsnashik.com') // Auto-fill email
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -50,10 +50,9 @@ export default function AdminLogin() {
       return
     }
 
-    // Try backend API authentication
+    // Try Supabase authentication via API route
     try {
-      const apiURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-      const response = await fetch(`${apiURL}/api/admin/auth`, {
+      const response = await fetch('/api/admin/auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +62,7 @@ export default function AdminLogin() {
 
       const data = await response.json()
 
-      if (response.ok) {
+      if (response.ok && data.success) {
         toast.success('Login successful!')
         // Store auth token in localStorage
         localStorage.setItem('adminAuth', 'true')
@@ -82,8 +81,7 @@ export default function AdminLogin() {
       }
     } catch (error) {
       console.error('Login error:', error)
-      // If backend is not available, show helpful message
-      toast.error('Backend server not available. Using development mode credentials: admin@apsnashik.com / admin123456')
+      toast.error('Login failed. Please check your connection and try again.')
       setPassword('')
     }
 
@@ -100,47 +98,32 @@ export default function AdminLogin() {
           className="bg-white rounded-2xl shadow-2xl p-8"
         >
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <img 
-                src="/images/aps.jpg" 
-                alt="APS Nashik" 
-                className="w-16 h-16 rounded-lg"
-              />
+          <div className="text-center mb-10">
+            <div className="flex justify-center mb-6">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-800 flex items-center justify-center shadow-lg">
+                <Lock className="w-10 h-10 text-white" />
+              </div>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">APS Admin Login</h1>
-            <p className="text-gray-600 mt-2">Sign in to manage your school website</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+            <p className="text-gray-600">Enter your password to continue</p>
           </div>
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="admin@apsnashik.com"
-                  autoComplete="email"
-                />
-              </div>
-            </div>
+            {/* Hidden email field - auto-filled */}
+            <input
+              type="hidden"
+              name="email"
+              value={email}
+            />
 
+            {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
@@ -149,67 +132,68 @@ export default function AdminLogin() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  autoFocus
+                  className="block w-full pl-12 pr-12 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 text-gray-900 placeholder-gray-400"
                   placeholder="Enter your password"
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center hover:bg-gray-50 rounded-r-xl transition-colors"
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
                   )}
                 </button>
               </div>
             </div>
 
+            {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <input
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded cursor-pointer"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-600 cursor-pointer">
                   Remember me
                 </label>
               </div>
-              <a href="#" className="text-sm text-primary-600 hover:text-primary-500">
+              <a href="#" className="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors">
                 Forgot password?
               </a>
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
-              disabled={isLoading}
-              className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center"
+              disabled={isLoading || !password}
+              className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 disabled:from-gray-400 disabled:to-gray-400 text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl disabled:shadow-none disabled:cursor-not-allowed transform hover:scale-[1.02] disabled:transform-none"
             >
               {isLoading ? (
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
                   Signing in...
                 </div>
               ) : (
-                'Sign In'
+                <div className="flex items-center">
+                  <Lock className="w-5 h-5 mr-2" />
+                  Sign In
+                </div>
               )}
             </button>
           </form>
 
-          {/* Setup Instructions */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <h3 className="text-sm font-medium text-blue-900 mb-2">Development Mode:</h3>
-            <div className="text-xs text-blue-700 space-y-1">
-              <p><strong>Email:</strong> admin@apsnashik.com</p>
-              <p><strong>Password:</strong> admin123456</p>
-            </div>
-            <div className="mt-2 text-xs text-blue-600">
-              <p>💡 This works without backend setup. For production, configure backend API.</p>
-            </div>
+          {/* Email Info */}
+          <div className="mt-6 text-center">
+            <p className="text-xs text-gray-500">
+              Logging in as <span className="font-semibold text-gray-700">admin@apsnashik.com</span>
+            </p>
           </div>
 
           {/* Footer */}
