@@ -9,7 +9,7 @@ function BusHome() {
   const { transportData, BUS_NAMES } = useTransport()
 
   // Calculate total entries
-  const totalEntries = BUS_NAMES.reduce((sum, bus) => {
+  const totalEntries = BUS_NAMES.reduce((sum: number, bus: string) => {
     return sum + (transportData[bus]?.length || 0)
   }, 0)
 
@@ -86,7 +86,7 @@ function BusHome() {
           <div className="bg-blue-50 border-l-4 border-blue-400 p-6 rounded-lg">
             <h3 className="text-lg font-semibold text-blue-800 mb-3">📊 Quick Stats</h3>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {BUS_NAMES.map(bus => (
+              {BUS_NAMES.map((bus: string) => (
                 <div key={bus} className="text-center">
                   <div className="text-2xl font-bold text-blue-700">
                     {transportData[bus]?.length || 0}

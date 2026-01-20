@@ -18,8 +18,8 @@ export function findRelatedTransactions(
     }
     // Bus fee collection with matching student name
     if (t.type === 'bus_fee_collection') {
-      // This is harder to match, but we can try by admission no if stored
-      if (t.admissionNo === admissionNo) return true
+      // Bus fee collections don't have admissionNo, so we skip this check
+      // They are matched by studentName which is handled separately
     }
     return false
   })

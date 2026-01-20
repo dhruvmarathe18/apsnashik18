@@ -247,7 +247,9 @@ export default function StudentProfilePage() {
                           {studentTransactions.map((transaction) => (
                             <tr key={transaction.id} className="border-b">
                               <td className="py-2 px-4 text-sm text-gray-600">{formatDateReadable(transaction.date)}</td>
-                              <td className="py-2 px-4 text-sm text-gray-900">{transaction.feeType}</td>
+                              <td className="py-2 px-4 text-sm text-gray-900">
+                                {transaction.type === 'fee_collection' ? transaction.feeType : '-'}
+                              </td>
                               <td className="py-2 px-4 text-sm font-semibold text-right text-green-600">
                                 {formatRupee(transaction.amount)}
                               </td>

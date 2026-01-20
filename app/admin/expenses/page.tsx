@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { formatRupee, formatDateReadable, getTodayISO } from '@/lib/utils/format'
-import { OtherExpense, ExpenseCategory } from '@/types/school'
+import { Transaction, OtherExpense, ExpenseCategory } from '@/types/school'
 import toast from 'react-hot-toast'
 
 export default function ExpensesPage() {
@@ -252,7 +252,7 @@ function ExpenseModal({ onClose }: { onClose: () => void }) {
         paymentMode: formData.paymentMode,
         notes: formData.notes || undefined,
         category: formData.category,
-      })
+      } as Omit<Transaction, 'id' | 'createdAt'>)
 
       toast.success('Expense added successfully')
       onClose()

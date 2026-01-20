@@ -25,11 +25,11 @@ export const transactionService = {
   },
 
   async create(transaction: Omit<Transaction, 'id' | 'createdAt'>): Promise<Transaction> {
-    const newTransaction = {
+    const newTransaction: Transaction = {
       ...transaction,
       id: generateUUID(),
       createdAt: new Date().toISOString(),
-    }
+    } as Transaction
 
     if (!isSupabaseConfigured()) {
       // Fallback to localStorage
@@ -60,7 +60,7 @@ export const transactionService = {
       const transactions = await this.getAll()
       const index = transactions.findIndex((t) => t.id === id)
       if (index >= 0) {
-        transactions[index] = { ...transactions[index], ...updates }
+        transactions[index] = { ...transactions[index], ...updates } as Transaction
         localStorage.setItem('school_transactions', JSON.stringify(transactions))
       }
       return

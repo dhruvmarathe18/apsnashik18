@@ -56,7 +56,7 @@ function DriverSalary() {
     const monthIndex = month - 1
     let workDays = 0
 
-    BUS_NAMES.forEach(bus => {
+    BUS_NAMES.forEach((bus: string) => {
       const data = transportData[bus] || []
       data.forEach((entry: any) => {
         const entryDate = new Date(entry.Date)
@@ -187,7 +187,7 @@ function DriverSalary() {
                       </td>
                     </tr>
                   ) : (
-                    drivers.map((driver, index) => {
+                    drivers.map((driver: string, index: number) => {
                       const salary = getSalary(driver)
                       const workDays = calculateWorkDays(driver)
                       const isEditing = editingSalary && editingSalary.driver === driver

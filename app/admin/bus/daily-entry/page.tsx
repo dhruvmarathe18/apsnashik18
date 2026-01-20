@@ -201,7 +201,7 @@ function DailyEntry() {
                   required
                 >
                   <option value="">Select Bus</option>
-                  {BUS_NAMES.map(bus => (
+                  {BUS_NAMES.map((bus: string) => (
                     <option key={bus} value={bus}>{bus}</option>
                   ))}
                 </select>

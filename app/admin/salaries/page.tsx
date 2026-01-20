@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { formatRupee, formatDateReadable, getTodayISO } from '@/lib/utils/format'
-import { Salary, EmployeeType } from '@/types/school'
+import { Transaction, Salary, EmployeeType } from '@/types/school'
 import toast from 'react-hot-toast'
 
 export default function SalariesPage() {
@@ -262,7 +262,7 @@ function SalaryModal({ onClose }: { onClose: () => void }) {
         employeeType: formData.employeeType,
         employeeName: formData.employeeName,
         salaryMonth: formData.salaryMonth || '',
-      })
+      } as Omit<Transaction, 'id' | 'createdAt'>)
 
       toast.success('Salary entry added successfully')
       onClose()

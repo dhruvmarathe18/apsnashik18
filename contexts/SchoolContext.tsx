@@ -21,14 +21,14 @@ interface SchoolContextType {
   deleteTransaction: (id: string) => void
 
   // Students
-  addStudent: (student: Omit<Student, 'id' | 'createdAt' | 'updatedAt'>) => Student
+  addStudent: (student: Omit<Student, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Student>
   updateStudent: (id: string, updates: Partial<Student>) => void
   deleteStudent: (id: string) => void
   getStudentById: (id: string) => Student | undefined
   getStudentByAdmissionNo: (admissionNo: string) => Student | undefined
 
   // Fee Plans
-  addFeePlan: (feePlan: Omit<FeePlan, 'id' | 'createdAt' | 'updatedAt'>) => FeePlan
+  addFeePlan: (feePlan: Omit<FeePlan, 'id' | 'createdAt' | 'updatedAt'>) => Promise<FeePlan>
   updateFeePlan: (id: string, updates: Partial<FeePlan>) => void
   deleteFeePlan: (id: string) => void
   getFeePlanByStudentId: (studentId: string) => FeePlan | undefined
@@ -46,7 +46,7 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [students, setStudents] = useState<Student[]>([])
   const [feePlans, setFeePlans] = useState<FeePlan[]>([])
-  const [settings, setSettings] = useState<AppSettings>(StorageService.getDefaultSettings())
+  const [settings, setSettings] = useState<AppSettings>(() => StorageService.getDefaultSettings() as AppSettings)
   const [isLoading, setIsLoading] = useState(true)
 
   const refreshData = async () => {
@@ -90,7 +90,7 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
         ...transactionData,
         id: generateUUID(),
         createdAt: new Date().toISOString(),
-      }
+      } as Transaction
       StorageService.saveTransaction(transaction)
       refreshData()
     }
@@ -100,7 +100,7 @@ export function SchoolProvider({ children }: { children: ReactNode }) {
     try {
       await transactionService.update(id, updates)
       setTransactions((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, ...updates } : t))
+        prev.map((t) => (t.id === id ? { ...t, ...updates } as Transaction : t))
       )
     } catch (error) {
       console.error('Error updating transaction:', error)

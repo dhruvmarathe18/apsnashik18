@@ -27,7 +27,7 @@ function DriverReport() {
     const totals = calculateDriverTotals(selectedDriver)
     const allEntries: any[] = []
 
-    BUS_NAMES.forEach(bus => {
+    BUS_NAMES.forEach((bus: string) => {
       const data = getBusData(bus)
       data.forEach((entry: any) => {
         const driver = entry['Driver Name']
@@ -75,7 +75,7 @@ function DriverReport() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 <option value="">Select Driver</option>
-                {drivers.map(driver => (
+                {drivers.map((driver: string) => (
                   <option key={driver} value={driver}>{driver}</option>
                 ))}
               </select>

@@ -357,7 +357,7 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
         savedStudent = student
         toast.success('Student updated successfully')
       } else {
-        savedStudent = addStudent(studentInfo)
+        savedStudent = await addStudent(studentInfo)
         toast.success('Student added successfully')
       }
 
