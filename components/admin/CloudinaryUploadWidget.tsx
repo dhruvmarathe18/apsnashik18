@@ -148,7 +148,7 @@ export default function CloudinaryUploadWidget({
 
         if (result && result.event === 'batch-cancelled') {
           setUploading(false)
-          toast.info('Upload cancelled')
+          toast('Upload cancelled')
         }
       }
     )

@@ -100,8 +100,12 @@ export default function AdminLogin() {
           {/* Header */}
           <div className="text-center mb-10">
             <div className="flex justify-center mb-6">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-600 to-primary-800 flex items-center justify-center shadow-lg">
-                <Lock className="w-10 h-10 text-white" />
+              <div className="w-20 h-20 rounded-2xl bg-white border-2 border-primary-200 flex items-center justify-center shadow-lg overflow-hidden">
+                <img 
+                  src="/images/aps.jpg" 
+                  alt="APS Nashik" 
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
