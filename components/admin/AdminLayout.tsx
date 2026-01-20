@@ -1,21 +1,26 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { 
   LayoutDashboard, 
-  Calendar, 
-  Image, 
-  FileText, 
-  Settings, 
-  Users, 
+  Bus,
+  Users,
+  GraduationCap,
+  BookOpen,
+  FileText,
+  Receipt,
+  TrendingUp,
+  UserCog,
+  Download,
+  Upload,
+  Settings,
+  PlusCircle,
   LogOut,
   Menu,
   X,
-  Home,
-  Edit
+  Home
 } from 'lucide-react'
 
 interface AdminLayoutProps {
@@ -46,10 +51,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { name: 'Events', href: '/admin#events', icon: Calendar },
-    { name: 'Gallery', href: '/admin#gallery', icon: Image },
-    { name: 'News', href: '/admin#news', icon: FileText },
-    { name: 'Content', href: '/admin/content', icon: Edit },
+    { name: 'Quick Entry', href: '/admin/quick-entry', icon: PlusCircle },
+    { name: 'Students', href: '/admin/students', icon: Users },
+    { name: 'Fee Ledger', href: '/admin/fee-ledger', icon: BookOpen },
+    { name: 'Fee Due Reports', href: '/admin/fee-due-reports', icon: FileText },
+    { name: 'Fees Collection', href: '/admin/fees', icon: GraduationCap },
+    { name: 'Transport', href: '/admin/transport', icon: Bus },
+    { name: 'Bus Management', href: '/admin/bus', icon: Bus },
+    { name: 'Salaries', href: '/admin/salaries', icon: UserCog },
+    { name: 'Expenses', href: '/admin/expenses', icon: Receipt },
+    { name: 'Other Income', href: '/admin/income', icon: TrendingUp },
+    { name: 'Reports', href: '/admin/reports', icon: FileText },
+    { name: 'Export/Import', href: '/admin/export-import', icon: Download },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
   ]
 
@@ -82,8 +95,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Mobile sidebar */}
       <div className={`fixed inset-0 z-50 lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`}>
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
-        <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-white">
-          <div className="flex h-16 items-center justify-between px-4 border-b">
+        <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-white overflow-y-auto">
+          <div className="flex h-16 items-center justify-between px-4 border-b sticky top-0 bg-white z-10">
             <div className="flex items-center space-x-3">
               <img
                 src="/images/aps.jpg"
@@ -113,13 +126,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
                 >
-                  <item.icon className="mr-3 h-5 w-5" />
-                  {item.name}
+                  <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
+                  <span className="truncate">{item.name}</span>
                 </Link>
               )
             })}
           </nav>
-          <div className="border-t p-4">
+          <div className="border-t p-4 sticky bottom-0 bg-white">
             <button
               onClick={handleLogout}
               className="flex w-full items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-md transition-colors"
@@ -141,10 +154,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 alt="APS Nashik"
                 className="w-8 h-8 rounded"
               />
-              <span className="text-lg font-semibold text-gray-900">APS Admin</span>
+              <div>
+                <span className="text-lg font-semibold text-gray-900 block">APS Admin</span>
+                <span className="text-xs text-gray-500">School Management</span>
+              </div>
             </div>
           </div>
-          <nav className="flex-1 space-y-1 px-2 py-4">
+          <nav className="flex-1 space-y-1 px-2 py-4 overflow-y-auto">
             {navigation.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href))
               return (
@@ -157,8 +173,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   }`}
                 >
-                  <item.icon className="mr-3 h-5 w-5" />
-                  {item.name}
+                  <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
+                  <span className="truncate">{item.name}</span>
                 </Link>
               )
             })}

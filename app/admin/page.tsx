@@ -1,265 +1,149 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
-import {
-  Calendar,
-  Image,
-  Users,
-  FileText,
-  Settings,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  Upload,
-  BarChart3,
-  TrendingUp,
-  Activity,
-  Award,
-  RefreshCw,
-  Database,
-  AlertCircle
+import { 
+  Bus, 
+  Users, 
+  GraduationCap, 
+  TrendingUp, 
+  TrendingDown,
+  DollarSign,
+  Receipt,
+  BookOpen,
+  FileText
 } from 'lucide-react'
 import AdminLayout from '@/components/admin/AdminLayout'
-import AddEventModal from '@/components/admin/AddEventModal'
-import AddImageModal from '@/components/admin/AddImageModal'
-import AddNewsModal from '@/components/admin/AddNewsModal'
-import AddHeroImageModal from '@/components/admin/AddHeroImageModal'
-import EditHeroImageModal from '@/components/admin/EditHeroImageModal'
-import toast from 'react-hot-toast'
-import { useData } from '@/contexts/DataContext'
-
-interface Event {
-  id: string
-  title: string
-  date: string
-  description: string
-  category: string
-  status: 'upcoming' | 'ongoing' | 'completed'
-}
-
-interface GalleryImage {
-  id: string
-  title: string
-  category: string
-  src: string
-  alt: string
-  upload_date: string
-}
-
-interface NewsArticle {
-  id: string
-  title: string
-  content: string
-  publish_date: string
-  status: 'draft' | 'published'
-}
-
-interface HeroImage {
-  id: string
-  title: string
-  src: string
-  alt: string
-  is_active: boolean
-  display_order: number
-}
+import Link from 'next/link'
+import { useSchool } from '@/contexts/SchoolContext'
+import { formatRupee, formatDateReadable, getTodayISO } from '@/lib/utils/format'
+import { generateDailyReport, generateMonthlyReport } from '@/lib/utils/reports'
+import { parseISO, isSameMonth, startOfMonth } from 'date-fns'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('overview')
-  const [showAddEvent, setShowAddEvent] = useState(false)
-  const [showAddImage, setShowAddImage] = useState(false)
-  const [showAddNews, setShowAddNews] = useState(false)
-  const [showAddHeroImage, setShowAddHeroImage] = useState(false)
-  const [showEditHeroImage, setShowEditHeroImage] = useState(false)
-  const [editingHeroImage, setEditingHeroImage] = useState<HeroImage | null>(null)
-  const [isResetting, setIsResetting] = useState(false)
+  const { transactions, students, settings, isLoading } = useSchool()
 
-  const {
-    events,
-    galleryImages,
-    newsArticles,
-    heroImages,
-    loading,
-    error,
-    addEvent,
-    addImage,
-    addNews,
-    addHeroImage,
-    updateHeroImage,
-    deleteEvent,
-    deleteImage,
-    deleteNews,
-    deleteHeroImage,
-    refreshData
-  } = useData()
+  const today = getTodayISO()
+  const todayReport = useMemo(() => generateDailyReport(transactions, today), [transactions, today])
+  
+  const currentMonth = useMemo(() => {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  }, [])
+  
+  const monthReport = useMemo(() => generateMonthlyReport(transactions, currentMonth), [transactions, currentMonth])
+
+  const activeStudents = useMemo(() => {
+    return students.filter((s) => s.status === 'Active').length
+  }, [students])
+
+  const busStudents = useMemo(() => {
+    return students.filter((s) => s.busOpted).length
+  }, [students])
+
+  const feeDefaulters = useMemo(() => {
+    // This would need fee ledger logic - simplified for now
+    return 0
+  }, [])
 
   const stats = [
-    { title: 'Total Events', value: events.length, icon: Calendar, color: 'text-blue-600' },
-    { title: 'Gallery Images', value: galleryImages.length, icon: Image, color: 'text-green-600' },
-    { title: 'News Articles', value: newsArticles.length, icon: FileText, color: 'text-purple-600' },
-    { title: 'Hero Images', value: heroImages.length, icon: Upload, color: 'text-indigo-600' },
-    { title: 'Published Content', value: newsArticles.filter((n: NewsArticle) => n.status === 'published').length, icon: Eye, color: 'text-orange-600' }
+    { 
+      title: 'Total Students', 
+      value: students.length.toString(), 
+      icon: Users, 
+      color: 'text-blue-600', 
+      href: '/admin/students',
+      change: null
+    },
+    { 
+      title: 'Active Students', 
+      value: activeStudents.toString(), 
+      icon: Users, 
+      color: 'text-green-600', 
+      href: '/admin/students',
+      change: null
+    },
+    { 
+      title: 'Today Income', 
+      value: formatRupee(todayReport.income.total), 
+      icon: TrendingUp, 
+      color: 'text-green-600', 
+      href: '/admin/reports',
+      change: null
+    },
+    { 
+      title: 'Today Expense', 
+      value: formatRupee(todayReport.expenses.total), 
+      icon: TrendingDown, 
+      color: 'text-red-600', 
+      href: '/admin/reports',
+      change: null
+    },
+    { 
+      title: 'Today Net', 
+      value: formatRupee(todayReport.net), 
+      icon: DollarSign, 
+      color: todayReport.net >= 0 ? 'text-green-600' : 'text-red-600', 
+      href: '/admin/reports',
+      change: null
+    },
+    { 
+      title: 'Month Net', 
+      value: formatRupee(monthReport.net), 
+      icon: Receipt, 
+      color: monthReport.net >= 0 ? 'text-green-600' : 'text-red-600', 
+      href: '/admin/reports',
+      change: null
+    },
+    { 
+      title: 'Fee Collection', 
+      value: formatRupee(monthReport.income.fees), 
+      icon: GraduationCap, 
+      color: 'text-purple-600', 
+      href: '/admin/fees',
+      change: null
+    },
+    { 
+      title: 'Bus Management', 
+      value: '5 Buses', 
+      icon: Bus, 
+      color: 'text-indigo-600', 
+      href: '/admin/bus',
+      change: null
+    },
   ]
 
   const quickActions = [
-    { title: 'Add New Event', icon: Plus, action: () => setShowAddEvent(true), color: 'bg-blue-500' },
-    { title: 'Upload Image', icon: Upload, action: () => setShowAddImage(true), color: 'bg-green-500' },
-    { title: 'Create News', icon: FileText, action: () => setShowAddNews(true), color: 'bg-purple-500' },
-    { title: 'Add Hero Image', icon: Image, action: () => setShowAddHeroImage(true), color: 'bg-indigo-500' },
-    { title: 'View Analytics', icon: BarChart3, action: () => {}, color: 'bg-orange-500' }
+    { title: 'Add Student', icon: Users, color: 'bg-blue-500', href: '/admin/students' },
+    { title: 'Quick Entry', icon: Receipt, color: 'bg-green-500', href: '/admin/quick-entry' },
+    { title: 'Fee Collection', icon: GraduationCap, color: 'bg-purple-500', href: '/admin/fees' },
+    { title: 'Bus Management', icon: Bus, color: 'bg-indigo-500', href: '/admin/bus' },
   ]
 
-  const handleAddEvent = async (eventData: Omit<Event, 'id'>) => {
-    try {
-      await addEvent(eventData)
-      toast.success('Event added successfully!')
-      setShowAddEvent(false)
-    } catch (error) {
-      toast.error('Failed to add event. Please try again.')
-    }
-  }
+  const modules = [
+    { name: 'Students', description: 'Manage student records and information', icon: Users, href: '/admin/students', color: 'bg-blue-50 border-blue-200' },
+    { name: 'Fee Management', description: 'Fee collection, ledger, and due reports', icon: BookOpen, href: '/admin/fees', color: 'bg-green-50 border-green-200' },
+    { name: 'Transport', description: 'Bus fees and transport expenses', icon: Bus, href: '/admin/transport', color: 'bg-purple-50 border-purple-200' },
+    { name: 'Bus Management', description: 'Daily entries, reports, and driver management', icon: Bus, href: '/admin/bus', color: 'bg-indigo-50 border-indigo-200' },
+    { name: 'Salaries', description: 'Employee salary management', icon: Users, href: '/admin/salaries', color: 'bg-yellow-50 border-yellow-200' },
+    { name: 'Expenses', description: 'Track school expenses', icon: Receipt, href: '/admin/expenses', color: 'bg-red-50 border-red-200' },
+    { name: 'Reports', description: 'Financial reports and analytics', icon: FileText, href: '/admin/reports', color: 'bg-gray-50 border-gray-200' },
+  ]
 
-  const handleAddImage = async (imageData: Omit<GalleryImage, 'id' | 'upload_date'>) => {
-    try {
-      await addImage(imageData)
-      toast.success('Image uploaded successfully!')
-      setShowAddImage(false)
-    } catch (error) {
-      toast.error('Failed to upload image. Please try again.')
-    }
-  }
+  const recentTransactions = useMemo(() => {
+    return [...transactions]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 5)
+  }, [transactions])
 
-  const handleAddNews = async (newsData: Omit<NewsArticle, 'id'>) => {
-    try {
-      await addNews(newsData)
-      toast.success('News article added successfully!')
-      setShowAddNews(false)
-    } catch (error) {
-      toast.error('Failed to add news article. Please try again.')
-    }
-  }
-
-  const handleAddHeroImage = async (imageData: Omit<HeroImage, 'id'>) => {
-    try {
-      await addHeroImage(imageData)
-      toast.success('Hero image uploaded successfully!')
-      setShowAddHeroImage(false)
-    } catch (error) {
-      toast.error('Failed to upload hero image. Please try again.')
-    }
-  }
-
-  const handleEditHeroImage = (image: HeroImage) => {
-    setEditingHeroImage(image)
-    setShowEditHeroImage(true)
-  }
-
-  const handleUpdateHeroImage = async (id: string, imageData: Partial<HeroImage>) => {
-    try {
-      await updateHeroImage(id, imageData)
-      toast.success('Hero image updated successfully!')
-      setShowEditHeroImage(false)
-      setEditingHeroImage(null)
-    } catch (error) {
-      toast.error('Failed to update hero image. Please try again.')
-    }
-  }
-
-  const handleDeleteHeroImage = async (id: string) => {
-    if (confirm('Are you sure you want to delete this hero image?')) {
-      try {
-        await deleteHeroImage(id)
-        toast.success('Hero image deleted successfully!')
-      } catch (error) {
-        toast.error('Failed to delete hero image. Please try again.')
-      }
-    }
-  }
-
-  const handleDeleteEvent = async (id: string) => {
-    try {
-      await deleteEvent(id)
-      toast.success('Event deleted successfully!')
-    } catch (error) {
-      toast.error('Failed to delete event. Please try again.')
-    }
-  }
-
-  const handleDeleteImage = async (id: string) => {
-    try {
-      await deleteImage(id)
-      toast.success('Image deleted successfully!')
-    } catch (error) {
-      toast.error('Failed to delete image. Please try again.')
-    }
-  }
-
-  const handleDeleteNews = async (id: string) => {
-    try {
-      await deleteNews(id)
-      toast.success('News article deleted successfully!')
-    } catch (error) {
-      toast.error('Failed to delete news article. Please try again.')
-    }
-  }
-
-  const handleResetData = async () => {
-    if (!confirm('Are you sure you want to reset all data? This will clear all events, images, and news articles and restore default data.')) {
-      return
-    }
-
-    setIsResetting(true)
-    
-    try {
-      // Clear localStorage
-      localStorage.removeItem('aps_events')
-      localStorage.removeItem('aps_gallery_images')
-      localStorage.removeItem('aps_news_articles')
-      
-      // Reload page to reset data
-      window.location.reload()
-    } catch (error) {
-      console.error('Error resetting data:', error)
-      toast.error('Error resetting data. Please try again.')
-      setIsResetting(false)
-    }
-  }
-
-  // Show loading state
-  if (loading) {
+  if (isLoading) {
     return (
       <AdminLayout>
-        <div className="p-6">
-          <div className="flex items-center justify-center min-h-96">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading dashboard data...</p>
-            </div>
-          </div>
-        </div>
-      </AdminLayout>
-    )
-  }
-
-  // Show error state
-  if (error) {
-    return (
-      <AdminLayout>
-        <div className="p-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-            <div className="flex items-center mb-4">
-              <AlertCircle className="w-6 h-6 text-red-600 mr-2" />
-              <h3 className="text-lg font-medium text-red-800">Error Loading Data</h3>
-            </div>
-            <p className="text-red-700 mb-4">{error}</p>
-            <button
-              onClick={refreshData}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center space-x-2"
-            >
-              <RefreshCw className="w-4 h-4" />
-              <span>Retry</span>
-            </button>
+        <div className="p-6 flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading dashboard...</p>
           </div>
         </div>
       </AdminLayout>
@@ -273,25 +157,8 @@ export default function AdminDashboard() {
         <div className="mb-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-gray-600 mt-2">Manage your school website content and monitor performance</p>
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={refreshData}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-              >
-                <RefreshCw className="w-4 h-4" />
-                <span>Refresh</span>
-              </button>
-              <button
-                onClick={handleResetData}
-                disabled={isResetting}
-                className="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-              >
-                <RefreshCw className={`w-4 h-4 ${isResetting ? 'animate-spin' : ''}`} />
-                <span>{isResetting ? 'Resetting...' : 'Reset Data'}</span>
-              </button>
+              <h1 className="text-3xl font-bold text-gray-900">School Management Dashboard</h1>
+              <p className="text-gray-600 mt-2">Welcome to {settings.schoolName} - {settings.academicYear}</p>
             </div>
           </div>
         </div>
@@ -299,23 +166,24 @@ export default function AdminDashboard() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {stats.map((stat, index) => (
-            <motion.div
-              key={stat.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white rounded-lg shadow-md p-4 sm:p-6"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{stat.title}</p>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{stat.value}</p>
+            <Link key={stat.title} href={stat.href || '#'}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="bg-white rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition-shadow cursor-pointer"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{stat.title}</p>
+                    <p className={`text-xl sm:text-2xl font-bold mt-1 ${stat.color}`}>{stat.value}</p>
+                  </div>
+                  <div className={`p-2 sm:p-3 rounded-full ${stat.color.replace('text-', 'bg-').replace('-600', '-100')} flex-shrink-0`}>
+                    <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.color}`} />
+                  </div>
                 </div>
-                <div className={`p-2 sm:p-3 rounded-full ${stat.color.replace('text-', 'bg-').replace('-600', '-100')} flex-shrink-0`}>
-                  <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.color}`} />
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </Link>
           ))}
         </div>
 
@@ -324,458 +192,131 @@ export default function AdminDashboard() {
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {quickActions.map((action, index) => (
-              <motion.button
-                key={action.title}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                onClick={action.action}
-                className={`${action.color} text-white p-3 sm:p-4 rounded-lg hover:opacity-90 transition-opacity flex items-center space-x-2 sm:space-x-3`}
-              >
-                <action.icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                <span className="font-medium text-sm sm:text-base truncate">{action.title}</span>
-              </motion.button>
+              <Link key={action.title} href={action.href || '#'}>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  className={`${action.color} text-white p-3 sm:p-4 rounded-lg hover:opacity-90 transition-opacity flex items-center space-x-2 sm:space-x-3 cursor-pointer`}
+                >
+                  <action.icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                  <span className="font-medium text-sm sm:text-base truncate">{action.title}</span>
+                </motion.div>
+              </Link>
             ))}
           </div>
         </div>
 
-        {/* Content Management Tabs */}
-        <div className="bg-white rounded-lg shadow-md">
-          <div className="border-b border-gray-200">
-            <nav className="flex overflow-x-auto space-x-2 sm:space-x-8 px-4 sm:px-6">
-              {[
-                { id: 'overview', name: 'Overview', icon: BarChart3 },
-                { id: 'events', name: 'Events', icon: Calendar },
-                { id: 'gallery', name: 'Gallery', icon: Image },
-                { id: 'hero', name: 'Hero Images', icon: Upload },
-                { id: 'news', name: 'News', icon: FileText }
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm flex items-center space-x-1 sm:space-x-2 whitespace-nowrap flex-shrink-0 ${
-                    activeTab === tab.id
-                      ? 'border-primary-500 text-primary-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <tab.icon className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">{tab.name}</span>
-                  <span className="sm:hidden">{tab.name.split(' ')[0]}</span>
-                </button>
-              ))}
-            </nav>
-          </div>
-
-          <div className="p-6">
-            {/* Overview Tab */}
-            {activeTab === 'overview' && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Recent Events</h3>
-                    <div className="space-y-3">
-                      {events.slice(0, 3).map((event: Event) => (
-                        <div key={event.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{event.title}</p>
-                            <p className="text-xs sm:text-sm text-gray-600">{event.date}</p>
-                          </div>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ml-2 ${
-                            event.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
-                            event.status === 'ongoing' ? 'bg-green-100 text-green-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
-                            {event.status}
-                          </span>
-                        </div>
-                      ))}
-                      {events.length === 0 && (
-                        <p className="text-gray-500 text-center py-4 text-sm">No events found. Add your first event!</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Recent News</h3>
-                    <div className="space-y-3">
-                      {newsArticles.slice(0, 3).map((article: NewsArticle) => (
-                        <div key={article.id} className="p-3 bg-white rounded-lg">
-                          <p className="font-medium text-gray-900 text-sm sm:text-base line-clamp-2">{article.title}</p>
-                          <p className="text-xs sm:text-sm text-gray-600">{article.publish_date}</p>
-                        </div>
-                      ))}
-                      {newsArticles.length === 0 && (
-                        <p className="text-gray-500 text-center py-4 text-sm">No news articles found. Add your first article!</p>
-                      )}
-                    </div>
-                  </div>
+        {/* Today's Summary */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Today's Summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Income:</span>
+                  <span className="text-lg font-semibold text-green-600">{formatRupee(todayReport.income.total)}</span>
                 </div>
-
-                {/* Data Status */}
-                <div className="bg-blue-50 rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center">
-                    <Database className="w-5 h-5 mr-2" />
-                    Data Status
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 text-xs sm:text-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="text-blue-700">Events stored:</span>
-                      <span className="font-medium">{events.length} items</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-blue-700">Images stored:</span>
-                      <span className="font-medium">{galleryImages.length} items</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-blue-700">News stored:</span>
-                      <span className="font-medium">{newsArticles.length} items</span>
-                    </div>
-                    <div className="flex items-center justify-between sm:col-span-2 lg:col-span-1">
-                      <span className="text-blue-700">Hero images:</span>
-                      <span className="font-medium">{heroImages.length} items</span>
-                    </div>
-                  </div>
-                  <p className="text-xs text-blue-600 mt-3">
-                    💡 Data is automatically saved to your browser's localStorage and will persist across page refreshes.
-                  </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Expenses:</span>
+                  <span className="text-lg font-semibold text-red-600">{formatRupee(todayReport.expenses.total)}</span>
+                </div>
+                <div className="flex justify-between items-center pt-4 border-t">
+                  <span className="text-gray-900 font-medium">Net:</span>
+                  <span className={`text-xl font-bold ${todayReport.net >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {formatRupee(todayReport.net)}
+                  </span>
                 </div>
               </div>
-            )}
+            </CardContent>
+          </Card>
 
-            {/* Events Tab */}
-            {activeTab === 'events' && (
-              <div>
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">Manage Events</h3>
-                  <button
-                    onClick={() => setShowAddEvent(true)}
-                    className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 flex items-center space-x-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Add Event</span>
-                  </button>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Monthly Summary ({currentMonth})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Income:</span>
+                  <span className="text-lg font-semibold text-green-600">{formatRupee(monthReport.income.total)}</span>
                 </div>
-
-                {events.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Events Yet</h3>
-                    <p className="text-gray-600 mb-4">Get started by adding your first school event.</p>
-                    <button
-                      onClick={() => setShowAddEvent(true)}
-                      className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700"
-                    >
-                      Add Your First Event
-                    </button>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {events.map((event: Event) => (
-                          <tr key={event.id}>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div>
-                                <div className="text-sm font-medium text-gray-900">{event.title}</div>
-                                <div className="text-sm text-gray-500">{event.description}</div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{event.date}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{event.category}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                event.status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
-                                event.status === 'ongoing' ? 'bg-green-100 text-green-800' :
-                                'bg-gray-100 text-gray-800'
-                              }`}>
-                                {event.status}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <div className="flex space-x-2">
-                                <button className="text-primary-600 hover:text-primary-900">
-                                  <Edit className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteEvent(event.id)}
-                                  className="text-red-600 hover:text-red-900"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Expenses:</span>
+                  <span className="text-lg font-semibold text-red-600">{formatRupee(monthReport.expenses.total)}</span>
+                </div>
+                <div className="flex justify-between items-center pt-4 border-t">
+                  <span className="text-gray-900 font-medium">Net:</span>
+                  <span className={`text-xl font-bold ${monthReport.net >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {formatRupee(monthReport.net)}
+                  </span>
+                </div>
               </div>
-            )}
-
-            {/* Gallery Tab */}
-            {activeTab === 'gallery' && (
-              <div>
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">Manage Gallery</h3>
-                  <button
-                    onClick={() => setShowAddImage(true)}
-                    className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 flex items-center space-x-2"
-                  >
-                    <Upload className="w-4 h-4" />
-                    <span>Upload Image</span>
-                  </button>
-                </div>
-
-                {/* Helpful Tip */}
-                <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-                  <h4 className="text-sm font-medium text-blue-900 mb-2">💡 Image Upload Tip</h4>
-                  <p className="text-sm text-blue-700">
-                    When adding images, you can either upload a new file or select from existing images in the school's image library. 
-                    This ensures all images display properly on the website.
-                  </p>
-                </div>
-
-                {galleryImages.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Image className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Images Yet</h3>
-                    <p className="text-gray-600 mb-4">Start building your gallery by uploading school photos.</p>
-                    <button
-                      onClick={() => setShowAddImage(true)}
-                      className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700"
-                    >
-                      Upload Your First Image
-                    </button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {galleryImages.map((image: GalleryImage) => (
-                      <div key={image.id} className="bg-white border rounded-lg overflow-hidden shadow-sm">
-                        <div className="relative h-48 overflow-hidden">
-                          <img
-                            src={image.src}
-                            alt={image.alt}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement
-                              target.style.display = 'none'
-                              target.nextElementSibling?.classList.remove('hidden')
-                            }}
-                          />
-                          <div className="hidden absolute inset-0 bg-gray-200 flex items-center justify-center">
-                            <div className="text-center text-gray-500">
-                              <AlertCircle className="w-8 h-8 mx-auto mb-2" />
-                              <p className="text-xs">Image not available</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="p-4">
-                          <h4 className="font-medium text-gray-900 mb-1">{image.title}</h4>
-                          <p className="text-sm text-gray-600 mb-2">{image.category}</p>
-                          <p className="text-xs text-gray-500 mb-3">Uploaded: {image.upload_date}</p>
-                          <div className="flex space-x-2">
-                            <button className="text-primary-600 hover:text-primary-900">
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteImage(image.id)}
-                              className="text-red-600 hover:text-red-900"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* News Tab */}
-            {activeTab === 'news' && (
-              <div>
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">Manage News</h3>
-                  <button
-                    onClick={() => setShowAddNews(true)}
-                    className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 flex items-center space-x-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Add News</span>
-                  </button>
-                </div>
-
-                {newsArticles.length === 0 ? (
-                  <div className="text-center py-12">
-                    <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No News Articles Yet</h3>
-                    <p className="text-gray-600 mb-4">Start sharing school news and updates with your community.</p>
-                    <button
-                      onClick={() => setShowAddNews(true)}
-                      className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700"
-                    >
-                      Add Your First Article
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {newsArticles.map((article: NewsArticle) => (
-                      <div key={article.id} className="bg-white border rounded-lg p-6">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h4 className="text-lg font-medium text-gray-900">{article.title}</h4>
-                            <p className="text-sm text-gray-600">Published: {article.publish_date}</p>
-                          </div>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            article.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {article.status}
-                          </span>
-                        </div>
-                        <p className="text-gray-700 mb-4">{article.content}</p>
-                        <div className="flex space-x-2">
-                          <button className="text-primary-600 hover:text-primary-900">
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteNews(article.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Hero Images Tab */}
-            {activeTab === 'hero' && (
-              <div>
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">Manage Hero Images</h3>
-                  <button
-                    onClick={() => setShowAddHeroImage(true)}
-                    className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 flex items-center space-x-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Add Hero Image</span>
-                  </button>
-                </div>
-
-                {heroImages.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Upload className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Hero Images Yet</h3>
-                    <p className="text-gray-600 mb-4">Add hero images to showcase your school on the homepage.</p>
-                    <button
-                      onClick={() => setShowAddHeroImage(true)}
-                      className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700"
-                    >
-                      Add Your First Hero Image
-                    </button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                    {heroImages.map((image: HeroImage) => (
-                      <div key={image.id} className="bg-white border rounded-lg overflow-hidden">
-                        <div className="aspect-w-16 aspect-h-9">
-                          <img
-                            src={image.src}
-                            alt={image.alt}
-                            className="w-full h-40 sm:h-48 object-cover"
-                          />
-                        </div>
-                        <div className="p-3 sm:p-4">
-                          <div className="flex justify-between items-start mb-2">
-                            <h4 className="text-sm sm:text-lg font-medium text-gray-900 flex-1 min-w-0 pr-2">{image.title}</h4>
-                            <div className="flex flex-col items-end space-y-1">
-                              {image.is_active && (
-                                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                                  Active
-                                </span>
-                              )}
-                              <span className="text-xs text-gray-500">
-                                Order: {image.display_order}
-                              </span>
-                            </div>
-                          </div>
-                          <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-2">{image.alt}</p>
-                          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                            <button
-                              onClick={() => handleEditHeroImage(image)}
-                              className="text-primary-600 hover:text-primary-900 flex items-center justify-center space-x-1 text-xs sm:text-sm py-1 px-2 rounded border border-primary-200 hover:bg-primary-50"
-                            >
-                              <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
-                              <span>Edit</span>
-                            </button>
-                            <button
-                              onClick={() => handleDeleteHeroImage(image.id)}
-                              className="text-red-600 hover:text-red-900 flex items-center justify-center space-x-1 text-xs sm:text-sm py-1 px-2 rounded border border-red-200 hover:bg-red-50"
-                            >
-                              <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-                              <span>Delete</span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Modals */}
-        <AddEventModal
-          isOpen={showAddEvent}
-          onClose={() => setShowAddEvent(false)}
-          onAdd={handleAddEvent}
-        />
+        {/* Recent Transactions */}
+        {recentTransactions.length > 0 && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="text-lg">Recent Transactions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Date</th>
+                      <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Type</th>
+                      <th className="text-right py-2 px-4 text-sm font-medium text-gray-700">Amount</th>
+                      <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Payment Mode</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentTransactions.map((transaction) => (
+                      <tr key={transaction.id} className="border-b hover:bg-gray-50">
+                        <td className="py-2 px-4 text-sm text-gray-600">{formatDateReadable(transaction.date)}</td>
+                        <td className="py-2 px-4 text-sm text-gray-900">{transaction.type.replace('_', ' ').toUpperCase()}</td>
+                        <td className="py-2 px-4 text-sm font-medium text-right">{formatRupee(transaction.amount)}</td>
+                        <td className="py-2 px-4 text-sm text-gray-600">{transaction.paymentMode}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-        <AddImageModal
-          isOpen={showAddImage}
-          onClose={() => setShowAddImage(false)}
-          onAdd={handleAddImage}
-        />
-
-        <AddNewsModal
-          isOpen={showAddNews}
-          onClose={() => setShowAddNews(false)}
-          onAdd={handleAddNews}
-        />
-
-        <AddHeroImageModal
-          isOpen={showAddHeroImage}
-          onClose={() => setShowAddHeroImage(false)}
-          onAdd={handleAddHeroImage}
-          existingImages={heroImages}
-        />
-
-        <EditHeroImageModal
-          isOpen={showEditHeroImage}
-          onClose={() => {
-            setShowEditHeroImage(false)
-            setEditingHeroImage(null)
-          }}
-          onUpdate={handleUpdateHeroImage}
-          image={editingHeroImage}
-        />
+        {/* Modules Grid */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Management Modules</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {modules.map((module, index) => (
+              <Link key={module.name} href={module.href}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  className={`${module.color} border-2 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer`}
+                >
+                  <div className="flex items-start space-x-4">
+                    <div className="p-3 bg-white rounded-lg">
+                      <module.icon className="w-6 h-6 text-gray-700" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">{module.name}</h3>
+                      <p className="text-sm text-gray-600">{module.description}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
     </AdminLayout>
   )

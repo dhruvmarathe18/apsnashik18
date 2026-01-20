@@ -28,6 +28,29 @@ export default function AdminLogin() {
     // Clear any previous error messages
     toast.dismiss()
 
+    // Development mode: Simple local authentication (no backend required)
+    const DEV_EMAIL = 'admin@apsnashik.com'
+    const DEV_PASSWORD = 'admin123456'
+    
+    // Check if using development credentials
+    if (email === DEV_EMAIL && password === DEV_PASSWORD) {
+      toast.success('Login successful!')
+      // Store auth token in localStorage
+      localStorage.setItem('adminAuth', 'true')
+      localStorage.setItem('adminToken', 'dev-token')
+      localStorage.setItem('adminEmail', DEV_EMAIL)
+      localStorage.setItem('adminName', 'Admin User')
+      localStorage.setItem('loginTime', new Date().toISOString())
+      
+      // Small delay to show success message
+      setTimeout(() => {
+        router.push('/admin')
+      }, 1000)
+      setIsLoading(false)
+      return
+    }
+
+    // Try backend API authentication
     try {
       const apiURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
       const response = await fetch(`${apiURL}/api/admin/auth`, {
@@ -59,7 +82,8 @@ export default function AdminLogin() {
       }
     } catch (error) {
       console.error('Login error:', error)
-      toast.error('Login failed. Please try again.')
+      // If backend is not available, show helpful message
+      toast.error('Backend server not available. Using development mode credentials: admin@apsnashik.com / admin123456')
       setPassword('')
     }
 
@@ -178,14 +202,13 @@ export default function AdminLogin() {
 
           {/* Setup Instructions */}
           <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-            <h3 className="text-sm font-medium text-blue-900 mb-2">First Time Setup:</h3>
+            <h3 className="text-sm font-medium text-blue-900 mb-2">Development Mode:</h3>
             <div className="text-xs text-blue-700 space-y-1">
-              <p>1. Create your admin account using the API</p>
-              <p>2. Use your registered email and password to login</p>
-              <p>3. Contact your developer for initial setup</p>
+              <p><strong>Email:</strong> admin@apsnashik.com</p>
+              <p><strong>Password:</strong> admin123456</p>
             </div>
             <div className="mt-2 text-xs text-blue-600">
-              <p>💡 Database authentication is now active</p>
+              <p>💡 This works without backend setup. For production, configure backend API.</p>
             </div>
           </div>
 
