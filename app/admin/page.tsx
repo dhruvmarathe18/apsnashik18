@@ -80,15 +80,19 @@ export default function AdminDashboard() {
       title: 'Total Students', 
       value: students.length.toString(), 
       icon: Users, 
-      color: 'text-blue-600', 
+      iconColor: 'text-primary',
+      iconBg: 'bg-primary/10',
+      valueColor: 'text-primary',
       href: '/admin/students',
       change: null
     },
     { 
       title: 'Pending Fee Collection', 
       value: formatRupee(pendingFeeCollection.amount), 
-      icon: AlertCircle, 
-      color: 'text-orange-600', 
+      icon: null, 
+      iconColor: 'text-warning',
+      iconBg: 'bg-warning/10',
+      valueColor: 'text-warning',
       href: '/admin/fee-due-reports',
       change: `${pendingFeeCollection.count} student(s)`,
     },
@@ -96,7 +100,9 @@ export default function AdminDashboard() {
       title: 'Today Income', 
       value: formatRupee(todayReport.income.total), 
       icon: TrendingUp, 
-      color: 'text-green-600', 
+      iconColor: 'text-success',
+      iconBg: 'bg-success/10',
+      valueColor: 'text-success',
       href: '/admin/reports',
       change: null
     },
@@ -104,7 +110,9 @@ export default function AdminDashboard() {
       title: 'Today Expense', 
       value: formatRupee(todayReport.expenses.total), 
       icon: TrendingDown, 
-      color: 'text-red-600', 
+      iconColor: 'text-destructive',
+      iconBg: 'bg-destructive/10',
+      valueColor: 'text-destructive',
       href: '/admin/reports',
       change: null
     },
@@ -112,7 +120,9 @@ export default function AdminDashboard() {
       title: 'Monthly Income', 
       value: formatRupee(monthReport.income.total), 
       icon: TrendingUp, 
-      color: 'text-green-600', 
+      iconColor: 'text-success',
+      iconBg: 'bg-success/10',
+      valueColor: 'text-success',
       href: '/admin/reports',
       change: currentMonth,
     },
@@ -120,7 +130,9 @@ export default function AdminDashboard() {
       title: 'Monthly Expenses', 
       value: formatRupee(monthReport.expenses.total), 
       icon: TrendingDown, 
-      color: 'text-red-600', 
+      iconColor: 'text-destructive',
+      iconBg: 'bg-destructive/10',
+      valueColor: 'text-destructive',
       href: '/admin/expenses',
       change: currentMonth,
     },
@@ -128,7 +140,9 @@ export default function AdminDashboard() {
       title: 'Bus Expenses', 
       value: formatRupee(monthReport.expenses.busExpenses), 
       icon: Bus, 
-      color: 'text-red-600', 
+      iconColor: 'text-destructive',
+      iconBg: 'bg-destructive/10',
+      valueColor: 'text-destructive',
       href: '/admin/expenses',
       change: currentMonth,
     },
@@ -136,7 +150,9 @@ export default function AdminDashboard() {
       title: 'Month Profit', 
       value: formatRupee(monthReport.net), 
       icon: Receipt, 
-      color: monthReport.net >= 0 ? 'text-green-600' : 'text-red-600', 
+      iconColor: monthReport.net >= 0 ? 'text-success' : 'text-destructive',
+      iconBg: monthReport.net >= 0 ? 'bg-success/10' : 'bg-destructive/10',
+      valueColor: monthReport.net >= 0 ? 'text-success' : 'text-destructive',
       href: '/admin/reports',
       change: null
     },
@@ -144,7 +160,9 @@ export default function AdminDashboard() {
       title: 'Fee Collection', 
       value: formatRupee(monthReport.income.fees), 
       icon: GraduationCap, 
-      color: 'text-purple-600', 
+      iconColor: 'text-primary',
+      iconBg: 'bg-primary/10',
+      valueColor: 'text-primary',
       href: '/admin/fees',
       change: null
     },
@@ -152,27 +170,29 @@ export default function AdminDashboard() {
       title: 'Bus Management', 
       value: '5 Buses', 
       icon: Bus, 
-      color: 'text-indigo-600', 
+      iconColor: 'text-primary',
+      iconBg: 'bg-primary/10',
+      valueColor: 'text-primary',
       href: '/admin/bus',
       change: null
     },
   ]
 
   const quickActions = [
-    { title: 'Add Student', icon: Users, color: 'bg-blue-500', href: '/admin/students' },
-    { title: 'Fee Collection', icon: GraduationCap, color: 'bg-green-500', href: '/admin/fees' },
-    { title: 'Expenses', icon: Receipt, color: 'bg-red-500', href: '/admin/expenses' },
-    { title: 'Bus Management', icon: Bus, color: 'bg-indigo-500', href: '/admin/bus' },
+    { title: 'Add Student', icon: Users, color: 'bg-primary', href: '/admin/students' },
+    { title: 'Fee Collection', icon: GraduationCap, color: 'bg-success', href: '/admin/fees' },
+    { title: 'Expenses', icon: Receipt, color: 'bg-destructive', href: '/admin/expenses' },
+    { title: 'Bus Management', icon: Bus, color: 'bg-primary', href: '/admin/bus' },
   ]
 
   const modules = [
-    { name: 'Students', description: 'Manage student records and information', icon: Users, href: '/admin/students', color: 'bg-blue-50 border-blue-200' },
-    { name: 'Fee Management', description: 'Fee collection, ledger, and due reports', icon: BookOpen, href: '/admin/fees', color: 'bg-green-50 border-green-200' },
-    { name: 'Transport', description: 'Bus fees and transport expenses', icon: Bus, href: '/admin/transport', color: 'bg-purple-50 border-purple-200' },
-    { name: 'Bus Management', description: 'Daily entries, reports, and driver management', icon: Bus, href: '/admin/bus', color: 'bg-indigo-50 border-indigo-200' },
-    { name: 'Salaries', description: 'Employee salary management', icon: Users, href: '/admin/salaries', color: 'bg-yellow-50 border-yellow-200' },
-    { name: 'Expenses', description: 'Track school expenses', icon: Receipt, href: '/admin/expenses', color: 'bg-red-50 border-red-200' },
-    { name: 'Reports', description: 'Financial reports and analytics', icon: FileText, href: '/admin/reports', color: 'bg-gray-50 border-gray-200' },
+    { name: 'Students', description: 'Manage student records and information', icon: Users, href: '/admin/students', bgColor: 'bg-primary/10', borderColor: 'border-primary/30', iconColor: 'text-primary' },
+    { name: 'Fee Management', description: 'Fee collection, ledger, and due reports', icon: BookOpen, href: '/admin/fees', bgColor: 'bg-success/10', borderColor: 'border-success/30', iconColor: 'text-success' },
+    { name: 'Transport', description: 'Bus fees and transport expenses', icon: Bus, href: '/admin/transport', bgColor: 'bg-primary/10', borderColor: 'border-primary/30', iconColor: 'text-primary' },
+    { name: 'Bus Management', description: 'Daily entries, reports, and driver management', icon: Bus, href: '/admin/bus', bgColor: 'bg-primary/10', borderColor: 'border-primary/30', iconColor: 'text-primary' },
+    { name: 'Salaries', description: 'Employee salary management', icon: Users, href: '/admin/salaries', bgColor: 'bg-warning/10', borderColor: 'border-warning/30', iconColor: 'text-warning' },
+    { name: 'Expenses', description: 'Track school expenses', icon: Receipt, href: '/admin/expenses', bgColor: 'bg-destructive/10', borderColor: 'border-destructive/30', iconColor: 'text-destructive' },
+    { name: 'Reports', description: 'Financial reports and analytics', icon: FileText, href: '/admin/reports', bgColor: 'bg-surface-2', borderColor: 'border-border/40', iconColor: 'text-text-muted' },
   ]
 
   const recentTransactions = useMemo(() => {
@@ -186,8 +206,8 @@ export default function AdminDashboard() {
       <AdminLayout>
         <div className="p-6 flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading dashboard...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-text-muted">Loading dashboard...</p>
           </div>
         </div>
       </AdminLayout>
@@ -201,8 +221,8 @@ export default function AdminDashboard() {
         <div className="mb-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">School Management Dashboard</h1>
-              <p className="text-gray-600 mt-2">Welcome to {settings.schoolName} - {settings.academicYear}</p>
+              <h1 className="text-3xl font-bold text-text">School Management Dashboard</h1>
+              <p className="text-text-muted mt-2">Welcome to {settings.schoolName} - {settings.academicYear}</p>
             </div>
           </div>
         </div>
@@ -215,19 +235,21 @@ export default function AdminDashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white rounded-lg shadow-md p-4 sm:p-6 hover:shadow-lg transition-shadow cursor-pointer"
+                className="bg-surface-1 rounded-lg shadow-sm ring-1 ring-border/40 p-4 sm:p-6 hover:shadow-md hover:ring-border/60 transition-shadow cursor-pointer"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{stat.title}</p>
-                    <p className={`text-xl sm:text-2xl font-bold mt-1 ${stat.color}`}>{stat.value}</p>
+                    <p className="text-xs sm:text-sm font-medium text-text-muted truncate">{stat.title}</p>
+                    <p className={`text-xl sm:text-2xl font-bold mt-1 ${stat.valueColor}`}>{stat.value}</p>
                     {stat.change && (
-                      <p className="text-xs text-gray-500 mt-1">{stat.change}</p>
+                      <p className="text-xs text-text-dim mt-1">{stat.change}</p>
                     )}
                   </div>
-                  <div className={`p-2 sm:p-3 rounded-full ${stat.color.replace('text-', 'bg-').replace('-600', '-100')} flex-shrink-0`}>
-                    <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.color}`} />
-                  </div>
+                  {stat.icon && (
+                    <div className={`p-2 sm:p-3 rounded-full ${stat.iconBg} flex-shrink-0`}>
+                      <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${stat.iconColor}`} />
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </Link>
@@ -235,8 +257,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6 sm:mb-8">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+        <div className="bg-surface-1 rounded-lg shadow-sm ring-1 ring-border/40 p-4 sm:p-6 mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-semibold text-text mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {quickActions.map((action, index) => (
               <Link key={action.title} href={action.href || '#'}>
@@ -263,16 +285,16 @@ export default function AdminDashboard() {
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Income:</span>
-                  <span className="text-lg font-semibold text-green-600">{formatRupee(todayReport.income.total)}</span>
+                  <span className="text-text-muted">Income:</span>
+                  <span className="text-lg font-semibold text-success">{formatRupee(todayReport.income.total)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Expenses:</span>
-                  <span className="text-lg font-semibold text-red-600">{formatRupee(todayReport.expenses.total)}</span>
+                  <span className="text-text-muted">Expenses:</span>
+                  <span className="text-lg font-semibold text-destructive">{formatRupee(todayReport.expenses.total)}</span>
                 </div>
-                <div className="flex justify-between items-center pt-4 border-t">
-                  <span className="text-gray-900 font-medium">Net:</span>
-                  <span className={`text-xl font-bold ${todayReport.net >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <div className="flex justify-between items-center pt-4 border-t border-border/20">
+                  <span className="text-text font-medium">Net:</span>
+                  <span className={`text-xl font-bold ${todayReport.net >= 0 ? 'text-success' : 'text-destructive'}`}>
                     {formatRupee(todayReport.net)}
                   </span>
                 </div>
@@ -287,16 +309,16 @@ export default function AdminDashboard() {
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Income:</span>
-                  <span className="text-lg font-semibold text-green-600">{formatRupee(monthReport.income.total)}</span>
+                  <span className="text-text-muted">Income:</span>
+                  <span className="text-lg font-semibold text-success">{formatRupee(monthReport.income.total)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Expenses:</span>
-                  <span className="text-lg font-semibold text-red-600">{formatRupee(monthReport.expenses.total)}</span>
+                  <span className="text-text-muted">Expenses:</span>
+                  <span className="text-lg font-semibold text-destructive">{formatRupee(monthReport.expenses.total)}</span>
                 </div>
-                <div className="flex justify-between items-center pt-4 border-t">
-                  <span className="text-gray-900 font-medium">Net:</span>
-                  <span className={`text-xl font-bold ${monthReport.net >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <div className="flex justify-between items-center pt-4 border-t border-border/20">
+                  <span className="text-text font-medium">Net:</span>
+                  <span className={`text-xl font-bold ${monthReport.net >= 0 ? 'text-success' : 'text-destructive'}`}>
                     {formatRupee(monthReport.net)}
                   </span>
                 </div>
@@ -311,24 +333,24 @@ export default function AdminDashboard() {
             <CardHeader>
               <CardTitle className="text-lg">Recent Transactions</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto bg-surface-2 rounded-xl ring-1 ring-border/40 p-6">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Date</th>
-                      <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Type</th>
-                      <th className="text-right py-2 px-4 text-sm font-medium text-gray-700">Amount</th>
-                      <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Payment Mode</th>
+                    <tr>
+                      <th className="text-left py-2 px-4 text-sm font-medium text-text-muted">Date</th>
+                      <th className="text-left py-2 px-4 text-sm font-medium text-text-muted">Type</th>
+                      <th className="text-right py-2 px-4 text-sm font-medium text-text-muted">Amount</th>
+                      <th className="text-left py-2 px-4 text-sm font-medium text-text-muted">Payment Mode</th>
                     </tr>
                   </thead>
                   <tbody>
                     {recentTransactions.map((transaction) => (
-                      <tr key={transaction.id} className="border-b hover:bg-gray-50">
-                        <td className="py-2 px-4 text-sm text-gray-600">{formatDateReadable(transaction.date)}</td>
-                        <td className="py-2 px-4 text-sm text-gray-900">{transaction.type.replace('_', ' ').toUpperCase()}</td>
-                        <td className="py-2 px-4 text-sm font-medium text-right">{formatRupee(transaction.amount)}</td>
-                        <td className="py-2 px-4 text-sm text-gray-600">{transaction.paymentMode}</td>
+                      <tr key={transaction.id}>
+                        <td className="py-2 px-4 text-sm text-text-muted">{formatDateReadable(transaction.date)}</td>
+                        <td className="py-2 px-4 text-sm text-text">{transaction.type.replace('_', ' ').toUpperCase()}</td>
+                        <td className="py-2 px-4 text-sm font-medium text-right text-success">{formatRupee(transaction.amount)}</td>
+                        <td className="py-2 px-4 text-sm text-text-muted">{transaction.paymentMode}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -339,8 +361,8 @@ export default function AdminDashboard() {
         )}
 
         {/* Modules Grid */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Management Modules</h2>
+        <div className="bg-surface-1 rounded-lg shadow-sm ring-1 ring-border/40 p-6">
+          <h2 className="text-xl font-semibold text-text mb-6">Management Modules</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {modules.map((module, index) => (
               <Link key={module.name} href={module.href}>
@@ -348,15 +370,15 @@ export default function AdminDashboard() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className={`${module.color} border-2 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer`}
+                  className={`${module.bgColor} ${module.borderColor} border-2 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer`}
                 >
                   <div className="flex items-start space-x-4">
-                    <div className="p-3 bg-white rounded-lg">
-                      <module.icon className="w-6 h-6 text-gray-700" />
+                    <div className={`p-3 rounded-lg ${module.bgColor}`}>
+                      <module.icon className={`w-6 h-6 ${module.iconColor}`} />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">{module.name}</h3>
-                      <p className="text-sm text-gray-600">{module.description}</p>
+                      <h3 className="text-lg font-semibold text-text mb-1">{module.name}</h3>
+                      <p className="text-sm text-text-dim">{module.description}</p>
                     </div>
                   </div>
                 </motion.div>

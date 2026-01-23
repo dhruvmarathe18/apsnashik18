@@ -172,11 +172,11 @@ export default function CloudinaryUploadWidget({
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">
-                Upload images to Cloudinary folder: <span className="font-medium">{folder}</span>
+              <p className="text-sm text-text-muted">
+                Upload images to Cloudinary folder: <span className="font-medium text-text">{folder}</span>
               </p>
               {tags.length > 0 && (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-text-dim mt-1">
                   Tags: {tags.join(', ')}
                 </p>
               )}
@@ -201,11 +201,11 @@ export default function CloudinaryUploadWidget({
           </div>
 
           {!cloudName && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start space-x-3">
-              <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <div className="bg-warning/20 border border-warning/30 rounded-lg p-4 flex items-start space-x-3">
+              <AlertCircle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium text-yellow-800">Configuration Required</p>
-                <p className="text-xs text-yellow-700 mt-1">
+                <p className="text-sm font-medium text-warning">Configuration Required</p>
+                <p className="text-xs text-text mt-1">
                   Please set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME in your environment variables.
                 </p>
               </div>
@@ -214,16 +214,16 @@ export default function CloudinaryUploadWidget({
 
           {uploadedFiles.length > 0 && (
             <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-gray-900">
+              <h3 className="text-sm font-semibold text-text">
                 Recently Uploaded ({uploadedFiles.length})
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {uploadedFiles.map((file, index) => (
                   <div
                     key={file.publicId}
-                    className="relative group border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                    className="relative group border border-border/40 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
                   >
-                    <div className="aspect-square bg-gray-100">
+                    <div className="aspect-square bg-surface-2">
                       <img
                         src={file.url}
                         alt={file.publicId}
@@ -232,15 +232,15 @@ export default function CloudinaryUploadWidget({
                     </div>
                     <button
                       onClick={() => removeFile(index)}
-                      className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-2 right-2 w-6 h-6 bg-destructive text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <X className="w-4 h-4" />
                     </button>
-                    <div className="p-2 bg-white">
-                      <p className="text-xs text-gray-600 truncate" title={file.publicId}>
+                    <div className="p-2 bg-surface-1">
+                      <p className="text-xs text-text-muted truncate" title={file.publicId}>
                         {file.publicId.split('/').pop()}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-text-dim mt-1">
                         {(file.bytes / 1024).toFixed(1)} KB
                       </p>
                     </div>

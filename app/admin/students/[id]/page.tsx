@@ -41,7 +41,7 @@ export default function StudentProfilePage() {
       <AdminLayout>
         <div className="p-6">
           <div className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Student Not Found</h2>
+            <h2 className="text-2xl font-bold text-text mb-4">Student Not Found</h2>
             <Link href="/admin/students">
               <Button>Back to Students</Button>
             </Link>
@@ -79,8 +79,8 @@ export default function StudentProfilePage() {
             </Link>
             <div className="flex justify-between items-start">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">{student.fullName}</h1>
-                <p className="text-gray-600 mt-2">
+                <h1 className="text-3xl font-bold text-text">{student.fullName}</h1>
+                <p className="text-text-muted mt-2">
                   {student.className}{student.section ? ` - ${student.section}` : ''} • Admission No: {student.admissionNo}
                 </p>
               </div>
@@ -98,7 +98,7 @@ export default function StudentProfilePage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Student Information */}
+              {/* Student Information */}
             <div className="lg:col-span-2 space-y-6">
               <Card>
                 <CardHeader>
@@ -107,44 +107,73 @@ export default function StudentProfilePage() {
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-gray-600">Admission Number</p>
-                      <p className="font-medium text-gray-900">{student.admissionNo}</p>
+                      <p className="text-sm text-text-dim">Admission Number</p>
+                      <p className="font-medium text-text">{student.admissionNo}</p>
                     </div>
                     {student.rollNo && (
                       <div>
-                        <p className="text-sm text-gray-600">Roll Number</p>
-                        <p className="font-medium text-gray-900">{student.rollNo}</p>
+                        <p className="text-sm text-text-dim">Roll Number</p>
+                        <p className="font-medium text-text">{student.rollNo}</p>
                       </div>
                     )}
                     <div>
-                      <p className="text-sm text-gray-600">Class</p>
-                      <p className="font-medium text-gray-900">{student.className}{student.section ? ` - ${student.section}` : ''}</p>
+                      <p className="text-sm text-text-dim">Class</p>
+                      <p className="font-medium text-text">{student.className}{student.section ? ` - ${student.section}` : ''}</p>
                     </div>
+                    {student.aadharNumber && (
+                      <div>
+                        <p className="text-sm text-text-dim">Aadhar Number</p>
+                        <p className="font-medium text-text">{student.aadharNumber}</p>
+                      </div>
+                    )}
                     <div>
-                      <p className="text-sm text-gray-600">Academic Year</p>
-                      <p className="font-medium text-gray-900">{student.academicYear}</p>
+                      <p className="text-sm text-text-dim">Academic Year</p>
+                      <p className="font-medium text-text">{student.academicYear}</p>
                     </div>
                     {student.gender && (
                       <div>
-                        <p className="text-sm text-gray-600">Gender</p>
-                        <p className="font-medium text-gray-900">{student.gender}</p>
+                        <p className="text-sm text-text-dim">Gender</p>
+                        <p className="font-medium text-text">{student.gender}</p>
                       </div>
                     )}
                     {student.dateOfBirth && (
                       <div>
-                        <p className="text-sm text-gray-600">Date of Birth</p>
-                        <p className="font-medium text-gray-900">{formatDateReadable(student.dateOfBirth)}</p>
+                        <p className="text-sm text-text-dim">Date of Birth</p>
+                        <p className="font-medium text-text">{formatDateReadable(student.dateOfBirth)}</p>
+                      </div>
+                    )}
+                    {student.birthPlace && (
+                      <div>
+                        <p className="text-sm text-text-dim">Birth Place</p>
+                        <p className="font-medium text-text">{student.birthPlace}</p>
+                      </div>
+                    )}
+                    {student.bloodGroup && (
+                      <div>
+                        <p className="text-sm text-text-dim">Blood Group</p>
+                        <p className="font-medium text-text">{student.bloodGroup}</p>
+                      </div>
+                    )}
+                    {student.casteCategory && (
+                      <div>
+                        <p className="text-sm text-text-dim">Caste Belongs To</p>
+                        <p className="font-medium text-text">
+                          {student.casteCategory}
+                          {student.casteCategory === 'Other' && student.casteOther
+                            ? ` - ${student.casteOther}`
+                            : ''}
+                        </p>
                       </div>
                     )}
                     <div>
-                      <p className="text-sm text-gray-600">Status</p>
+                      <p className="text-sm text-text-dim">Status</p>
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium ${
                           student.status === 'Active'
-                            ? 'bg-green-100 text-green-800'
+                            ? 'bg-success/20 text-success'
                             : student.status === 'Inactive'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-gray-100 text-gray-800'
+                            ? 'bg-warning/20 text-warning'
+                            : 'bg-muted/50 text-text-dim'
                         }`}
                       >
                         {student.status}
@@ -160,39 +189,45 @@ export default function StudentProfilePage() {
                   <CardTitle>Contact Information</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
+                      <div className="space-y-4">
                     {student.fatherName && (
                       <div>
-                        <p className="text-sm text-gray-600">Father's Name</p>
-                        <p className="font-medium text-gray-900">{student.fatherName}</p>
+                        <p className="text-sm text-text-dim">Father's Name</p>
+                        <p className="font-medium text-text">{student.fatherName}</p>
                       </div>
                     )}
                     {student.motherName && (
                       <div>
-                        <p className="text-sm text-gray-600">Mother's Name</p>
-                        <p className="font-medium text-gray-900">{student.motherName}</p>
+                        <p className="text-sm text-text-dim">Mother's Name</p>
+                        <p className="font-medium text-text">{student.motherName}</p>
                       </div>
                     )}
                     {student.guardianName && (
                       <div>
-                        <p className="text-sm text-gray-600">Guardian Name</p>
-                        <p className="font-medium text-gray-900">{student.guardianName}</p>
+                        <p className="text-sm text-text-dim">Guardian Name</p>
+                        <p className="font-medium text-text">{student.guardianName}</p>
+                      </div>
+                    )}
+                    {student.previousSchoolName && (
+                      <div>
+                        <p className="text-sm text-text-dim">Previous School Name</p>
+                        <p className="font-medium text-text">{student.previousSchoolName}</p>
                       </div>
                     )}
                     <div>
-                      <p className="text-sm text-gray-600">Primary Phone</p>
-                      <p className="font-medium text-gray-900">{student.phonePrimary}</p>
+                      <p className="text-sm text-text-dim">Primary Phone</p>
+                      <p className="font-medium text-text">{student.phonePrimary}</p>
                     </div>
                     {student.phoneSecondary && (
                       <div>
-                        <p className="text-sm text-gray-600">Secondary Phone</p>
-                        <p className="font-medium text-gray-900">{student.phoneSecondary}</p>
+                        <p className="text-sm text-text-dim">Secondary Phone</p>
+                        <p className="font-medium text-text">{student.phoneSecondary}</p>
                       </div>
                     )}
                     {(student.addressLine1 || student.city || student.state) && (
                       <div>
-                        <p className="text-sm text-gray-600">Address</p>
-                        <p className="font-medium text-gray-900">
+                        <p className="text-sm text-text-dim">Address</p>
+                        <p className="font-medium text-text">
                           {[student.addressLine1, student.addressLine2, student.city, student.state, student.pincode]
                             .filter(Boolean)
                             .join(', ')}
@@ -210,15 +245,21 @@ export default function StudentProfilePage() {
                     <CardTitle>Transport Information</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                      <div className="space-y-4">
                       <div>
-                        <p className="text-sm text-gray-600">Bus Route</p>
-                        <p className="font-medium text-gray-900">{student.busRouteId || 'Not assigned'}</p>
+                        <p className="text-sm text-text-dim">Bus Route</p>
+                        <p className="font-medium text-text">{student.busRouteId || 'Not assigned'}</p>
                       </div>
+                      {student.busRouteAddress && (
+                        <div>
+                          <p className="text-sm text-text-dim">Bus Route Address</p>
+                          <p className="font-medium text-text">{student.busRouteAddress}</p>
+                        </div>
+                      )}
                       {student.busFeeMonthly && (
                         <div>
-                          <p className="text-sm text-gray-600">Monthly Bus Fee</p>
-                          <p className="font-medium text-gray-900">{formatRupee(student.busFeeMonthly)}</p>
+                          <p className="text-sm text-text-dim">Monthly Bus Fee</p>
+                          <p className="font-medium text-text">{formatRupee(student.busFeeMonthly)}</p>
                         </div>
                       )}
                     </div>
@@ -232,37 +273,37 @@ export default function StudentProfilePage() {
                   <CardHeader>
                     <CardTitle>Fee Payment History</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="overflow-x-auto">
+                  <CardContent className="p-0">
+                    <div className="overflow-x-auto bg-surface-2 rounded-xl ring-1 ring-border/40 p-6">
                       <table className="w-full">
                         <thead>
-                          <tr className="border-b">
-                            <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Date</th>
-                            <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Fee Type</th>
-                            <th className="text-right py-2 px-4 text-sm font-medium text-gray-700">Amount</th>
-                            <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Payment Mode</th>
+                          <tr>
+                            <th className="text-left py-2 px-4 text-sm font-medium text-text-muted">Date</th>
+                            <th className="text-left py-2 px-4 text-sm font-medium text-text-muted">Fee Type</th>
+                            <th className="text-right py-2 px-4 text-sm font-medium text-text-muted">Amount</th>
+                            <th className="text-left py-2 px-4 text-sm font-medium text-text-muted">Payment Mode</th>
                           </tr>
                         </thead>
                         <tbody>
                           {studentTransactions.map((transaction) => (
-                            <tr key={transaction.id} className="border-b">
-                              <td className="py-2 px-4 text-sm text-gray-600">{formatDateReadable(transaction.date)}</td>
-                              <td className="py-2 px-4 text-sm text-gray-900">
+                            <tr key={transaction.id}>
+                              <td className="py-2 px-4 text-sm text-text-muted">{formatDateReadable(transaction.date)}</td>
+                              <td className="py-2 px-4 text-sm text-text">
                                 {transaction.type === 'fee_collection' ? transaction.feeType : '-'}
                               </td>
-                              <td className="py-2 px-4 text-sm font-semibold text-right text-green-600">
+                              <td className="py-2 px-4 text-sm font-semibold text-right text-success">
                                 {formatRupee(transaction.amount)}
                               </td>
-                              <td className="py-2 px-4 text-sm text-gray-600">{transaction.paymentMode}</td>
+                              <td className="py-2 px-4 text-sm text-text-muted">{transaction.paymentMode}</td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
-                    <div className="mt-4 pt-4 border-t">
+                    <div className="mt-4 pt-4 border-t border-border/20 px-6 pb-6">
                       <div className="flex justify-between items-center">
-                        <span className="font-medium text-gray-900">Total Paid:</span>
-                        <span className="text-lg font-bold text-green-600">{formatRupee(totalPaid)}</span>
+                        <span className="font-medium text-text">Total Paid:</span>
+                        <span className="text-lg font-bold text-success">{formatRupee(totalPaid)}</span>
                       </div>
                     </div>
                   </CardContent>
@@ -280,12 +321,12 @@ export default function StudentProfilePage() {
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-sm text-gray-600">Total Fee Paid</p>
-                      <p className="text-2xl font-bold text-green-600">{formatRupee(totalPaid)}</p>
+                      <p className="text-sm text-text-muted">Total Fee Paid</p>
+                      <p className="text-2xl font-bold text-success">{formatRupee(totalPaid)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Transactions</p>
-                      <p className="text-2xl font-bold text-gray-900">{studentTransactions.length}</p>
+                      <p className="text-sm text-text-muted">Transactions</p>
+                      <p className="text-2xl font-bold text-text">{studentTransactions.length}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -300,15 +341,15 @@ export default function StudentProfilePage() {
                   <CardContent>
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Annual Fee:</span>
-                        <span className="text-sm font-medium">{formatRupee(feePlan.annualFee)}</span>
+                        <span className="text-sm text-text-muted">Tuition Fee:</span>
+                        <span className="text-sm font-medium text-text">{formatRupee(feePlan.annualFee)}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Exam Fee:</span>
-                        <span className="text-sm font-medium">{formatRupee(feePlan.examFee)}</span>
+                        <span className="text-sm text-text-muted">Exam Fee:</span>
+                        <span className="text-sm font-medium text-text">{formatRupee(feePlan.examFee)}</span>
                       </div>
                       {feePlan.discount > 0 && (
-                        <div className="flex justify-between text-red-600">
+                        <div className="flex justify-between text-destructive">
                           <span className="text-sm">Discount:</span>
                           <span className="text-sm font-medium">-{formatRupee(feePlan.discount)}</span>
                         </div>

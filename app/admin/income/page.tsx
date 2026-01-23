@@ -71,8 +71,8 @@ export default function IncomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Other Income</h1>
-              <p className="text-gray-600 mt-2">Track income from sources other than fees</p>
+              <h1 className="text-3xl font-bold text-text">Other Income</h1>
+              <p className="text-text-muted mt-2">Track income from sources other than fees</p>
             </div>
             <Button onClick={() => setShowAddModal(true)}>
               <Plus className="w-5 h-5 mr-2" />
@@ -86,10 +86,10 @@ export default function IncomePage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Income</p>
-                    <p className="text-2xl font-bold text-green-600 mt-2">{formatRupee(stats.total)}</p>
+                    <p className="text-sm font-medium text-text-muted">Total Income</p>
+                    <p className="text-2xl font-bold text-success mt-2">{formatRupee(stats.total)}</p>
                   </div>
-                  <TrendingUp className="w-8 h-8 text-green-600" />
+                  <TrendingUp className="w-8 h-8 text-success" />
                 </div>
               </CardContent>
             </Card>
@@ -97,10 +97,10 @@ export default function IncomePage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">This Month</p>
-                    <p className="text-2xl font-bold text-blue-600 mt-2">{formatRupee(stats.thisMonth)}</p>
+                    <p className="text-sm font-medium text-text-muted">This Month</p>
+                    <p className="text-2xl font-bold text-primary mt-2">{formatRupee(stats.thisMonth)}</p>
                   </div>
-                  <TrendingUp className="w-8 h-8 text-blue-600" />
+                  <TrendingUp className="w-8 h-8 text-primary" />
                 </div>
               </CardContent>
             </Card>
@@ -115,9 +115,9 @@ export default function IncomePage() {
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {Object.entries(sourceTotals).map(([source, total]) => (
-                    <div key={source} className="bg-green-50 rounded-lg p-4">
-                      <p className="text-sm text-gray-600">{source}</p>
-                      <p className="text-lg font-bold text-green-600 mt-1">{formatRupee(total)}</p>
+                    <div key={source} className="bg-success/10 rounded-lg p-4">
+                      <p className="text-sm text-text-muted">{source}</p>
+                      <p className="text-lg font-bold text-success mt-1">{formatRupee(total)}</p>
                     </div>
                   ))}
                 </div>
@@ -153,12 +153,12 @@ export default function IncomePage() {
             <CardHeader>
               <CardTitle>Income Records ({filteredIncome.length})</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               {filteredIncome.length === 0 ? (
-                <div className="text-center py-12">
-                  <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Income Records Found</h3>
-                  <p className="text-gray-600 mb-4">
+                <div className="text-center py-12 px-6">
+                  <TrendingUp className="w-16 h-16 text-text-subtle mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-text mb-2">No Income Records Found</h3>
+                  <p className="text-text-muted mb-4">
                     {filterMonth || filterSource ? 'Try adjusting your filters' : 'Get started by adding your first income entry'}
                   </p>
                   {!filterMonth && !filterSource && (
@@ -169,36 +169,36 @@ export default function IncomePage() {
                   )}
                 </div>
               ) : (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto bg-surface-2 rounded-xl ring-1 ring-border/40 p-6">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Date</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Source</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Amount</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Payment Mode</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Notes</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Actions</th>
+                      <tr>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Date</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Source</th>
+                        <th className="text-right py-3 px-4 text-sm font-medium text-text-muted">Amount</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Payment Mode</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Notes</th>
+                        <th className="text-right py-3 px-4 text-sm font-medium text-text-muted">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredIncome.map((income) => (
-                        <tr key={income.id} className="border-b hover:bg-gray-50">
-                          <td className="py-3 px-4 text-sm text-gray-600">{formatDateReadable(income.date)}</td>
+                        <tr key={income.id}>
+                          <td className="py-3 px-4 text-sm text-text-muted">{formatDateReadable(income.date)}</td>
                           <td className="py-3 px-4">
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-success/20 text-success">
                               {income.incomeSource}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-sm font-semibold text-right text-green-600">
+                          <td className="py-3 px-4 text-sm font-semibold text-right text-success">
                             {formatRupee(income.amount)}
                           </td>
-                          <td className="py-3 px-4 text-sm text-gray-600">{income.paymentMode}</td>
-                          <td className="py-3 px-4 text-sm text-gray-600">{income.notes || '-'}</td>
+                          <td className="py-3 px-4 text-sm text-text-muted">{income.paymentMode}</td>
+                          <td className="py-3 px-4 text-sm text-text-muted">{income.notes || '-'}</td>
                           <td className="py-3 px-4">
                             <div className="flex items-center justify-end">
                               <Button variant="ghost" size="sm" onClick={() => handleDelete(income.id)}>
-                                <Trash2 className="w-4 h-4 text-red-600" />
+                                <Trash2 className="w-4 h-4 text-destructive" />
                               </Button>
                             </div>
                           </td>
@@ -265,9 +265,9 @@ function IncomeModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
-        <div className="p-6 border-b">
-          <h2 className="text-2xl font-bold text-gray-900">Add Income</h2>
+      <div className="bg-card rounded-lg shadow-xl max-w-2xl w-full ring-1 ring-border/40">
+        <div className="p-6 border-b border-border/20">
+          <h2 className="text-2xl font-bold text-text">Add Income</h2>
         </div>
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-4">

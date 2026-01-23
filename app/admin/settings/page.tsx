@@ -116,8 +116,8 @@ export default function SettingsPage() {
       <div className="p-6">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-            <p className="text-gray-600 mt-2">Configure school settings and preferences</p>
+            <h1 className="text-3xl font-bold text-text">Settings</h1>
+            <p className="text-text-muted mt-2">Configure school settings and preferences</p>
           </div>
 
           {/* Data Statistics */}
@@ -127,17 +127,17 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-sm text-gray-600">Total Students</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{dataStats.students}</p>
+                <div className="bg-surface-2 rounded-lg p-4">
+                  <p className="text-sm text-text-muted">Total Students</p>
+                  <p className="text-2xl font-bold text-text mt-1">{dataStats.students}</p>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-sm text-gray-600">Total Transactions</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{dataStats.transactions}</p>
+                <div className="bg-surface-2 rounded-lg p-4">
+                  <p className="text-sm text-text-muted">Total Transactions</p>
+                  <p className="text-2xl font-bold text-text mt-1">{dataStats.transactions}</p>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-sm text-gray-600">Fee Plans</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{dataStats.feePlans}</p>
+                <div className="bg-surface-2 rounded-lg p-4">
+                  <p className="text-sm text-text-muted">Fee Plans</p>
+                  <p className="text-2xl font-bold text-text mt-1">{dataStats.feePlans}</p>
                 </div>
               </div>
             </CardContent>
@@ -147,14 +147,14 @@ export default function SettingsPage() {
           <Card className="mb-6">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Lock className="w-5 h-5 text-blue-600" />
+                <Lock className="w-5 h-5 text-primary" />
                 Change Password
               </CardTitle>
             </CardHeader>
             <CardContent>
               {!showPasswordChange ? (
                 <div className="space-y-4">
-                  <p className="text-gray-600">
+                  <p className="text-text-muted">
                     Update your admin account password to keep your account secure.
                   </p>
                   <Button onClick={() => setShowPasswordChange(true)}>
@@ -176,7 +176,7 @@ export default function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => setShowPasswords({ ...showPasswords, current: !showPasswords.current })}
-                      className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-9 text-text-muted hover:text-text transition-colors"
                     >
                       {showPasswords.current ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -194,7 +194,7 @@ export default function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => setShowPasswords({ ...showPasswords, new: !showPasswords.new })}
-                      className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-9 text-text-muted hover:text-text transition-colors"
                     >
                       {showPasswords.new ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -212,7 +212,7 @@ export default function SettingsPage() {
                     <button
                       type="button"
                       onClick={() => setShowPasswords({ ...showPasswords, confirm: !showPasswords.confirm })}
-                      className="absolute right-3 top-9 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-9 text-text-muted hover:text-text transition-colors"
                     >
                       {showPasswords.confirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -253,24 +253,24 @@ export default function SettingsPage() {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Reset All Data</h3>
-                  <p className="text-gray-600 mb-4">
+                  <h3 className="text-lg font-semibold text-text mb-2">Reset All Data</h3>
+                  <p className="text-text-muted mb-4">
                     This action will permanently delete all user-entered data from the admin panel, including:
                   </p>
-                  <ul className="list-disc list-inside text-gray-600 space-y-1 mb-4 ml-4">
+                  <ul className="list-disc list-inside text-text-muted space-y-1 mb-4 ml-4">
                     <li>All students and their information</li>
                     <li>All fee plans</li>
                     <li>All transactions (fee collections, expenses, salaries, bus expenses, etc.)</li>
                     <li>All bus daily entries</li>
                   </ul>
-                  <p className="text-red-600 font-medium mb-4">
+                  <p className="text-destructive font-medium mb-4">
                     ⚠️ This action cannot be undone. Settings and admin accounts will be preserved.
                   </p>
                 </div>
                 <Button
                   variant="outline"
                   onClick={() => setShowConfirmDialog(true)}
-                  className="border-red-500 text-red-600 hover:bg-red-50"
+                  className="border-destructive text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
                   Reset All Data
@@ -281,33 +281,33 @@ export default function SettingsPage() {
 
           {/* Confirmation Dialog */}
           {showConfirmDialog && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-                <div className="p-6 border-b">
-                  <h2 className="text-2xl font-bold text-red-600 flex items-center">
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <div className="bg-surface rounded-lg shadow-xl max-w-md w-full ring-1 ring-border/40">
+                <div className="p-6 border-b border-border/20">
+                  <h2 className="text-2xl font-bold text-destructive flex items-center">
                     <AlertTriangle className="w-6 h-6 mr-2" />
                     Confirm Reset
                   </h2>
                 </div>
                 <div className="p-6">
-                  <p className="text-gray-700 mb-4">
+                  <p className="text-text mb-4">
                     Are you absolutely sure you want to delete all data? This will permanently remove:
                   </p>
-                  <ul className="list-disc list-inside text-gray-600 space-y-1 mb-6 ml-4">
-                    <li><strong>{dataStats.students}</strong> students</li>
-                    <li><strong>{dataStats.transactions}</strong> transactions</li>
-                    <li><strong>{dataStats.feePlans}</strong> fee plans</li>
+                  <ul className="list-disc list-inside text-text-muted space-y-1 mb-6 ml-4">
+                    <li><strong className="text-text">{dataStats.students}</strong> students</li>
+                    <li><strong className="text-text">{dataStats.transactions}</strong> transactions</li>
+                    <li><strong className="text-text">{dataStats.feePlans}</strong> fee plans</li>
                     <li>All bus entries</li>
                   </ul>
                   <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Type <strong className="text-red-600">DELETE ALL DATA</strong> to confirm:
+                    <label className="block text-sm font-medium text-text mb-2">
+                      Type <strong className="text-destructive">DELETE ALL DATA</strong> to confirm:
                     </label>
                     <input
                       type="text"
                       value={confirmText}
                       onChange={(e) => setConfirmText(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                      className="w-full px-3 py-2 bg-surface-1 border border-border/40 rounded-md focus:outline-none focus:ring-2 focus:ring-destructive/50 text-text placeholder:text-text-dim"
                       placeholder="DELETE ALL DATA"
                     />
                   </div>

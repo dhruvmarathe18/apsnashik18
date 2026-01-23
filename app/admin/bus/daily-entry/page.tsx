@@ -164,22 +164,22 @@ function DailyEntry() {
     <AdminLayout>
       <div className="p-6">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-primary-700 mb-8">📝 Daily Entry</h1>
+          <h1 className="text-4xl font-bold text-primary mb-8">📝 Daily Entry</h1>
 
           {alert && (
-            <div className={`mb-6 p-4 rounded-lg ${
+            <div className={`mb-6 p-4 rounded-lg ring-1 ring-border/40 ${
               alert.type === 'success' 
-                ? 'bg-green-100 text-green-800 border border-green-400' 
-                : 'bg-red-100 text-red-800 border border-red-400'
+                ? 'bg-success/20 text-success border border-success/30' 
+                : 'bg-destructive/20 text-destructive border border-destructive/30'
             }`}>
               {alert.message}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-8">
+          <form onSubmit={handleSubmit} className="bg-surface rounded-lg shadow-lg p-8 ring-1 ring-border/40">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   Date *
                 </label>
                 <input
@@ -188,20 +188,20 @@ function DailyEntry() {
                   value={formData.Date}
                   onChange={handleChange}
                   max={getTodayISO()}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary text-text"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   Bus *
                 </label>
                 <select
                   name="Bus"
                   value={formData.Bus}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary text-text"
                   required
                 >
                   <option value="">Select Bus</option>
@@ -212,7 +212,7 @@ function DailyEntry() {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   Driver Name *
                 </label>
                 <input
@@ -220,13 +220,13 @@ function DailyEntry() {
                   name="Driver Name"
                   value={formData['Driver Name']}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary text-text"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   Start KM *
                 </label>
                 <input
@@ -236,10 +236,10 @@ function DailyEntry() {
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary text-text"
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-text-dim mt-1">
                   {getLastEntry(formData.Bus) 
                     ? 'Auto-loaded from previous day (you can edit if needed)' 
                     : 'Enter starting KM reading'}
@@ -247,7 +247,7 @@ function DailyEntry() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   End KM *
                 </label>
                 <input
@@ -256,13 +256,13 @@ function DailyEntry() {
                   value={formData['End KM']}
                   onChange={handleChange}
                   step="0.01"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary text-text"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   Daily KM
                 </label>
                 <input
@@ -271,12 +271,12 @@ function DailyEntry() {
                   value={formData['Daily KM'].toFixed(2)}
                   readOnly
                   step="0.01"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600"
+                  className="w-full px-4 py-2 border border-border/40 rounded-lg bg-surface-2 text-text-muted"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   Diesel Filled (Liters)
                 </label>
                 <input
@@ -286,12 +286,12 @@ function DailyEntry() {
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary text-text"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   Diesel Rate (per Liter)
                 </label>
                 <input
@@ -301,12 +301,12 @@ function DailyEntry() {
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary text-text"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   Diesel Amount
                 </label>
                 <input
@@ -315,12 +315,12 @@ function DailyEntry() {
                   value={formData['Diesel Amount'].toFixed(2)}
                   readOnly
                   step="0.01"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600"
+                  className="w-full px-4 py-2 border border-border/40 rounded-lg bg-surface-2 text-text-muted"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   Expense Description
                 </label>
                 <input
@@ -328,12 +328,12 @@ function DailyEntry() {
                   name="Expense Description"
                   value={formData['Expense Description']}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary text-text"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   Other Expense Amount
                 </label>
                 <input
@@ -343,12 +343,12 @@ function DailyEntry() {
                   onChange={handleChange}
                   step="0.01"
                   min="0"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary text-text"
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   Remarks
                 </label>
                 <textarea
@@ -356,15 +356,15 @@ function DailyEntry() {
                   value={formData['Remarks']}
                   onChange={handleChange}
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary text-text"
                 />
               </div>
             </div>
 
             {dieselInfo && (
-              <div className="mt-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
-                <h4 className="font-semibold text-blue-800 mb-2">Diesel Information</h4>
-                <div className="text-sm text-blue-700 space-y-1">
+              <div className="mt-6 p-4 bg-primary/10 border-l-4 border-primary rounded">
+                <h4 className="font-semibold text-primary mb-2">Diesel Information</h4>
+                <div className="text-sm text-text space-y-1">
                   <p><strong>Running KM since last diesel:</strong> {dieselInfo.runningKM.toFixed(2)} KM</p>
                   {dieselInfo.dieselFilled > 0 ? (
                     <>
@@ -386,8 +386,8 @@ function DailyEntry() {
               disabled={isSaving}
               className={`mt-8 w-full px-6 py-3 rounded-lg transition font-semibold text-lg relative ${
                 isSaving 
-                  ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-primary-500 hover:bg-primary-600 text-white'
+                  ? 'bg-muted cursor-not-allowed text-text-muted' 
+                  : 'bg-primary hover:bg-primary/90 text-primary-foreground'
               }`}
             >
               {isSaving ? (

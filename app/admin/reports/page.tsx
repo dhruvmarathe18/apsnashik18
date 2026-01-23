@@ -49,8 +49,8 @@ export default function ReportsPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Financial Reports</h1>
-              <p className="text-gray-600 mt-2">Generate and view comprehensive financial reports</p>
+              <h1 className="text-3xl font-bold text-text">Financial Reports</h1>
+              <p className="text-text-muted mt-2">Generate and view comprehensive financial reports</p>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={handlePrint}>
@@ -114,52 +114,52 @@ export default function ReportsPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h3 className="text-lg font-semibold mb-4">Income</h3>
+                      <h3 className="text-lg font-semibold mb-4 text-text">Income</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Fees:</span>
-                          <span className="font-medium">{formatRupee(dailyReport.income.fees)}</span>
+                          <span className="text-text-muted">Fees:</span>
+                          <span className="font-medium text-text">{formatRupee(dailyReport.income.fees)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Bus Fees:</span>
-                          <span className="font-medium">{formatRupee(dailyReport.income.busFees)}</span>
+                          <span className="text-text-muted">Bus Fees:</span>
+                          <span className="font-medium text-text">{formatRupee(dailyReport.income.busFees)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Other Income:</span>
-                          <span className="font-medium">{formatRupee(dailyReport.income.otherIncome)}</span>
+                          <span className="text-text-muted">Other Income:</span>
+                          <span className="font-medium text-text">{formatRupee(dailyReport.income.otherIncome)}</span>
                         </div>
-                        <div className="flex justify-between pt-2 border-t font-semibold">
-                          <span>Total Income:</span>
-                          <span className="text-green-600">{formatRupee(dailyReport.income.total)}</span>
+                        <div className="flex justify-between pt-2 border-t border-border/20 font-semibold">
+                          <span className="text-text">Total Income:</span>
+                          <span className="text-success">{formatRupee(dailyReport.income.total)}</span>
                         </div>
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold mb-4">Expenses</h3>
+                      <h3 className="text-lg font-semibold mb-4 text-text">Expenses</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Bus Expenses:</span>
-                          <span className="font-medium">{formatRupee(dailyReport.expenses.busExpenses)}</span>
+                          <span className="text-text-muted">Bus Expenses:</span>
+                          <span className="font-medium text-text">{formatRupee(dailyReport.expenses.busExpenses)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Salaries:</span>
-                          <span className="font-medium">{formatRupee(dailyReport.expenses.salaries)}</span>
+                          <span className="text-text-muted">Salaries:</span>
+                          <span className="font-medium text-text">{formatRupee(dailyReport.expenses.salaries)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Other Expenses:</span>
-                          <span className="font-medium">{formatRupee(dailyReport.expenses.otherExpenses)}</span>
+                          <span className="text-text-muted">Other Expenses:</span>
+                          <span className="font-medium text-text">{formatRupee(dailyReport.expenses.otherExpenses)}</span>
                         </div>
-                        <div className="flex justify-between pt-2 border-t font-semibold">
-                          <span>Total Expenses:</span>
-                          <span className="text-red-600">{formatRupee(dailyReport.expenses.total)}</span>
+                        <div className="flex justify-between pt-2 border-t border-border/20 font-semibold">
+                          <span className="text-text">Total Expenses:</span>
+                          <span className="text-destructive">{formatRupee(dailyReport.expenses.total)}</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="pt-4 border-t">
+                  <div className="pt-4 border-t border-border/20">
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold">Net Amount:</span>
-                      <span className={`text-2xl font-bold ${dailyReport.net >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      <span className="text-lg font-semibold text-text">Net Amount:</span>
+                      <span className={`text-2xl font-bold ${dailyReport.net >= 0 ? 'text-success' : 'text-destructive'}`}>
                         {formatRupee(dailyReport.net)}
                       </span>
                     </div>
@@ -180,52 +180,52 @@ export default function ReportsPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h3 className="text-lg font-semibold mb-4">Income</h3>
+                      <h3 className="text-lg font-semibold mb-4 text-text">Income</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Fees:</span>
-                          <span className="font-medium">{formatRupee(monthlyReport.income.fees)}</span>
+                          <span className="text-text-muted">Fees:</span>
+                          <span className="font-medium text-text">{formatRupee(monthlyReport.income.fees)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Bus Fees:</span>
-                          <span className="font-medium">{formatRupee(monthlyReport.income.busFees)}</span>
+                          <span className="text-text-muted">Bus Fees:</span>
+                          <span className="font-medium text-text">{formatRupee(monthlyReport.income.busFees)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Other Income:</span>
-                          <span className="font-medium">{formatRupee(monthlyReport.income.otherIncome)}</span>
+                          <span className="text-text-muted">Other Income:</span>
+                          <span className="font-medium text-text">{formatRupee(monthlyReport.income.otherIncome)}</span>
                         </div>
-                        <div className="flex justify-between pt-2 border-t font-semibold">
-                          <span>Total Income:</span>
-                          <span className="text-green-600">{formatRupee(monthlyReport.income.total)}</span>
+                        <div className="flex justify-between pt-2 border-t border-border/20 font-semibold">
+                          <span className="text-text">Total Income:</span>
+                          <span className="text-success">{formatRupee(monthlyReport.income.total)}</span>
                         </div>
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold mb-4">Expenses</h3>
+                      <h3 className="text-lg font-semibold mb-4 text-text">Expenses</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Bus Expenses:</span>
-                          <span className="font-medium">{formatRupee(monthlyReport.expenses.busExpenses)}</span>
+                          <span className="text-text-muted">Bus Expenses:</span>
+                          <span className="font-medium text-text">{formatRupee(monthlyReport.expenses.busExpenses)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Salaries:</span>
-                          <span className="font-medium">{formatRupee(monthlyReport.expenses.salaries)}</span>
+                          <span className="text-text-muted">Salaries:</span>
+                          <span className="font-medium text-text">{formatRupee(monthlyReport.expenses.salaries)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Other Expenses:</span>
-                          <span className="font-medium">{formatRupee(monthlyReport.expenses.otherExpenses)}</span>
+                          <span className="text-text-muted">Other Expenses:</span>
+                          <span className="font-medium text-text">{formatRupee(monthlyReport.expenses.otherExpenses)}</span>
                         </div>
-                        <div className="flex justify-between pt-2 border-t font-semibold">
-                          <span>Total Expenses:</span>
-                          <span className="text-red-600">{formatRupee(monthlyReport.expenses.total)}</span>
+                        <div className="flex justify-between pt-2 border-t border-border/20 font-semibold">
+                          <span className="text-text">Total Expenses:</span>
+                          <span className="text-destructive">{formatRupee(monthlyReport.expenses.total)}</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="pt-4 border-t">
+                  <div className="pt-4 border-t border-border/20">
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold">Net Amount:</span>
-                      <span className={`text-2xl font-bold ${monthlyReport.net >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      <span className="text-lg font-semibold text-text">Net Amount:</span>
+                      <span className={`text-2xl font-bold ${monthlyReport.net >= 0 ? 'text-success' : 'text-destructive'}`}>
                         {formatRupee(monthlyReport.net)}
                       </span>
                     </div>
@@ -247,20 +247,20 @@ export default function ReportsPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Class</th>
-                          <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Total Amount</th>
-                          <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Count</th>
+                        <tr className="border-b border-border/20">
+                          <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Class</th>
+                          <th className="text-right py-3 px-4 text-sm font-medium text-text-muted">Total Amount</th>
+                          <th className="text-right py-3 px-4 text-sm font-medium text-text-muted">Count</th>
                         </tr>
                       </thead>
                       <tbody>
                         {classWiseReport.map((report) => (
-                          <tr key={report.class} className="border-b">
-                            <td className="py-3 px-4 text-sm font-medium">{report.class}</td>
-                            <td className="py-3 px-4 text-sm font-semibold text-right text-green-600">
+                          <tr key={report.class} className="border-b border-border/20">
+                            <td className="py-3 px-4 text-sm font-medium text-text">{report.class}</td>
+                            <td className="py-3 px-4 text-sm font-semibold text-right text-success">
                               {formatRupee(report.total)}
                             </td>
-                            <td className="py-3 px-4 text-sm text-right">{report.count}</td>
+                            <td className="py-3 px-4 text-sm text-right text-text">{report.count}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -274,26 +274,26 @@ export default function ReportsPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Bus Number</th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Route</th>
-                          <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Fee Collection</th>
-                          <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Expenses</th>
-                          <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Net</th>
+                        <tr className="border-b border-border/20">
+                          <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Bus Number</th>
+                          <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Route</th>
+                          <th className="text-right py-3 px-4 text-sm font-medium text-text-muted">Fee Collection</th>
+                          <th className="text-right py-3 px-4 text-sm font-medium text-text-muted">Expenses</th>
+                          <th className="text-right py-3 px-4 text-sm font-medium text-text-muted">Net</th>
                         </tr>
                       </thead>
                       <tbody>
                         {transportReport.map((report) => (
-                          <tr key={report.busNumber} className="border-b">
-                            <td className="py-3 px-4 text-sm font-medium">{report.busNumber}</td>
-                            <td className="py-3 px-4 text-sm text-gray-600">{report.busRoute}</td>
-                            <td className="py-3 px-4 text-sm font-semibold text-right text-green-600">
+                          <tr key={report.busNumber} className="border-b border-border/20">
+                            <td className="py-3 px-4 text-sm font-medium text-text">{report.busNumber}</td>
+                            <td className="py-3 px-4 text-sm text-text-muted">{report.busRoute}</td>
+                            <td className="py-3 px-4 text-sm font-semibold text-right text-success">
                               {formatRupee(report.feeCollection)}
                             </td>
-                            <td className="py-3 px-4 text-sm font-semibold text-right text-red-600">
+                            <td className="py-3 px-4 text-sm font-semibold text-right text-destructive">
                               {formatRupee(report.expenses.total)}
                             </td>
-                            <td className={`py-3 px-4 text-sm font-semibold text-right ${report.net >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            <td className={`py-3 px-4 text-sm font-semibold text-right ${report.net >= 0 ? 'text-success' : 'text-destructive'}`}>
                               {formatRupee(report.net)}
                             </td>
                           </tr>
@@ -317,36 +317,36 @@ export default function ReportsPage() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h3 className="text-lg font-semibold mb-4">Teachers</h3>
+                      <h3 className="text-lg font-semibold mb-4 text-text">Teachers</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Total:</span>
-                          <span className="font-medium">{formatRupee(salaryReport.teachers.total)}</span>
+                          <span className="text-text-muted">Total:</span>
+                          <span className="font-medium text-text">{formatRupee(salaryReport.teachers.total)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Count:</span>
-                          <span className="font-medium">{salaryReport.teachers.count}</span>
+                          <span className="text-text-muted">Count:</span>
+                          <span className="font-medium text-text">{salaryReport.staff.count}</span>
                         </div>
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold mb-4">Staff</h3>
+                      <h3 className="text-lg font-semibold mb-4 text-text">Staff</h3>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Total:</span>
-                          <span className="font-medium">{formatRupee(salaryReport.staff.total)}</span>
+                          <span className="text-text-muted">Total:</span>
+                          <span className="font-medium text-text">{formatRupee(salaryReport.staff.total)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Count:</span>
-                          <span className="font-medium">{salaryReport.staff.count}</span>
+                          <span className="text-text-muted">Count:</span>
+                          <span className="font-medium text-text">{salaryReport.staff.count}</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="pt-4 border-t">
+                  <div className="pt-4 border-t border-border/20">
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold">Total Salaries:</span>
-                      <span className="text-2xl font-bold text-green-600">{formatRupee(salaryReport.total)}</span>
+                      <span className="text-lg font-semibold text-text">Total Salaries:</span>
+                      <span className="text-2xl font-bold text-success">{formatRupee(salaryReport.total)}</span>
                     </div>
                   </div>
                 </div>

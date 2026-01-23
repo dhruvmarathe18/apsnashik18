@@ -44,12 +44,18 @@ export interface Database {
           full_name: string
           gender: string | null
           date_of_birth: string | null
+          aadhar_number: string | null
           class_name: string
           section: string | null
           academic_year: string
           father_name: string | null
           mother_name: string | null
           guardian_name: string | null
+          previous_school_name: string | null
+          blood_group: string | null
+          caste_category: string | null
+          caste_other: string | null
+          birth_place: string | null
           phone_primary: string
           phone_secondary: string | null
           address_line1: string | null
@@ -60,6 +66,7 @@ export interface Database {
           bus_opted: boolean
           bus_route_id: string | null
           bus_fee_monthly: number | null
+          bus_route_address: string | null
           status: string
           created_at: string
           updated_at: string

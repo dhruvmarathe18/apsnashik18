@@ -103,6 +103,8 @@ export type Transaction =
 export type StudentStatus = 'Active' | 'Inactive' | 'Left'
 export type Gender = 'Male' | 'Female' | 'Other'
 export type FeeFrequency = 'Monthly' | 'Quarterly' | 'Yearly'
+export type BloodGroup = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-' | 'Not Known'
+export type CasteCategory = 'General' | 'OBC' | 'SC' | 'ST' | 'VJNT' | 'SBC' | 'EWS' | 'Other'
 
 export interface Student {
   id: string
@@ -111,12 +113,18 @@ export interface Student {
   fullName: string
   gender?: Gender
   dateOfBirth?: string
+  aadharNumber?: string
   className: string
   section?: string
   academicYear: string
   fatherName?: string
   motherName?: string
   guardianName?: string
+  previousSchoolName?: string
+  bloodGroup?: BloodGroup
+  casteCategory?: CasteCategory
+  casteOther?: string
+  birthPlace?: string
   phonePrimary: string
   phoneSecondary?: string
   addressLine1?: string
@@ -127,6 +135,7 @@ export interface Student {
   busOpted: boolean
   busRouteId?: string
   busFeeMonthly?: number
+  busRouteAddress?: string
   status: StudentStatus
   createdAt: string
   updatedAt: string

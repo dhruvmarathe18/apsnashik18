@@ -127,7 +127,7 @@ function BusReport() {
     <AdminLayout>
       <div className="p-6">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl font-bold text-primary-700 mb-8">🚌 Bus Report</h1>
+          <h1 className="text-4xl font-bold text-primary mb-8">🚌 Bus Report</h1>
 
           {alert && (
             <div className={`mb-6 p-4 rounded-lg ${
@@ -139,17 +139,17 @@ function BusReport() {
             </div>
           )}
 
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h3 className="text-xl font-semibold mb-4">Select Report Parameters</h3>
+          <div className="bg-surface rounded-lg shadow-lg p-6 mb-6 ring-1 ring-border/40">
+            <h3 className="text-xl font-semibold mb-4 text-text">Select Report Parameters</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   Select Bus *
                 </label>
                 <select
                   value={selectedBus}
                   onChange={(e) => setSelectedBus(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary text-text"
                 >
                   <option value="">Select Bus</option>
                   {BUS_NAMES.map((bus: string) => (
@@ -159,20 +159,20 @@ function BusReport() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-text mb-2">
                   Select Month *
                 </label>
                 <input
                   type="month"
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary text-text"
                 />
               </div>
             </div>
             <button
               onClick={generateReport}
-              className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition"
+              className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition"
             >
               Generate Report
             </button>
@@ -212,8 +212,8 @@ function BusReport() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
-                <h3 className="text-xl font-semibold p-4 bg-gray-50 border-b">Daily Entries</h3>
+              <div className="bg-surface rounded-lg shadow-lg overflow-hidden mb-6 ring-1 ring-border/40">
+                <h3 className="text-xl font-semibold p-4 bg-surface-2 border-b border-border/20 text-text">Daily Entries</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-primary-500 text-white">
@@ -236,7 +236,7 @@ function BusReport() {
                     <tbody>
                       {reportData.entries.length === 0 ? (
                         <tr>
-                          <td colSpan={13} className="px-4 py-8 text-center text-gray-500">
+                          <td colSpan={13} className="px-4 py-8 text-center text-text-dim">
                             No entries found for this month
                           </td>
                         </tr>
@@ -245,30 +245,30 @@ function BusReport() {
                           const date = new Date(entry.Date)
                           const formattedDate = date.toLocaleDateString('en-GB')
                           return (
-                            <tr key={index} className="border-b hover:bg-gray-50">
-                              <td className="px-4 py-3">{formattedDate}</td>
-                              <td className="px-4 py-3">{entry['Driver Name'] || '-'}</td>
-                              <td className="px-4 py-3 text-right">{parseFloat(entry['Start KM'] || 0).toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">{parseFloat(entry['End KM'] || 0).toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">{parseFloat(entry['Daily KM'] || 0).toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">{parseFloat(entry['Diesel Filled'] || 0).toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">{parseFloat(entry['Diesel Rate'] || 0).toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">{formatRupee(parseFloat(entry['Diesel Amount'] || 0))}</td>
-                              <td className="px-4 py-3 text-right">{formatRupee(parseFloat(entry['Other Expense'] || 0))}</td>
-                              <td className="px-4 py-3 text-right">{parseFloat(entry['Running KM'] || 0).toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">{parseFloat(entry['Actual Average'] || 0).toFixed(2)}</td>
-                              <td className="px-4 py-3">{entry['Remarks'] || '-'}</td>
+                            <tr key={index} className="border-b border-border/20 hover:bg-surface-2">
+                              <td className="px-4 py-3 text-text">{formattedDate}</td>
+                              <td className="px-4 py-3 text-text">{entry['Driver Name'] || '-'}</td>
+                              <td className="px-4 py-3 text-right text-text">{parseFloat(entry['Start KM'] || 0).toFixed(2)}</td>
+                              <td className="px-4 py-3 text-right text-text">{parseFloat(entry['End KM'] || 0).toFixed(2)}</td>
+                              <td className="px-4 py-3 text-right text-text">{parseFloat(entry['Daily KM'] || 0).toFixed(2)}</td>
+                              <td className="px-4 py-3 text-right text-text">{parseFloat(entry['Diesel Filled'] || 0).toFixed(2)}</td>
+                              <td className="px-4 py-3 text-right text-text">{parseFloat(entry['Diesel Rate'] || 0).toFixed(2)}</td>
+                              <td className="px-4 py-3 text-right text-text">{formatRupee(parseFloat(entry['Diesel Amount'] || 0))}</td>
+                              <td className="px-4 py-3 text-right text-text">{formatRupee(parseFloat(entry['Other Expense'] || 0))}</td>
+                              <td className="px-4 py-3 text-right text-text">{parseFloat(entry['Running KM'] || 0).toFixed(2)}</td>
+                              <td className="px-4 py-3 text-right text-text">{parseFloat(entry['Actual Average'] || 0).toFixed(2)}</td>
+                              <td className="px-4 py-3 text-text-muted">{entry['Remarks'] || '-'}</td>
                               <td className="px-4 py-3">
                                 <div className="flex gap-2 justify-center">
                                   <button
                                     onClick={() => handleEdit(entry)}
-                                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition text-sm"
+                                    className="bg-primary text-primary-foreground px-3 py-1 rounded hover:bg-primary/90 transition text-sm"
                                   >
                                     ✏️ Edit
                                   </button>
                                   <button
                                     onClick={() => handleDelete(entry)}
-                                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition text-sm"
+                                    className="bg-destructive text-white px-3 py-1 rounded hover:bg-destructive/90 transition text-sm"
                                   >
                                     🗑️ Delete
                                   </button>
@@ -285,7 +285,7 @@ function BusReport() {
 
               <button
                 onClick={handleExport}
-                className="w-full bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition font-semibold text-lg mb-6"
+                className="w-full bg-success text-white px-6 py-3 rounded-lg hover:bg-success/90 transition font-semibold text-lg mb-6"
               >
                 📊 Export Monthly Report to Excel
               </button>
@@ -294,107 +294,107 @@ function BusReport() {
 
           {/* Edit Modal */}
           {editingEntry && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg shadow-xl p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                <h2 className="text-2xl font-bold text-primary-700 mb-6">Edit Entry</h2>
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-surface rounded-lg shadow-xl p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto ring-1 ring-border/40">
+                <h2 className="text-2xl font-bold text-primary mb-6">Edit Entry</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Date</label>
+                    <label className="block text-sm font-semibold text-text mb-2">Date</label>
                     <input
                       type="date"
                       value={editingEntry.Date}
                       onChange={(e) => handleEditChange('Date', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg text-text"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Driver Name</label>
+                    <label className="block text-sm font-semibold text-text mb-2">Driver Name</label>
                     <input
                       type="text"
                       value={editingEntry['Driver Name'] || ''}
                       onChange={(e) => handleEditChange('Driver Name', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg text-text"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Start KM</label>
+                    <label className="block text-sm font-semibold text-text mb-2">Start KM</label>
                     <input
                       type="number"
                       step="0.01"
                       value={editingEntry['Start KM'] || ''}
                       onChange={(e) => handleEditChange('Start KM', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg text-text"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">End KM</label>
+                    <label className="block text-sm font-semibold text-text mb-2">End KM</label>
                     <input
                       type="number"
                       step="0.01"
                       value={editingEntry['End KM'] || ''}
                       onChange={(e) => handleEditChange('End KM', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg text-text"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Diesel Filled</label>
+                    <label className="block text-sm font-semibold text-text mb-2">Diesel Filled</label>
                     <input
                       type="number"
                       step="0.01"
                       value={editingEntry['Diesel Filled'] || ''}
                       onChange={(e) => handleEditChange('Diesel Filled', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg text-text"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Diesel Rate</label>
+                    <label className="block text-sm font-semibold text-text mb-2">Diesel Rate</label>
                     <input
                       type="number"
                       step="0.01"
                       value={editingEntry['Diesel Rate'] || ''}
                       onChange={(e) => handleEditChange('Diesel Rate', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg text-text"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Expense Description</label>
+                    <label className="block text-sm font-semibold text-text mb-2">Expense Description</label>
                     <input
                       type="text"
                       value={editingEntry['Expense Description'] || ''}
                       onChange={(e) => handleEditChange('Expense Description', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg text-text"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Other Expense</label>
+                    <label className="block text-sm font-semibold text-text mb-2">Other Expense</label>
                     <input
                       type="number"
                       step="0.01"
                       value={editingEntry['Other Expense'] || ''}
                       onChange={(e) => handleEditChange('Other Expense', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg text-text"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Remarks</label>
+                    <label className="block text-sm font-semibold text-text mb-2">Remarks</label>
                     <textarea
                       value={editingEntry['Remarks'] || ''}
                       onChange={(e) => handleEditChange('Remarks', e.target.value)}
                       rows={3}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg text-text"
                     />
                   </div>
                 </div>
                 <div className="flex gap-4 mt-6">
                   <button
                     onClick={handleSaveEdit}
-                    className="flex-1 bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+                    className="flex-1 bg-success text-white px-6 py-2 rounded-lg hover:bg-success/90 transition"
                   >
                     Save Changes
                   </button>
                   <button
                     onClick={() => setEditingEntry(null)}
-                    className="flex-1 bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition"
+                    className="flex-1 bg-muted text-text px-6 py-2 rounded-lg hover:bg-muted/80 transition"
                   >
                     Cancel
                   </button>
@@ -405,10 +405,10 @@ function BusReport() {
 
           {/* Delete Confirmation Modal */}
           {deleteConfirm && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4">
-                <h2 className="text-2xl font-bold text-red-700 mb-4">Confirm Delete</h2>
-                <p className="mb-6">
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-surface rounded-lg shadow-xl p-8 max-w-md w-full mx-4 ring-1 ring-border/40">
+                <h2 className="text-2xl font-bold text-destructive mb-4">Confirm Delete</h2>
+                <p className="mb-6 text-text">
                   Are you sure you want to delete the entry for{' '}
                   <strong>{new Date(deleteConfirm.Date).toLocaleDateString()}</strong>?
                   This action cannot be undone.
@@ -416,13 +416,13 @@ function BusReport() {
                 <div className="flex gap-4">
                   <button
                     onClick={confirmDelete}
-                    className="flex-1 bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition"
+                    className="flex-1 bg-destructive text-white px-6 py-2 rounded-lg hover:bg-destructive/90 transition"
                   >
                     Delete
                   </button>
                   <button
                     onClick={() => setDeleteConfirm(null)}
-                    className="flex-1 bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition"
+                    className="flex-1 bg-muted text-text px-6 py-2 rounded-lg hover:bg-muted/80 transition"
                   >
                     Cancel
                   </button>

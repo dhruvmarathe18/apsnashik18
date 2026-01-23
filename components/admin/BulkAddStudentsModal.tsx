@@ -55,6 +55,16 @@ function StudentEditRow({
               value={editedStudent.rollNo || ''}
               onChange={(e) => setEditedStudent({ ...editedStudent, rollNo: e.target.value || undefined })}
             />
+            <Input
+              label="Aadhar Number (12 digits)"
+              value={editedStudent.aadharNumber || ''}
+              onChange={(e) =>
+                setEditedStudent({
+                  ...editedStudent,
+                  aadharNumber: e.target.value || undefined,
+                })
+              }
+            />
             <Select
               label="Gender"
               value={editedStudent.gender || ''}
@@ -86,6 +96,81 @@ function StudentEditRow({
               onChange={(e) => setEditedStudent({ ...editedStudent, section: e.target.value || undefined })}
             />
             <Input
+              label="Previous School Name"
+              value={editedStudent.previousSchoolName || ''}
+              onChange={(e) =>
+                setEditedStudent({
+                  ...editedStudent,
+                  previousSchoolName: e.target.value || undefined,
+                })
+              }
+            />
+            <Select
+              label="Blood Group"
+              value={editedStudent.bloodGroup || ''}
+              onChange={(e) =>
+                setEditedStudent({
+                  ...editedStudent,
+                  bloodGroup: e.target.value as any,
+                })
+              }
+              options={[
+                { value: '', label: 'Select Blood Group' },
+                { value: 'A+', label: 'A+' },
+                { value: 'A-', label: 'A-' },
+                { value: 'B+', label: 'B+' },
+                { value: 'B-', label: 'B-' },
+                { value: 'AB+', label: 'AB+' },
+                { value: 'AB-', label: 'AB-' },
+                { value: 'O+', label: 'O+' },
+                { value: 'O-', label: 'O-' },
+                { value: 'Not Known', label: 'Not Known' },
+              ]}
+            />
+            <Select
+              label="Caste Belongs To"
+              value={editedStudent.casteCategory || ''}
+              onChange={(e) =>
+                setEditedStudent({
+                  ...editedStudent,
+                  casteCategory: e.target.value as any,
+                })
+              }
+              options={[
+                { value: '', label: 'Select Caste Category' },
+                { value: 'General', label: 'General' },
+                { value: 'OBC', label: 'OBC' },
+                { value: 'SC', label: 'SC' },
+                { value: 'ST', label: 'ST' },
+                { value: 'VJNT', label: 'VJNT' },
+                { value: 'SBC', label: 'SBC' },
+                { value: 'EWS', label: 'EWS' },
+                { value: 'Other', label: 'Other' },
+              ]}
+            />
+            {editedStudent.casteCategory === 'Other' && (
+              <Input
+                label="Caste Other (Specify)"
+                value={editedStudent.casteOther || ''}
+                onChange={(e) =>
+                  setEditedStudent({
+                    ...editedStudent,
+                    casteOther: e.target.value || undefined,
+                  })
+                }
+              />
+            )}
+            <Input
+              label="Birth Place"
+              value={editedStudent.birthPlace || ''}
+              onChange={(e) =>
+                setEditedStudent({
+                  ...editedStudent,
+                  birthPlace: e.target.value || undefined,
+                })
+              }
+            />
+            <Input
               label="Phone Primary*"
               value={editedStudent.phonePrimary}
               onChange={(e) => setEditedStudent({ ...editedStudent, phonePrimary: e.target.value })}
@@ -110,9 +195,9 @@ function StudentEditRow({
                 type="checkbox"
                 checked={editedStudent.busOpted}
                 onChange={(e) => setEditedStudent({ ...editedStudent, busOpted: e.target.checked })}
-                className="rounded border-gray-300"
+                className="rounded border-border/40"
               />
-              <span className="text-sm font-medium text-gray-700">Bus Opted</span>
+              <span className="text-sm font-medium text-text">Bus Opted</span>
             </div>
             {editedStudent.busOpted && (
               <>
@@ -122,21 +207,36 @@ function StudentEditRow({
                   onChange={(e) => setEditedStudent({ ...editedStudent, busRouteId: e.target.value || undefined })}
                 />
                 <Input
+                  label="Bus Route Address"
+                  value={editedStudent.busRouteAddress || ''}
+                  onChange={(e) =>
+                    setEditedStudent({
+                      ...editedStudent,
+                      busRouteAddress: e.target.value || undefined,
+                    })
+                  }
+                />
+                <Input
                   label="Bus Fee Monthly"
                   type="number"
                   value={editedStudent.busFeeMonthly || ''}
-                  onChange={(e) => setEditedStudent({ ...editedStudent, busFeeMonthly: e.target.value ? parseFloat(e.target.value) : undefined })}
+                  onChange={(e) =>
+                    setEditedStudent({
+                      ...editedStudent,
+                      busFeeMonthly: e.target.value ? parseFloat(e.target.value) : undefined,
+                    })
+                  }
                 />
               </>
             )}
           </div>
           
           {/* Fee Plan Fields */}
-          <div className="border-t pt-4">
-            <h4 className="font-semibold text-gray-900 mb-3">Fee Plan Details</h4>
+          <div className="border-t border-border/20 pt-4">
+            <h4 className="font-semibold text-text mb-3">Fee Plan Details</h4>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Input
-                label="Annual Fee"
+                label="Tuition Fee"
                 type="number"
                 value={editedStudent.annualFee || 0}
                 onChange={(e) => setEditedStudent({ ...editedStudent, annualFee: parseFloat(e.target.value) || 0 })}
@@ -195,7 +295,7 @@ interface BulkAddStudentsModalProps {
 }
 
 export default function BulkAddStudentsModal({ isOpen, onClose }: BulkAddStudentsModalProps) {
-  const { settings, addStudentsBatch, refreshData, students: existingStudents } = useSchool()
+  const { settings, addStudentsBatch, refreshData, students: existingStudents, updateStudent, feePlans, updateFeePlan, addFeePlan } = useSchool()
   const [step, setStep] = useState<'upload' | 'preview'>('upload')
   const [validations, setValidations] = useState<BulkStudentValidation[]>([])
   const [students, setStudents] = useState<BulkStudentRow[]>([])
@@ -206,7 +306,7 @@ export default function BulkAddStudentsModal({ isOpen, onClose }: BulkAddStudent
   if (!isOpen) return null
 
   const handleDownloadTemplate = () => {
-    downloadStudentTemplate(settings.academicYear, settings.classes)
+    downloadStudentTemplate(settings.academicYear, settings.classes, existingStudents, feePlans)
     toast.success('Template downloaded successfully')
   }
 
@@ -298,25 +398,124 @@ export default function BulkAddStudentsModal({ isOpen, onClose }: BulkAddStudent
 
     setIsSubmitting(true)
     try {
-      // Convert to student and fee plan format
-      const studentsData = students.map((s) => bulkStudentToStudent(s, settings.academicYear))
-      const feePlansData = students.map((s) => ({
-        admissionNo: s.admissionNo,
-        studentId: '', // Will be set after student creation
-        annualFee: s.annualFee || 0,
-        examFee: s.examFee || 0,
-        bookFee: s.bookFee || 0,
-        uniformFee: s.uniformFee || 0,
-        discount: s.discount || 0,
-        miscFee: s.miscFee || 0,
-      }))
+      // Separate new students from updates
+      const newStudents: BulkStudentRow[] = []
+      const updates: Array<{ student: Student; updates: Partial<Student> }> = []
 
-      const result = await addStudentsBatch(studentsData, feePlansData)
+      for (const bulkStudent of students) {
+        const existingStudent = existingStudents.find((s) => s.admissionNo === bulkStudent.admissionNo)
+        
+        if (existingStudent) {
+          // This is an update - include all fields
+          const studentUpdate = bulkStudentToStudent(bulkStudent, settings.academicYear)
+          updates.push({
+            student: existingStudent,
+            updates: {
+              rollNo: studentUpdate.rollNo,
+              fullName: studentUpdate.fullName,
+              gender: studentUpdate.gender,
+              dateOfBirth: studentUpdate.dateOfBirth,
+              aadharNumber: studentUpdate.aadharNumber,
+              className: studentUpdate.className,
+              section: studentUpdate.section,
+              fatherName: studentUpdate.fatherName,
+              motherName: studentUpdate.motherName,
+              guardianName: studentUpdate.guardianName,
+              previousSchoolName: studentUpdate.previousSchoolName,
+              bloodGroup: studentUpdate.bloodGroup,
+              casteCategory: studentUpdate.casteCategory,
+              casteOther: studentUpdate.casteOther,
+              birthPlace: studentUpdate.birthPlace,
+              phonePrimary: studentUpdate.phonePrimary,
+              phoneSecondary: studentUpdate.phoneSecondary,
+              addressLine1: studentUpdate.addressLine1,
+              addressLine2: studentUpdate.addressLine2,
+              city: studentUpdate.city,
+              state: studentUpdate.state,
+              pincode: studentUpdate.pincode,
+              busOpted: studentUpdate.busOpted,
+              busRouteId: studentUpdate.busRouteId,
+              busFeeMonthly: studentUpdate.busFeeMonthly,
+              busRouteAddress: studentUpdate.busRouteAddress,
+              status: studentUpdate.status,
+            },
+          })
+        } else {
+          // This is a new student
+          newStudents.push(bulkStudent)
+        }
+      }
+
+      // Update existing students and their fee plans
+      let updateCount = 0
+      for (const { student, updates: studentUpdates } of updates) {
+        try {
+          await updateStudent(student.id, studentUpdates)
+          
+          // Also update fee plan if provided
+          const bulkStudent = students.find((s) => s.admissionNo === student.admissionNo)
+          if (bulkStudent && (bulkStudent.annualFee !== undefined || bulkStudent.examFee !== undefined || 
+              bulkStudent.bookFee !== undefined || bulkStudent.uniformFee !== undefined || 
+              bulkStudent.discount !== undefined || bulkStudent.miscFee !== undefined)) {
+            const existingFeePlan = feePlans.find((p) => p.studentId === student.id)
+            if (existingFeePlan) {
+              await updateFeePlan(existingFeePlan.id, {
+                annualFee: bulkStudent.annualFee ?? existingFeePlan.annualFee,
+                examFee: bulkStudent.examFee ?? existingFeePlan.examFee,
+                bookFee: bulkStudent.bookFee ?? existingFeePlan.bookFee,
+                uniformFee: bulkStudent.uniformFee ?? existingFeePlan.uniformFee,
+                discount: bulkStudent.discount ?? existingFeePlan.discount,
+                miscFee: bulkStudent.miscFee ?? existingFeePlan.miscFee,
+              })
+            } else if (bulkStudent.annualFee || bulkStudent.examFee || bulkStudent.bookFee || 
+                       bulkStudent.uniformFee || bulkStudent.discount || bulkStudent.miscFee) {
+              // Create fee plan if it doesn't exist
+              await addFeePlan({
+                studentId: student.id,
+                annualFee: bulkStudent.annualFee || 0,
+                examFee: bulkStudent.examFee || 0,
+                bookFee: bulkStudent.bookFee || 0,
+                uniformFee: bulkStudent.uniformFee || 0,
+                discount: bulkStudent.discount || 0,
+                miscFee: bulkStudent.miscFee || 0,
+              })
+            }
+          }
+          
+          updateCount++
+        } catch (error) {
+          console.error(`Error updating student ${student.admissionNo}:`, error)
+          toast.error(`Failed to update student ${student.admissionNo}`)
+        }
+      }
+
+      // Create new students
+      if (newStudents.length > 0) {
+        const studentsData = newStudents.map((s) => bulkStudentToStudent(s, settings.academicYear))
+        const feePlansData = newStudents.map((s) => ({
+          admissionNo: s.admissionNo,
+          studentId: '', // Will be set after student creation
+          annualFee: s.annualFee || 0,
+          examFee: s.examFee || 0,
+          bookFee: s.bookFee || 0,
+          uniformFee: s.uniformFee || 0,
+          discount: s.discount || 0,
+          miscFee: s.miscFee || 0,
+        }))
+
+        await addStudentsBatch(studentsData, feePlansData)
+      }
+
       await refreshData()
       
+      const messages = []
+      if (updateCount > 0) messages.push(`${updateCount} student(s) updated`)
+      if (newStudents.length > 0) messages.push(`${newStudents.length} student(s) added`)
+      
+      toast.success(messages.join(', '))
       handleClose()
     } catch (error: any) {
-      toast.error(error.message || 'Failed to add students')
+      toast.error(error.message || 'Failed to process students')
     } finally {
       setIsSubmitting(false)
     }
@@ -338,14 +537,14 @@ export default function BulkAddStudentsModal({ isOpen, onClose }: BulkAddStudent
   const warningCount = validations.filter((v) => v.warnings.length > 0).length
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-surface rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] flex flex-col ring-1 ring-border/40">
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-2xl font-bold text-gray-900">Bulk Add Students</h2>
+        <div className="flex justify-between items-center p-6 border-b border-border/20">
+          <h2 className="text-2xl font-bold text-text">Bulk Add Students</h2>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-text-muted hover:text-text transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -356,8 +555,8 @@ export default function BulkAddStudentsModal({ isOpen, onClose }: BulkAddStudent
           {step === 'upload' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Step 1: Download Template</h3>
-                <p className="text-gray-600 mb-4">
+                <h3 className="text-lg font-semibold text-text mb-4">Step 1: Download Template</h3>
+                <p className="text-text-muted mb-4">
                   Download the Excel template, fill in student information, and upload it back.
                 </p>
                 <Button onClick={handleDownloadTemplate} className="w-full sm:w-auto">
@@ -367,10 +566,10 @@ export default function BulkAddStudentsModal({ isOpen, onClose }: BulkAddStudent
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Step 2: Upload Filled Template</h3>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 mb-4">Upload your filled Excel file</p>
+                <h3 className="text-lg font-semibold text-text mb-4">Step 2: Upload Filled Template</h3>
+                <div className="border-2 border-dashed border-border/40 rounded-lg p-8 text-center">
+                  <Upload className="w-12 h-12 text-text-muted mx-auto mb-4" />
+                  <p className="text-text-muted mb-4">Upload your filled Excel file</p>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -394,51 +593,51 @@ export default function BulkAddStudentsModal({ isOpen, onClose }: BulkAddStudent
             <div className="space-y-6">
               {/* Summary */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="bg-success/20 border border-success/30 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-green-600">Valid</p>
-                      <p className="text-2xl font-bold text-green-700">{validCount}</p>
+                      <p className="text-sm text-success">Valid</p>
+                      <p className="text-2xl font-bold text-success">{validCount}</p>
                     </div>
-                    <CheckCircle className="w-8 h-8 text-green-600" />
+                    <CheckCircle className="w-8 h-8 text-success" />
                   </div>
                 </div>
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="bg-destructive/20 border border-destructive/30 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-red-600">Errors</p>
-                      <p className="text-2xl font-bold text-red-700">{errorCount}</p>
+                      <p className="text-sm text-destructive">Errors</p>
+                      <p className="text-2xl font-bold text-destructive">{errorCount}</p>
                     </div>
-                    <AlertCircle className="w-8 h-8 text-red-600" />
+                    <AlertCircle className="w-8 h-8 text-destructive" />
                   </div>
                 </div>
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="bg-warning/20 border border-warning/30 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-yellow-600">Warnings</p>
-                      <p className="text-2xl font-bold text-yellow-700">{warningCount}</p>
+                      <p className="text-sm text-warning">Warnings</p>
+                      <p className="text-2xl font-bold text-warning">{warningCount}</p>
                     </div>
-                    <AlertCircle className="w-8 h-8 text-yellow-600" />
+                    <AlertCircle className="w-8 h-8 text-warning" />
                   </div>
                 </div>
               </div>
 
               {/* Students List */}
-              <div className="border rounded-lg overflow-hidden">
+              <div className="border border-border/20 rounded-lg overflow-hidden">
                 <div className="overflow-x-auto max-h-[500px]">
                   <table className="w-full">
-                    <thead className="bg-gray-50 sticky top-0">
+                    <thead className="bg-surface-2 sticky top-0">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Row</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Admission No</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Name</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Class</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Phone</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Status</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">Actions</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase">Row</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase">Admission No</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase">Name</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase">Class</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase">Phone</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase">Status</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-border/20">
                       {students.map((student, index) => {
                         const validation = validations[index]
                         const isEditing = editingIndex === index
@@ -457,24 +656,24 @@ export default function BulkAddStudentsModal({ isOpen, onClose }: BulkAddStudent
                         return (
                           <tr
                             key={index}
-                            className={validation.errors.length > 0 ? 'bg-red-50' : validation.warnings.length > 0 ? 'bg-yellow-50' : 'bg-white'}
+                            className={validation.errors.length > 0 ? 'bg-destructive/10' : validation.warnings.length > 0 ? 'bg-warning/10' : 'bg-surface-1'}
                           >
-                            <td className="px-4 py-3 text-sm text-gray-900">{validation.row}</td>
-                            <td className="px-4 py-3 text-sm text-gray-900">{student.admissionNo}</td>
-                            <td className="px-4 py-3 text-sm text-gray-900">{student.fullName}</td>
-                            <td className="px-4 py-3 text-sm text-gray-900">{student.className}</td>
-                            <td className="px-4 py-3 text-sm text-gray-900">{student.phonePrimary}</td>
+                            <td className="px-4 py-3 text-sm text-text">{validation.row}</td>
+                            <td className="px-4 py-3 text-sm text-text">{student.admissionNo}</td>
+                            <td className="px-4 py-3 text-sm text-text">{student.fullName}</td>
+                            <td className="px-4 py-3 text-sm text-text">{student.className}</td>
+                            <td className="px-4 py-3 text-sm text-text">{student.phonePrimary}</td>
                             <td className="px-4 py-3">
                               {validation.errors.length > 0 ? (
-                                <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded">
+                                <span className="px-2 py-1 text-xs font-medium bg-destructive/20 text-destructive rounded">
                                   {validation.errors.length} Error(s)
                                 </span>
                               ) : validation.warnings.length > 0 ? (
-                                <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">
+                                <span className="px-2 py-1 text-xs font-medium bg-warning/20 text-warning rounded">
                                   {validation.warnings.length} Warning(s)
                                 </span>
                               ) : (
-                                <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">
+                                <span className="px-2 py-1 text-xs font-medium bg-success/20 text-success rounded">
                                   Valid
                                 </span>
                               )}
@@ -482,7 +681,7 @@ export default function BulkAddStudentsModal({ isOpen, onClose }: BulkAddStudent
                             <td className="px-4 py-3">
                               <button
                                 onClick={() => handleEdit(index)}
-                                className="text-blue-600 hover:text-blue-800"
+                                className="text-primary hover:text-primary/80"
                               >
                                 <Edit2 className="w-4 h-4" />
                               </button>
@@ -498,7 +697,7 @@ export default function BulkAddStudentsModal({ isOpen, onClose }: BulkAddStudent
               {/* Error/Warning Details */}
               {validations.some((v) => v.errors.length > 0 || v.warnings.length > 0) && (
                 <div className="space-y-4">
-                  <h4 className="font-semibold text-gray-900">Validation Details</h4>
+                  <h4 className="font-semibold text-text">Validation Details</h4>
                   {validations.map((validation, index) => {
                     if (validation.errors.length === 0 && validation.warnings.length === 0) return null
                     

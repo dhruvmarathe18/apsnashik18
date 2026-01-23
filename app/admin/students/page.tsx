@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { Users, Plus, Search, FileText, Edit, Trash2, Eye, Upload } from 'lucide-react'
 import { useSchool } from '@/contexts/SchoolContext'
@@ -73,8 +73,8 @@ export default function StudentsPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Student Management</h1>
-              <p className="text-gray-600 mt-2">Manage student records, admissions, and information</p>
+              <h1 className="text-3xl font-bold text-text">Student Management</h1>
+              <p className="text-text-muted mt-2">Manage student records, admissions, and information</p>
             </div>
             <div className="flex space-x-3">
               <Button variant="outline" onClick={() => setShowBulkAddModal(true)}>
@@ -94,8 +94,8 @@ export default function StudentsPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Students</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-2">{stats.total}</p>
+                    <p className="text-sm font-medium text-text-muted">Total Students</p>
+                    <p className="text-2xl font-bold text-text mt-2">{stats.total}</p>
                   </div>
                   <Users className="w-8 h-8 text-blue-600" />
                 </div>
@@ -105,7 +105,7 @@ export default function StudentsPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Active Students</p>
+                    <p className="text-sm font-medium text-text-muted">Active Students</p>
                     <p className="text-2xl font-bold text-green-600 mt-2">{stats.active}</p>
                   </div>
                   <Users className="w-8 h-8 text-green-600" />
@@ -116,10 +116,10 @@ export default function StudentsPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">With Bus</p>
-                    <p className="text-2xl font-bold text-purple-600 mt-2">{stats.withBus}</p>
+                    <p className="text-sm font-medium text-text-muted">With Bus</p>
+                    <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-2">{stats.withBus}</p>
                   </div>
-                  <Users className="w-8 h-8 text-purple-600" />
+                  <Users className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                 </div>
               </CardContent>
             </Card>
@@ -127,7 +127,7 @@ export default function StudentsPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Fee Defaulters</p>
+                    <p className="text-sm font-medium text-text-muted">Fee Defaulters</p>
                     <p className="text-2xl font-bold text-red-600 mt-2">{stats.defaulters}</p>
                   </div>
                   <FileText className="w-8 h-8 text-red-600" />
@@ -141,7 +141,7 @@ export default function StudentsPage() {
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 z-10 pointer-events-none" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-dim w-5 h-5 z-10 pointer-events-none" />
                   <Input
                     type="text"
                     placeholder="Search by name, admission number, or phone..."
@@ -180,9 +180,9 @@ export default function StudentsPage() {
             <CardContent>
               {filteredStudents.length === 0 ? (
                 <div className="text-center py-12">
-                  <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Students Found</h3>
-                  <p className="text-gray-600 mb-4">
+                  <Users className="w-16 h-16 text-text-subtle mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-text mb-2">No Students Found</h3>
+                  <p className="text-text-muted mb-4">
                     {searchTerm || filterClass || filterStatus
                       ? 'Try adjusting your search filters'
                       : 'Get started by adding your first student'}
@@ -197,41 +197,41 @@ export default function StudentsPage() {
               ) : (
                 <div className="overflow-x-auto -mx-3 sm:-mx-4 md:-mx-6 px-3 sm:px-4 md:px-6">
                   <div className="min-w-full inline-block align-middle">
-                    <div className="overflow-hidden">
-                      <table className="min-w-full divide-y divide-gray-200">
+                    <div className="overflow-hidden bg-surface-2 rounded-xl ring-1 ring-border/40 p-4">
+                      <table className="min-w-full">
                     <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Admission No</th>
-                        <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Name</th>
-                        <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Class</th>
-                        <th className="hidden sm:table-cell text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Phone</th>
-                        <th className="hidden md:table-cell text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Bus</th>
-                        <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Status</th>
-                        <th className="text-right py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 whitespace-nowrap">Actions</th>
+                      <tr>
+                        <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-text-muted whitespace-nowrap">Admission No</th>
+                        <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-text-muted whitespace-nowrap">Name</th>
+                        <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-text-muted whitespace-nowrap">Class</th>
+                        <th className="hidden sm:table-cell text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-text-muted whitespace-nowrap">Phone</th>
+                        <th className="hidden md:table-cell text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-text-muted whitespace-nowrap">Bus</th>
+                        <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-text-muted whitespace-nowrap">Status</th>
+                        <th className="text-right py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-text-muted whitespace-nowrap">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredStudents.map((student) => (
-                        <tr key={student.id} className="border-b hover:bg-gray-50 transition-colors">
-                          <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-900 whitespace-nowrap">{student.admissionNo}</td>
-                          <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-900">{student.fullName}</td>
-                          <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-600">{student.className}{student.section ? ` - ${student.section}` : ''}</td>
-                          <td className="hidden sm:table-cell py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-600">{student.phonePrimary}</td>
-                          <td className="hidden md:table-cell py-3 px-2 sm:px-4 text-xs sm:text-sm text-gray-600">
+                        <tr key={student.id}>
+                          <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-text whitespace-nowrap">{student.admissionNo}</td>
+                          <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm text-text">{student.fullName}</td>
+                          <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm text-text-muted">{student.className}{student.section ? ` - ${student.section}` : ''}</td>
+                          <td className="hidden sm:table-cell py-3 px-2 sm:px-4 text-xs sm:text-sm text-text-muted">{student.phonePrimary}</td>
+                          <td className="hidden md:table-cell py-3 px-2 sm:px-4 text-xs sm:text-sm text-text-muted">
                             {student.busOpted ? (
-                              <span className="text-green-600 font-medium">Yes</span>
+                              <span className="text-success font-medium">Yes</span>
                             ) : (
-                              <span className="text-gray-400">No</span>
+                              <span className="text-text-subtle">No</span>
                             )}
                           </td>
                           <td className="py-3 px-2 sm:px-4">
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
                                 student.status === 'Active'
-                                  ? 'bg-green-100 text-green-800'
+                                  ? 'bg-success/20 text-success'
                                   : student.status === 'Inactive'
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : 'bg-gray-100 text-gray-800'
+                                  ? 'bg-warning/20 text-warning'
+                                  : 'bg-muted text-text-muted'
                               }`}
                             >
                               {student.status}
@@ -308,12 +308,18 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
     fullName: student?.fullName || '',
     gender: student?.gender || '',
     dateOfBirth: student?.dateOfBirth || '',
+    aadharNumber: student?.aadharNumber || '',
     className: student?.className || '',
     section: student?.section || '',
     academicYear: student?.academicYear || settings.academicYear,
     fatherName: student?.fatherName || '',
     motherName: student?.motherName || '',
     guardianName: student?.guardianName || '',
+    previousSchoolName: student?.previousSchoolName || '',
+    bloodGroup: student?.bloodGroup || '',
+    casteCategory: student?.casteCategory || '',
+    casteOther: student?.casteOther || '',
+    birthPlace: student?.birthPlace || '',
     phonePrimary: student?.phonePrimary || '',
     phoneSecondary: student?.phoneSecondary || '',
     addressLine1: student?.addressLine1 || '',
@@ -324,6 +330,7 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
     busOpted: student?.busOpted || false,
     busRouteId: student?.busRouteId || '',
     busFeeMonthly: student?.busFeeMonthly || '',
+    busRouteAddress: student?.busRouteAddress || '',
     status: student?.status || 'Active',
     // Fee Plan fields
     annualFee: existingFeePlan?.annualFee || '',
@@ -335,6 +342,91 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Update form data when student prop changes (for edit mode)
+  useEffect(() => {
+    if (student) {
+      const currentFeePlan = getFeePlanByStudentId(student.id)
+      setFormData({
+        admissionNo: student.admissionNo || '',
+        rollNo: student.rollNo || '',
+        fullName: student.fullName || '',
+        gender: student.gender || '',
+        dateOfBirth: student.dateOfBirth || '',
+        aadharNumber: student.aadharNumber || '',
+        className: student.className || '',
+        section: student.section || '',
+        academicYear: student.academicYear || settings.academicYear,
+        fatherName: student.fatherName || '',
+        motherName: student.motherName || '',
+        guardianName: student.guardianName || '',
+        previousSchoolName: student.previousSchoolName || '',
+        bloodGroup: student.bloodGroup || '',
+        casteCategory: student.casteCategory || '',
+        casteOther: student.casteOther || '',
+        birthPlace: student.birthPlace || '',
+        phonePrimary: student.phonePrimary || '',
+        phoneSecondary: student.phoneSecondary || '',
+        addressLine1: student.addressLine1 || '',
+        addressLine2: student.addressLine2 || '',
+        city: student.city || '',
+        state: student.state || '',
+        pincode: student.pincode || '',
+        busOpted: student.busOpted || false,
+        busRouteId: student.busRouteId || '',
+        busFeeMonthly: student.busFeeMonthly || '',
+        busRouteAddress: student.busRouteAddress || '',
+        status: student.status || 'Active',
+        // Fee Plan fields
+        annualFee: currentFeePlan?.annualFee || '',
+        examFee: currentFeePlan?.examFee || '',
+        bookFee: currentFeePlan?.bookFee || '',
+        uniformFee: currentFeePlan?.uniformFee || '',
+        discount: currentFeePlan?.discount || '',
+        miscFee: currentFeePlan?.miscFee || '',
+      })
+    } else {
+      // Reset form for new student
+      setFormData({
+        admissionNo: '',
+        rollNo: '',
+        fullName: '',
+        gender: '',
+        dateOfBirth: '',
+        aadharNumber: '',
+        className: '',
+        section: '',
+        academicYear: settings.academicYear,
+        fatherName: '',
+        motherName: '',
+        guardianName: '',
+        previousSchoolName: '',
+        bloodGroup: '',
+        casteCategory: '',
+        casteOther: '',
+        birthPlace: '',
+        phonePrimary: '',
+        phoneSecondary: '',
+        addressLine1: '',
+        addressLine2: '',
+        city: '',
+        state: '',
+        pincode: '',
+        busOpted: false,
+        busRouteId: '',
+        busFeeMonthly: '',
+        busRouteAddress: '',
+        status: 'Active',
+        annualFee: '',
+        examFee: '',
+        bookFee: '',
+        uniformFee: '',
+        discount: '',
+        miscFee: '',
+      })
+    }
+    setErrors({})
+  }, [student, settings.academicYear, getFeePlanByStudentId])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -356,6 +448,16 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
     if (!formData.phonePrimary) {
       setErrors({ phonePrimary: 'Primary phone is required' })
       return
+    }
+
+    // Aadhaar validation (optional but strict if provided)
+    if (formData.aadharNumber) {
+      const digits = String(formData.aadharNumber).replace(/\D/g, '')
+      if (!/^\d{12}$/.test(digits)) {
+        setErrors({ aadharNumber: 'Aadhar Number must be exactly 12 digits' })
+        return
+      }
+      formData.aadharNumber = digits
     }
 
     setIsSubmitting(true)
@@ -406,10 +508,10 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-4 sm:p-6 border-b sticky top-0 bg-white z-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-surface rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto ring-1 ring-border/40">
+        <div className="p-4 sm:p-6 border-b border-border/20 sticky top-0 bg-surface z-10">
+          <h2 className="text-xl sm:text-2xl font-bold text-text">
             {student ? 'Edit Student' : 'Add New Student'}
           </h2>
         </div>
@@ -426,6 +528,12 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
               label="Roll Number"
               value={formData.rollNo}
               onChange={(e) => setFormData({ ...formData, rollNo: e.target.value })}
+            />
+            <Input
+              label="Aadhar Number (12 digits)"
+              value={formData.aadharNumber}
+              onChange={(e) => setFormData({ ...formData, aadharNumber: e.target.value })}
+              error={errors.aadharNumber}
             />
             <Input
               label="Full Name"
@@ -489,6 +597,56 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
               onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
             />
             <Input
+              label="Previous School Name"
+              value={formData.previousSchoolName}
+              onChange={(e) => setFormData({ ...formData, previousSchoolName: e.target.value })}
+            />
+            <Select
+              label="Blood Group"
+              value={formData.bloodGroup}
+              onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
+              options={[
+                { value: '', label: 'Select Blood Group' },
+                { value: 'A+', label: 'A+' },
+                { value: 'A-', label: 'A-' },
+                { value: 'B+', label: 'B+' },
+                { value: 'B-', label: 'B-' },
+                { value: 'AB+', label: 'AB+' },
+                { value: 'AB-', label: 'AB-' },
+                { value: 'O+', label: 'O+' },
+                { value: 'O-', label: 'O-' },
+                { value: 'Not Known', label: 'Not Known' },
+              ]}
+            />
+            <Select
+              label="Caste Belongs To"
+              value={formData.casteCategory}
+              onChange={(e) => setFormData({ ...formData, casteCategory: e.target.value })}
+              options={[
+                { value: '', label: 'Select Caste Category' },
+                { value: 'General', label: 'General' },
+                { value: 'OBC', label: 'OBC' },
+                { value: 'SC', label: 'SC' },
+                { value: 'ST', label: 'ST' },
+                { value: 'VJNT', label: 'VJNT' },
+                { value: 'SBC', label: 'SBC' },
+                { value: 'EWS', label: 'EWS' },
+                { value: 'Other', label: 'Other' },
+              ]}
+            />
+            {formData.casteCategory === 'Other' && (
+              <Input
+                label="Caste Other (Specify)"
+                value={formData.casteOther}
+                onChange={(e) => setFormData({ ...formData, casteOther: e.target.value })}
+              />
+            )}
+            <Input
+              label="Birth Place"
+              value={formData.birthPlace}
+              onChange={(e) => setFormData({ ...formData, birthPlace: e.target.value })}
+            />
+            <Input
               label="Primary Phone"
               value={formData.phonePrimary}
               onChange={(e) => setFormData({ ...formData, phonePrimary: e.target.value })}
@@ -531,9 +689,9 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
                   type="checkbox"
                   checked={formData.busOpted}
                   onChange={(e) => setFormData({ ...formData, busOpted: e.target.checked })}
-                  className="rounded border-gray-300"
+                  className="rounded border-border/40"
                 />
-                <span className="text-sm font-medium text-gray-700">Opted for Bus Transport</span>
+                <span className="text-sm font-medium text-text">Opted for Bus Transport</span>
               </label>
             </div>
             {formData.busOpted && (
@@ -546,6 +704,11 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
                     { value: '', label: 'Select Bus Route' },
                     ...settings.buses.map((bus) => ({ value: bus.busNumber, label: `${bus.busNumber} - ${bus.route}` })),
                   ]}
+                />
+                <Input
+                  label="Bus Route Address"
+                  value={formData.busRouteAddress}
+                  onChange={(e) => setFormData({ ...formData, busRouteAddress: e.target.value })}
                 />
                 <Input
                   label="Monthly Bus Fee (₹)"
@@ -569,11 +732,11 @@ function StudentModal({ student, onClose }: { student: Student | null; onClose: 
           </div>
 
           {/* Fee Plan Section */}
-          <div className="mt-8 pt-8 border-t">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Fee Plan Details</h3>
+          <div className="mt-8 pt-8 border-t border-border/20">
+            <h3 className="text-lg font-semibold text-text mb-4">Fee Plan Details</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Annual Fee (₹)"
+            <Input
+              label="Tuition Fee (₹)"
                 type="number"
                 step="0.01"
                 min="0"

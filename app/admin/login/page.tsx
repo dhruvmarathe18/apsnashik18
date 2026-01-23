@@ -95,12 +95,12 @@ export default function AdminLogin() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white rounded-2xl shadow-2xl p-8"
+          className="bg-surface rounded-2xl shadow-2xl p-8 ring-1 ring-border/40"
         >
           {/* Header */}
           <div className="text-center mb-10">
             <div className="flex justify-center mb-6">
-              <div className="w-20 h-20 rounded-2xl bg-white border-2 border-primary-200 flex items-center justify-center shadow-lg overflow-hidden">
+              <div className="w-20 h-20 rounded-2xl bg-surface-1 border-2 border-primary/30 flex items-center justify-center shadow-lg overflow-hidden">
                 <img 
                   src="/images/aps.jpg" 
                   alt="APS Nashik" 
@@ -108,8 +108,8 @@ export default function AdminLogin() {
                 />
               </div>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-            <p className="text-gray-600">Enter your password to continue</p>
+            <h1 className="text-3xl font-bold text-text mb-2">Welcome Back</h1>
+            <p className="text-text-muted">Enter your password to continue</p>
           </div>
 
           {/* Login Form */}
@@ -123,12 +123,12 @@ export default function AdminLogin() {
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-text mb-2">
                 Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-5 w-5 text-text-muted" />
                 </div>
                 <input
                   id="password"
@@ -137,19 +137,19 @@ export default function AdminLogin() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoFocus
-                  className="block w-full pl-12 pr-12 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 text-gray-900 placeholder-gray-400"
+                  className="block w-full pl-12 pr-12 py-4 bg-surface-1 border-2 border-border/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 text-text placeholder:text-text-dim"
                   placeholder="Enter your password"
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center hover:bg-gray-50 rounded-r-xl transition-colors"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center hover:bg-surface-2 rounded-r-xl transition-colors"
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                    <EyeOff className="h-5 w-5 text-text-muted hover:text-text transition-colors" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                    <Eye className="h-5 w-5 text-text-muted hover:text-text transition-colors" />
                   )}
                 </button>
               </div>
@@ -162,9 +162,9 @@ export default function AdminLogin() {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded cursor-pointer"
+                  className="h-4 w-4 text-primary focus:ring-primary/50 border-border/40 rounded cursor-pointer"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-600 cursor-pointer">
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-text-muted cursor-pointer">
                   Remember me
                 </label>
               </div>
@@ -195,14 +195,14 @@ export default function AdminLogin() {
 
           {/* Email Info */}
           <div className="mt-6 text-center">
-            <p className="text-xs text-gray-500">
-              Logging in as <span className="font-semibold text-gray-700">admin@apsnashik.com</span>
+            <p className="text-xs text-text-dim">
+              Logging in as <span className="font-semibold text-text">admin@apsnashik.com</span>
             </p>
           </div>
 
           {/* Footer */}
           <div className="mt-8 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-text-muted">
               Protected by secure authentication
             </p>
           </div>

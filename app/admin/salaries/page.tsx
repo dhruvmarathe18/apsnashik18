@@ -66,8 +66,8 @@ export default function SalariesPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Salary Management</h1>
-              <p className="text-gray-600 mt-2">Manage employee salaries and payments</p>
+              <h1 className="text-3xl font-bold text-text">Salary Management</h1>
+              <p className="text-text-muted mt-2">Manage employee salaries and payments</p>
             </div>
             <Button onClick={() => setShowAddModal(true)}>
               <Plus className="w-5 h-5 mr-2" />
@@ -81,10 +81,10 @@ export default function SalariesPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Salaries</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-2">{formatRupee(stats.total)}</p>
+                    <p className="text-sm font-medium text-text-muted">Total Salaries</p>
+                    <p className="text-2xl font-bold text-text mt-2">{formatRupee(stats.total)}</p>
                   </div>
-                  <UserCog className="w-8 h-8 text-gray-600" />
+                  <UserCog className="w-8 h-8 text-text-muted" />
                 </div>
               </CardContent>
             </Card>
@@ -92,10 +92,10 @@ export default function SalariesPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Teachers</p>
-                    <p className="text-2xl font-bold text-blue-600 mt-2">{formatRupee(stats.teachers)}</p>
+                    <p className="text-sm font-medium text-text-muted">Teachers</p>
+                    <p className="text-2xl font-bold text-primary mt-2">{formatRupee(stats.teachers)}</p>
                   </div>
-                  <UserCog className="w-8 h-8 text-blue-600" />
+                  <UserCog className="w-8 h-8 text-primary" />
                 </div>
               </CardContent>
             </Card>
@@ -103,10 +103,10 @@ export default function SalariesPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Staff</p>
-                    <p className="text-2xl font-bold text-purple-600 mt-2">{formatRupee(stats.staff)}</p>
+                    <p className="text-sm font-medium text-text-muted">Staff</p>
+                    <p className="text-2xl font-bold text-purple-500 mt-2">{formatRupee(stats.staff)}</p>
                   </div>
-                  <UserCog className="w-8 h-8 text-purple-600" />
+                  <UserCog className="w-8 h-8 text-purple-500" />
                 </div>
               </CardContent>
             </Card>
@@ -114,10 +114,10 @@ export default function SalariesPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">This Month</p>
-                    <p className="text-2xl font-bold text-green-600 mt-2">{formatRupee(stats.thisMonth)}</p>
+                    <p className="text-sm font-medium text-text-muted">This Month</p>
+                    <p className="text-2xl font-bold text-success mt-2">{formatRupee(stats.thisMonth)}</p>
                   </div>
-                  <UserCog className="w-8 h-8 text-green-600" />
+                  <UserCog className="w-8 h-8 text-success" />
                 </div>
               </CardContent>
             </Card>
@@ -152,12 +152,12 @@ export default function SalariesPage() {
             <CardHeader>
               <CardTitle>Salary Records ({filteredSalaries.length})</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               {filteredSalaries.length === 0 ? (
-                <div className="text-center py-12">
-                  <UserCog className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Salary Records Found</h3>
-                  <p className="text-gray-600 mb-4">
+                <div className="text-center py-12 px-6">
+                  <UserCog className="w-16 h-16 text-text-subtle mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-text mb-2">No Salary Records Found</h3>
+                  <p className="text-text-muted mb-4">
                     {filterMonth || filterType ? 'Try adjusting your filters' : 'Get started by adding your first salary entry'}
                   </p>
                   {!filterMonth && !filterType && (
@@ -168,40 +168,40 @@ export default function SalariesPage() {
                   )}
                 </div>
               ) : (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto bg-surface-2 rounded-xl ring-1 ring-border/40 p-6">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Date</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Employee Name</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Type</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Salary Month</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Amount</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Payment Mode</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Actions</th>
+                      <tr>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Date</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Employee Name</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Type</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Salary Month</th>
+                        <th className="text-right py-3 px-4 text-sm font-medium text-text-muted">Amount</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Payment Mode</th>
+                        <th className="text-right py-3 px-4 text-sm font-medium text-text-muted">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredSalaries.map((salary) => (
-                        <tr key={salary.id} className="border-b hover:bg-gray-50">
-                          <td className="py-3 px-4 text-sm text-gray-600">{formatDateReadable(salary.date)}</td>
-                          <td className="py-3 px-4 text-sm font-medium text-gray-900">{salary.employeeName}</td>
+                        <tr key={salary.id}>
+                          <td className="py-3 px-4 text-sm text-text-muted">{formatDateReadable(salary.date)}</td>
+                          <td className="py-3 px-4 text-sm font-medium text-text">{salary.employeeName}</td>
                           <td className="py-3 px-4">
                             <span
                               className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 salary.employeeType === 'Teacher'
-                                  ? 'bg-blue-100 text-blue-800'
-                                  : 'bg-purple-100 text-purple-800'
+                                  ? 'bg-primary/20 text-primary'
+                                  : 'bg-purple-500/20 text-purple-400'
                               }`}
                             >
                               {salary.employeeType}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-sm text-gray-600">{salary.salaryMonth || '-'}</td>
-                          <td className="py-3 px-4 text-sm font-semibold text-right text-green-600">
+                          <td className="py-3 px-4 text-sm text-text-muted">{salary.salaryMonth || '-'}</td>
+                          <td className="py-3 px-4 text-sm font-semibold text-right text-success">
                             {formatRupee(salary.amount)}
                           </td>
-                          <td className="py-3 px-4 text-sm text-gray-600">{salary.paymentMode}</td>
+                          <td className="py-3 px-4 text-sm text-text-muted">{salary.paymentMode}</td>
                           <td className="py-3 px-4">
                             <div className="flex items-center justify-end gap-2">
                               <Button 
@@ -212,10 +212,10 @@ export default function SalariesPage() {
                                   setShowAddModal(true)
                                 }}
                               >
-                                <Edit className="w-4 h-4 text-blue-600" />
+                                <Edit className="w-4 h-4 text-primary" />
                               </Button>
                               <Button variant="ghost" size="sm" onClick={() => handleDelete(salary.id)}>
-                                <Trash2 className="w-4 h-4 text-red-600" />
+                                <Trash2 className="w-4 h-4 text-destructive" />
                               </Button>
                             </div>
                           </td>
@@ -367,25 +367,25 @@ function SalaryModal({ salary, onClose }: { salary: Salary | null; onClose: () =
       onClick={handleClose}
     >
       <div 
-        className={`bg-white rounded-lg shadow-xl max-w-2xl w-full transition-all duration-300 ease-in-out ${
+        className={`bg-card rounded-lg shadow-xl max-w-2xl w-full transition-all duration-300 ease-in-out ring-1 ring-border/40 ${
           isClosing 
             ? 'transform translate-x-[100%] opacity-0 scale-95' 
             : 'transform translate-x-0 opacity-100 scale-100'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-6 border-b flex items-center justify-between">
+        <div className="p-6 border-b border-border/20 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {salary && (
               <button
                 onClick={handleClose}
-                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-1 hover:bg-surface-3 rounded-full transition-colors"
                 aria-label="Go back"
               >
-                <ArrowLeft className="w-5 h-5 text-gray-600" />
+                <ArrowLeft className="w-5 h-5 text-text-muted" />
               </button>
             )}
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-text">
               {salary ? 'Edit Salary Entry' : 'Add Salary Entry'}
             </h2>
           </div>
@@ -402,11 +402,11 @@ function SalaryModal({ salary, onClose }: { salary: Salary | null; onClose: () =
             {previousEmployees.length > 0 && useDropdown ? (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="block text-sm font-medium text-gray-700">Employee Name</label>
+                  <label className="block text-sm font-medium text-text">Employee Name</label>
                   <button
                     type="button"
                     onClick={() => setUseDropdown(false)}
-                    className="text-xs text-blue-600 hover:text-blue-800"
+                    className="text-xs text-primary hover:opacity-80"
                   >
                     Enter manually
                   </button>
@@ -430,12 +430,12 @@ function SalaryModal({ salary, onClose }: { salary: Salary | null; onClose: () =
             ) : (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="block text-sm font-medium text-gray-700">Employee Name</label>
+                  <label className="block text-sm font-medium text-text">Employee Name</label>
                   {previousEmployees.length > 0 && (
                     <button
                       type="button"
                       onClick={() => setUseDropdown(true)}
-                      className="text-xs text-blue-600 hover:text-blue-800"
+                      className="text-xs text-primary hover:opacity-80"
                     >
                       Select from list
                     </button>

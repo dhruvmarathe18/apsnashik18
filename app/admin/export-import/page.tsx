@@ -30,12 +30,18 @@ export default function ExportImportPage() {
           'Full Name': s.fullName,
           'Gender': s.gender || '',
           'Date of Birth': s.dateOfBirth || '',
+          'Aadhar Number': s.aadharNumber || '',
           'Class': s.className,
           'Section': s.section || '',
           'Academic Year': s.academicYear,
           "Father's Name": s.fatherName || '',
           "Mother's Name": s.motherName || '',
           'Guardian Name': s.guardianName || '',
+          'Previous School Name': s.previousSchoolName || '',
+          'Blood Group': s.bloodGroup || '',
+          'Caste Belongs To': s.casteCategory || '',
+          'Caste Other': s.casteOther || '',
+          'Birth Place': s.birthPlace || '',
           'Primary Phone': s.phonePrimary,
           'Secondary Phone': s.phoneSecondary || '',
           'Address Line 1': s.addressLine1 || '',
@@ -45,6 +51,7 @@ export default function ExportImportPage() {
           'Pincode': s.pincode || '',
           'Bus Opted': s.busOpted ? 'Yes' : 'No',
           'Bus Route ID': s.busRouteId || '',
+          'Bus Route Address': s.busRouteAddress || '',
           'Bus Fee Monthly': s.busFeeMonthly || '',
           'Status': s.status,
         }))
@@ -59,7 +66,7 @@ export default function ExportImportPage() {
           return {
             'Admission No': student?.admissionNo || '',
             'Student Name': student?.fullName || '',
-            'Annual Fee': fp.annualFee,
+            'Tuition Fee': fp.annualFee,
             'Exam Fee': fp.examFee,
             'Book Fee': fp.bookFee,
             'Uniform Fee': fp.uniformFee,
@@ -221,7 +228,7 @@ export default function ExportImportPage() {
             if (student) {
               await addFeePlan({
                 studentId: student.id,
-                annualFee: parseFloat(row['Annual Fee'] || 0),
+                      annualFee: parseFloat(row['Tuition Fee'] || row['Annual Fee'] || 0),
                 examFee: parseFloat(row['Exam Fee'] || 0),
                 bookFee: parseFloat(row['Book Fee'] || 0),
                 uniformFee: parseFloat(row['Uniform Fee'] || 0),
@@ -313,34 +320,34 @@ export default function ExportImportPage() {
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Export / Import</h1>
-            <p className="text-gray-600 mt-2">Export and import your school data</p>
+            <h1 className="text-3xl font-bold text-text">Export / Import</h1>
+            <p className="text-text-muted mt-2">Export and import your school data</p>
           </div>
 
           {/* Data Summary */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <Card>
               <CardContent className="p-4">
-                <p className="text-sm text-gray-600">Students</p>
-                <p className="text-2xl font-bold text-gray-900">{students.length}</p>
+                <p className="text-sm text-text-muted">Students</p>
+                <p className="text-2xl font-bold text-text">{students.length}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
-                <p className="text-sm text-gray-600">Transactions</p>
-                <p className="text-2xl font-bold text-gray-900">{transactions.length}</p>
+                <p className="text-sm text-text-muted">Transactions</p>
+                <p className="text-2xl font-bold text-text">{transactions.length}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
-                <p className="text-sm text-gray-600">Fee Plans</p>
-                <p className="text-2xl font-bold text-gray-900">{feePlans.length}</p>
+                <p className="text-sm text-text-muted">Fee Plans</p>
+                <p className="text-2xl font-bold text-text">{feePlans.length}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
-                <p className="text-sm text-gray-600">Settings</p>
-                <p className="text-2xl font-bold text-gray-900">✓</p>
+                <p className="text-sm text-text-muted">Settings</p>
+                <p className="text-2xl font-bold text-text">✓</p>
               </CardContent>
             </Card>
           </div>
@@ -355,10 +362,10 @@ export default function ExportImportPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600 mb-4">
+                <p className="text-text-muted mb-4">
                   Export all your school data to an Excel file. This includes:
                 </p>
-                <ul className="list-disc list-inside text-gray-600 mb-6 space-y-1 ml-2">
+                <ul className="list-disc list-inside text-text-muted mb-6 space-y-1 ml-2">
                   <li>All students and their information</li>
                   <li>All fee plans</li>
                   <li>All transactions (fees, expenses, salaries, etc.)</li>
@@ -383,7 +390,7 @@ export default function ExportImportPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600 mb-4">
+                <p className="text-text-muted mb-4">
                   Import data from an Excel file. The file should match the export format.
                 </p>
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">

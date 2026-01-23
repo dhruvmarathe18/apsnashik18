@@ -61,18 +61,18 @@ function DriverReport() {
     <AdminLayout>
       <div className="p-6">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl font-bold text-primary-700 mb-8">👤 Driver Report</h1>
+          <h1 className="text-4xl font-bold text-primary mb-8">👤 Driver Report</h1>
 
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h3 className="text-xl font-semibold mb-4">Select Driver</h3>
+          <div className="bg-surface rounded-lg shadow-lg p-6 mb-6 ring-1 ring-border/40">
+            <h3 className="text-xl font-semibold mb-4 text-text">Select Driver</h3>
             <div className="mb-4">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-text mb-2">
                 Select Driver *
               </label>
               <select
                 value={selectedDriver}
                 onChange={(e) => setSelectedDriver(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-surface-1 border border-border/40 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary text-text"
               >
                 <option value="">Select Driver</option>
                 {drivers.map((driver: string) => (
@@ -82,7 +82,7 @@ function DriverReport() {
             </div>
             <button
               onClick={generateReport}
-              className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition"
+              className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition"
             >
               Generate Report
             </button>
@@ -110,8 +110,8 @@ function DriverReport() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
-                <h3 className="text-xl font-semibold p-4 bg-gray-50 border-b">All Entries</h3>
+              <div className="bg-surface rounded-lg shadow-lg overflow-hidden mb-6 ring-1 ring-border/40">
+                <h3 className="text-xl font-semibold p-4 bg-surface-2 border-b border-border/20 text-text">All Entries</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-primary-500 text-white">
@@ -131,7 +131,7 @@ function DriverReport() {
                     <tbody>
                       {reportData.entries.length === 0 ? (
                         <tr>
-                          <td colSpan={10} className="px-4 py-8 text-center text-gray-500">
+                          <td colSpan={10} className="px-4 py-8 text-center text-text-dim">
                             No entries found for this driver
                           </td>
                         </tr>
@@ -140,17 +140,17 @@ function DriverReport() {
                           const date = new Date(entry.Date)
                           const formattedDate = date.toLocaleDateString('en-GB')
                           return (
-                            <tr key={index} className="border-b hover:bg-gray-50">
-                              <td className="px-4 py-3">{formattedDate}</td>
-                              <td className="px-4 py-3">{entry.Bus}</td>
-                              <td className="px-4 py-3 text-right">{parseFloat(entry['Start KM'] || 0).toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">{parseFloat(entry['End KM'] || 0).toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">{parseFloat(entry['Daily KM'] || 0).toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">{parseFloat(entry['Diesel Filled'] || 0).toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">{parseFloat(entry['Diesel Rate'] || 0).toFixed(2)}</td>
-                              <td className="px-4 py-3 text-right">{formatRupee(parseFloat(entry['Diesel Amount'] || 0))}</td>
-                              <td className="px-4 py-3 text-right">{formatRupee(parseFloat(entry['Other Expense'] || 0))}</td>
-                              <td className="px-4 py-3">{entry['Remarks'] || '-'}</td>
+                            <tr key={index} className="border-b border-border/20 hover:bg-surface-2">
+                              <td className="px-4 py-3 text-text">{formattedDate}</td>
+                              <td className="px-4 py-3 text-text">{entry.Bus}</td>
+                              <td className="px-4 py-3 text-right text-text">{parseFloat(entry['Start KM'] || 0).toFixed(2)}</td>
+                              <td className="px-4 py-3 text-right text-text">{parseFloat(entry['End KM'] || 0).toFixed(2)}</td>
+                              <td className="px-4 py-3 text-right text-text">{parseFloat(entry['Daily KM'] || 0).toFixed(2)}</td>
+                              <td className="px-4 py-3 text-right text-text">{parseFloat(entry['Diesel Filled'] || 0).toFixed(2)}</td>
+                              <td className="px-4 py-3 text-right text-text">{parseFloat(entry['Diesel Rate'] || 0).toFixed(2)}</td>
+                              <td className="px-4 py-3 text-right text-text">{formatRupee(parseFloat(entry['Diesel Amount'] || 0))}</td>
+                              <td className="px-4 py-3 text-right text-text">{formatRupee(parseFloat(entry['Other Expense'] || 0))}</td>
+                              <td className="px-4 py-3 text-text-muted">{entry['Remarks'] || '-'}</td>
                             </tr>
                           )
                         })

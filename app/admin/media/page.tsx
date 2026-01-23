@@ -102,11 +102,11 @@ export default function MediaPage() {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center space-x-2">
+            <h1 className="text-3xl font-bold text-text flex items-center space-x-2">
               <ImageIcon className="w-8 h-8" />
               <span>Media Management</span>
             </h1>
-            <p className="text-gray-600 mt-2">Upload and manage images in Cloudinary</p>
+            <p className="text-text-muted mt-2">Upload and manage images in Cloudinary</p>
           </div>
 
           {/* Upload Widget */}
@@ -131,7 +131,7 @@ export default function MediaPage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-text mb-2">
                     <Folder className="w-4 h-4 inline mr-1" />
                     Folder
                   </label>
@@ -145,7 +145,7 @@ export default function MediaPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-text mb-2">
                     <Tag className="w-4 h-4 inline mr-1" />
                     Tag
                   </label>
@@ -159,7 +159,7 @@ export default function MediaPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-text mb-2">
                     <Search className="w-4 h-4 inline mr-1" />
                     Search
                   </label>
@@ -179,7 +179,7 @@ export default function MediaPage() {
             <Card>
               <CardContent className="py-12 text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading media from Cloudinary...</p>
+                <p className="text-text-muted">Loading media from Cloudinary...</p>
               </CardContent>
             </Card>
           ) : error ? (
@@ -192,9 +192,9 @@ export default function MediaPage() {
           ) : filteredMedia.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
-                <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Media Found</h3>
-                <p className="text-gray-600 mb-4">
+                <ImageIcon className="w-16 h-16 text-text-subtle mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-text mb-2">No Media Found</h3>
+                <p className="text-text-muted mb-4">
                   {searchTerm || selectedTag
                     ? 'No media matches your filters. Try adjusting your search criteria.'
                     : 'No media found in this folder. Upload some images to get started.'}
@@ -205,7 +205,7 @@ export default function MediaPage() {
           ) : (
             <>
               <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-text-muted">
                   Showing {filteredMedia.length} of {media.length} images
                 </p>
                 <Button variant="outline" onClick={refetch}>
@@ -219,10 +219,10 @@ export default function MediaPage() {
                     key={item.id}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="group relative bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300"
+                    className="group relative bg-surface-1 border border-border/40 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300"
                   >
                     <div
-                      className="aspect-square bg-gray-100 cursor-pointer"
+                      className="aspect-square bg-surface-2 cursor-pointer"
                       onClick={() => openLightbox(item)}
                     >
                       <CloudinaryImage
@@ -239,23 +239,23 @@ export default function MediaPage() {
                         }}
                       />
                     </div>
-                    <div className="p-3 bg-white">
-                      <p className="text-xs text-gray-600 truncate mb-1" title={item.id}>
+                    <div className="p-3 bg-surface-1">
+                      <p className="text-xs text-text-muted truncate mb-1" title={item.id}>
                         {item.id.split('/').pop()}
                       </p>
-                      <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center justify-between text-xs text-text-dim">
                         <span>{(item.bytes / 1024).toFixed(1)} KB</span>
                         <div className="flex items-center space-x-1">
                           <button
                             onClick={() => handleCopyPublicId(item.id)}
-                            className="p-1 hover:bg-gray-100 rounded transition-colors"
+                            className="p-1 hover:bg-surface-3 rounded transition-colors"
                             title="Copy Public ID"
                           >
                             <Copy className="w-3 h-3" />
                           </button>
                           <button
                             onClick={() => handleCopyUrl(item.url)}
-                            className="p-1 hover:bg-gray-100 rounded transition-colors"
+                            className="p-1 hover:bg-surface-3 rounded transition-colors"
                             title="Copy URL"
                           >
                             <CheckCircle className="w-3 h-3" />
@@ -273,7 +273,7 @@ export default function MediaPage() {
                             </span>
                           ))}
                           {item.tags.length > 2 && (
-                            <span className="text-xs text-gray-500">+{item.tags.length - 2}</span>
+                            <span className="text-xs text-text-dim">+{item.tags.length - 2}</span>
                           )}
                         </div>
                       )}

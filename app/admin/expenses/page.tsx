@@ -94,8 +94,8 @@ export default function ExpensesPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Expense Management</h1>
-              <p className="text-gray-600 mt-2">Track and manage school expenses</p>
+              <h1 className="text-3xl font-bold text-text">Expense Management</h1>
+              <p className="text-text-muted mt-2">Track and manage school expenses</p>
             </div>
             <Button onClick={() => setShowAddModal(true)}>
               <Plus className="w-5 h-5 mr-2" />
@@ -109,10 +109,10 @@ export default function ExpensesPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Expenses</p>
-                    <p className="text-2xl font-bold text-red-600 mt-2">{formatRupee(stats.total)}</p>
+                    <p className="text-sm font-medium text-text-muted">Total Expenses</p>
+                    <p className="text-2xl font-bold text-destructive mt-2">{formatRupee(stats.total)}</p>
                   </div>
-                  <Receipt className="w-8 h-8 text-red-600" />
+                  <Receipt className="w-8 h-8 text-destructive" />
                 </div>
               </CardContent>
             </Card>
@@ -120,10 +120,10 @@ export default function ExpensesPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">This Month</p>
-                    <p className="text-2xl font-bold text-orange-600 mt-2">{formatRupee(stats.thisMonth)}</p>
+                    <p className="text-sm font-medium text-text-muted">This Month</p>
+                    <p className="text-2xl font-bold text-warning mt-2">{formatRupee(stats.thisMonth)}</p>
                   </div>
-                  <Receipt className="w-8 h-8 text-orange-600" />
+                  <Receipt className="w-8 h-8 text-warning" />
                 </div>
               </CardContent>
             </Card>
@@ -138,9 +138,9 @@ export default function ExpensesPage() {
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {Object.entries(categoryTotals).map(([category, total]) => (
-                    <div key={category} className="bg-gray-50 rounded-lg p-4">
-                      <p className="text-sm text-gray-600">{category}</p>
-                      <p className="text-lg font-bold text-gray-900 mt-1">{formatRupee(total)}</p>
+                    <div key={category} className="bg-surface-2 rounded-lg p-4">
+                      <p className="text-sm text-text-muted">{category}</p>
+                      <p className="text-lg font-bold text-text mt-1">{formatRupee(total)}</p>
                     </div>
                   ))}
                 </div>
@@ -187,12 +187,12 @@ export default function ExpensesPage() {
             <CardHeader>
               <CardTitle>Expense Records ({filteredExpenses.length})</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               {filteredExpenses.length === 0 ? (
-                <div className="text-center py-12">
-                  <Receipt className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Expense Records Found</h3>
-                  <p className="text-gray-600 mb-4">
+                <div className="text-center py-12 px-6">
+                  <Receipt className="w-16 h-16 text-text-subtle mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-text mb-2">No Expense Records Found</h3>
+                  <p className="text-text-muted mb-4">
                     {filterMonth || filterCategory ? 'Try adjusting your filters' : 'Get started by adding your first expense'}
                   </p>
                   {!filterMonth && !filterCategory && (
@@ -203,30 +203,30 @@ export default function ExpensesPage() {
                   )}
                 </div>
               ) : (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto bg-surface-2 rounded-xl ring-1 ring-border/40 p-6">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Date</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Category</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Details</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Amount</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Payment Mode</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Notes</th>
-                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-700">Actions</th>
+                      <tr>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Date</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Category</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Details</th>
+                        <th className="text-right py-3 px-4 text-sm font-medium text-text-muted">Amount</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Payment Mode</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-text-muted">Notes</th>
+                        <th className="text-right py-3 px-4 text-sm font-medium text-text-muted">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredExpenses.map((expense) => (
-                        <tr key={expense.id} className="border-b hover:bg-gray-50">
-                          <td className="py-3 px-4 text-sm text-gray-600">{formatDateReadable(expense.date)}</td>
+                        <tr key={expense.id}>
+                          <td className="py-3 px-4 text-sm text-text-muted">{formatDateReadable(expense.date)}</td>
                           <td className="py-3 px-4">
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                               expense.type === 'bus_expense' 
-                                ? 'bg-purple-100 text-purple-800'
+                                ? 'bg-purple-500/20 text-purple-400'
                                 : expense.type === 'salary'
-                                ? 'bg-blue-100 text-blue-800'
-                                : 'bg-orange-100 text-orange-800'
+                                ? 'bg-primary/20 text-primary'
+                                : 'bg-warning/20 text-warning'
                             }`}>
                               {expense.type === 'bus_expense' 
                                 ? expense.expenseType || 'Bus Expense'
@@ -235,32 +235,32 @@ export default function ExpensesPage() {
                                 : expense.category}
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-sm text-gray-600">
+                          <td className="py-3 px-4 text-sm text-text-muted">
                             {expense.type === 'bus_expense' ? (
                               <div>
-                                <div className="font-medium">Bus: {expense.busNumber || 'N/A'}</div>
+                                <div className="font-medium text-text">Bus: {expense.busNumber || 'N/A'}</div>
                                 {expense.vendor && (
-                                  <div className="text-xs text-gray-500">Vendor: {expense.vendor}</div>
+                                  <div className="text-xs text-text-dim">Vendor: {expense.vendor}</div>
                                 )}
                               </div>
                             ) : expense.type === 'salary' ? (
                               <div>
-                                <div className="font-medium">{expense.employeeName}</div>
-                                <div className="text-xs text-gray-500">Month: {expense.salaryMonth}</div>
+                                <div className="font-medium text-text">{expense.employeeName}</div>
+                                <div className="text-xs text-text-dim">Month: {expense.salaryMonth}</div>
                               </div>
                             ) : (
                               '-'
                             )}
                           </td>
-                          <td className="py-3 px-4 text-sm font-semibold text-right text-red-600">
+                          <td className="py-3 px-4 text-sm font-semibold text-right text-destructive">
                             {formatRupee(expense.amount)}
                           </td>
-                          <td className="py-3 px-4 text-sm text-gray-600">{expense.paymentMode}</td>
-                          <td className="py-3 px-4 text-sm text-gray-600">{expense.notes || '-'}</td>
+                          <td className="py-3 px-4 text-sm text-text-muted">{expense.paymentMode}</td>
+                          <td className="py-3 px-4 text-sm text-text-muted">{expense.notes || '-'}</td>
                           <td className="py-3 px-4">
                             <div className="flex items-center justify-end">
                               <Button variant="ghost" size="sm" onClick={() => handleDelete(expense.id)}>
-                                <Trash2 className="w-4 h-4 text-red-600" />
+                                <Trash2 className="w-4 h-4 text-destructive" />
                               </Button>
                             </div>
                           </td>
@@ -388,9 +388,9 @@ function ExpenseModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b">
-          <h2 className="text-2xl font-bold text-gray-900">Add Expense</h2>
+      <div className="bg-card rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto ring-1 ring-border/40">
+        <div className="p-6 border-b border-border/20">
+          <h2 className="text-2xl font-bold text-text">Add Expense</h2>
         </div>
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-4">

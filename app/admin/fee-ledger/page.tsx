@@ -77,8 +77,8 @@ export default function FeeLedgerPage() {
       <div className="p-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Fee Ledger</h1>
-            <p className="text-gray-600 mt-2">View student fee payment history and balances</p>
+            <h1 className="text-3xl font-bold text-text">Fee Ledger</h1>
+            <p className="text-text-muted mt-2">View student fee payment history and balances</p>
           </div>
 
           {/* Filters */}
@@ -86,7 +86,7 @@ export default function FeeLedgerPage() {
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-dim w-5 h-5" />
                   <Input
                     type="text"
                     placeholder="Search by name or admission no..."
@@ -121,9 +121,9 @@ export default function FeeLedgerPage() {
           {studentLedgers.length === 0 ? (
             <Card>
               <CardContent className="p-12 text-center">
-                <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Fee Records Found</h3>
-                <p className="text-gray-600">No fee transactions found for the selected filters.</p>
+                <BookOpen className="w-16 h-16 text-text-subtle mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-text mb-2">No Fee Records Found</h3>
+                <p className="text-text-muted">No fee transactions found for the selected filters.</p>
               </CardContent>
             </Card>
           ) : (
@@ -136,45 +136,45 @@ export default function FeeLedgerPage() {
                         <CardTitle className="text-lg">
                           {ledger.student.fullName} ({ledger.student.admissionNo})
                         </CardTitle>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-sm text-text-dim mt-1">
                           {ledger.student.className} • {ledger.transactions.length} transaction(s)
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm text-gray-600">Total Paid</p>
-                        <p className="text-2xl font-bold text-green-600">{formatRupee(ledger.total)}</p>
+                        <p className="text-sm text-text-muted">Total Paid</p>
+                        <p className="text-2xl font-bold text-success">{formatRupee(ledger.total)}</p>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="overflow-x-auto">
+                  <CardContent className="p-0">
+                    <div className="overflow-x-auto bg-surface-2 rounded-xl ring-1 ring-border/40 p-6">
                       <table className="w-full">
                         <thead>
-                          <tr className="border-b">
-                            <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Date</th>
-                            <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Fee Type</th>
-                            <th className="text-right py-2 px-4 text-sm font-medium text-gray-700">Amount</th>
-                            <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Payment Mode</th>
-                            <th className="text-left py-2 px-4 text-sm font-medium text-gray-700">Status</th>
+                          <tr>
+                            <th className="text-left py-2 px-4 text-sm font-medium text-text-muted">Date</th>
+                            <th className="text-left py-2 px-4 text-sm font-medium text-text-muted">Fee Type</th>
+                            <th className="text-right py-2 px-4 text-sm font-medium text-text-muted">Amount</th>
+                            <th className="text-left py-2 px-4 text-sm font-medium text-text-muted">Payment Mode</th>
+                            <th className="text-left py-2 px-4 text-sm font-medium text-text-muted">Status</th>
                           </tr>
                         </thead>
                         <tbody>
                           {ledger.transactions
                             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                             .map((transaction) => (
-                              <tr key={transaction.id} className="border-b hover:bg-gray-50">
-                                <td className="py-2 px-4 text-sm text-gray-600">{formatDateReadable(transaction.date)}</td>
-                                <td className="py-2 px-4 text-sm text-gray-900">{transaction.feeType}</td>
-                                <td className="py-2 px-4 text-sm font-semibold text-right text-green-600">
+                              <tr key={transaction.id}>
+                                <td className="py-2 px-4 text-sm text-text-muted">{formatDateReadable(transaction.date)}</td>
+                                <td className="py-2 px-4 text-sm text-text">{transaction.feeType}</td>
+                                <td className="py-2 px-4 text-sm font-semibold text-right text-success">
                                   {formatRupee(transaction.amount)}
                                 </td>
-                                <td className="py-2 px-4 text-sm text-gray-600">{transaction.paymentMode}</td>
+                                <td className="py-2 px-4 text-sm text-text-muted">{transaction.paymentMode}</td>
                                 <td className="py-2 px-4">
                                   <span
                                     className={`px-2 py-1 rounded-full text-xs font-medium ${
                                       transaction.status === 'Paid'
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-yellow-100 text-yellow-800'
+                                        ? 'bg-success/20 text-success'
+                                        : 'bg-warning/20 text-warning'
                                     }`}
                                   >
                                     {transaction.status || 'Paid'}
@@ -186,7 +186,7 @@ export default function FeeLedgerPage() {
                       </table>
                     </div>
                     {ledger.student.id && (
-                      <div className="mt-4 pt-4 border-t">
+                      <div className="mt-4 pt-4 border-t border-border/20 px-6 pb-6">
                         <Link href={`/admin/students/${ledger.student.id}`}>
                           <Button variant="outline" className="w-full">
                             View Full Profile

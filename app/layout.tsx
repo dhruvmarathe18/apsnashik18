@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast'
 import { DataProvider } from '@/contexts/DataContext'
 import { TransportProvider } from '@/contexts/TransportContext'
 import { SchoolProvider } from '@/contexts/SchoolContext'
+import { ThemeProvider } from '@/components/theme-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -45,28 +46,36 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/images/aps.jpg" type="image/x-icon" />
       </head>
       <body className={inter.className}>
-        <DataProvider>
-          <TransportProvider>
-            <SchoolProvider>
-              {children}
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  duration: 4000,
-                  style: {
-                    background: '#363636',
-                    color: '#fff',
-                  },
-                }}
-              />
-            </SchoolProvider>
-          </TransportProvider>
-        </DataProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <DataProvider>
+            <TransportProvider>
+              <SchoolProvider>
+                {children}
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    duration: 4000,
+                    style: {
+                      background: 'var(--toast-bg, #363636)',
+                      color: 'var(--toast-color, #fff)',
+                    },
+                    className: 'dark:bg-gray-800 dark:text-gray-100',
+                  }}
+                />
+              </SchoolProvider>
+            </TransportProvider>
+          </DataProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
