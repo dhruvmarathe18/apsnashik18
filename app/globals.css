@@ -1,5 +1,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Merriweather:wght@300;400;700&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 @import 'react-day-picker/dist/style.css';
+
+/* Custom styles for react-day-picker navigation buttons */
+.rdp-button_previous::after,
+.rdp-button_next::after {
+  content: '';
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-style: solid;
+  border-width: 0.125rem 0.125rem 0 0;
+}
+
+.rdp-button_previous::after {
+  content: '‹';
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.rdp-button_next::after {
+  content: '›';
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.rdp-button_previous,
+.rdp-button_next {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(var(--text-muted));
+}
+
+.rdp-button_previous:hover,
+.rdp-button_next:hover {
+  color: rgb(var(--text));
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

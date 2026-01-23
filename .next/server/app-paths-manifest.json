@@ -1,8 +1,8 @@
 {
   "/admin/page": "app/admin/page.js",
   "/admin/students/page": "app/admin/students/page.js",
-  "/admin/expenses/page": "app/admin/expenses/page.js",
   "/admin/settings/page": "app/admin/settings/page.js",
   "/admin/students/[id]/page": "app/admin/students/[id]/page.js",
-  "/admin/fee-due-reports/page": "app/admin/fee-due-reports/page.js"
+  "/admin/fee-due-reports/page": "app/admin/fee-due-reports/page.js",
+  "/admin/fees/page": "app/admin/fees/page.js"
 }

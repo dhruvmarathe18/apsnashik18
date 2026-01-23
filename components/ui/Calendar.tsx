@@ -22,8 +22,8 @@ function Calendar({
         caption: 'flex justify-center pt-1 relative items-center',
         caption_label: 'text-sm font-medium text-text',
         nav: 'space-x-1 flex items-center',
-        button_previous: 'absolute left-1',
-        button_next: 'absolute right-1',
+        button_previous: 'absolute left-1 text-text-muted hover:text-text',
+        button_next: 'absolute right-1 text-text-muted hover:text-text',
         month_caption: 'flex justify-center pt-1 relative items-center',
         month_grid: 'w-full border-collapse space-y-1',
         weekdays: 'flex',
@@ -39,10 +39,6 @@ function Calendar({
         range_middle: 'aria-selected:bg-muted/50 aria-selected:text-text',
         hidden: 'invisible',
         ...classNames,
-      }}
-      components={{
-        IconLeft: ({ ...props }) => <span className="text-text-muted">‹</span>,
-        IconRight: ({ ...props }) => <span className="text-text-muted">›</span>,
       }}
       {...props}
     />
