@@ -451,7 +451,7 @@ export function parseStudentExcel(
           let validBloodGroup: BloodGroup | undefined
           if (bloodGroupStr) {
             const cleaned = bloodGroupStr.trim().toUpperCase().replace(/\s+/g, '')
-            const allowed: BloodGroup[] = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'NOTKNOWN', 'UNKNOWN']
+            const allowed: BloodGroup[] = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Not Known']
             
             // Handle "Not Known" variations
             if (cleaned === 'NOTKNOWN' || cleaned === 'UNKNOWN' || cleaned.includes('NOTKNOWN') || cleaned.includes('UNKNOWN')) {
